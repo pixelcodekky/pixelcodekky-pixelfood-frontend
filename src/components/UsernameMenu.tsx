@@ -1,4 +1,3 @@
-import React from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { CircleUserRound } from 'lucide-react'
 import { Link } from 'react-router-dom';
@@ -12,8 +11,8 @@ export const UsernameMenu = () => {
 
     return (
     <DropdownMenu>
-        <DropdownMenuTrigger className='flex items-center px-3 font-bold hover:text-orange-500 gap-2'>
-            <CircleUserRound className='text-orange-500'/>
+        <DropdownMenuTrigger className='flex items-center px-3 font-bold hover:text-green-500 gap-2'>
+            <CircleUserRound className='text-green-500'/>
             {user?.given_name}
         </DropdownMenuTrigger>
         <DropdownMenuContent>

@@ -10,7 +10,7 @@ const MainNav = () => {
         {isAuthenticated ? <UsernameMenu /> : 
         <Button 
             variant='ghost'
-            className='font-bold hover:text-orange-500 hover:bg-white'
+            className='font-bold hover:text-green-500 hover:bg-white'
             onClick={async () => await loginWithRedirect()}
             >
             Log In

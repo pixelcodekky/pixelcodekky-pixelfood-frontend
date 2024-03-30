@@ -1,10 +1,10 @@
-import hero from '../assets/hero.png';
+import pixelfood from '../assets/pixel_food_bg.jpg';
 
 
 export const Hero = () => {
   return (
     <div>
-        <img src={hero} className='w-full max-h-[600px] object-cover'/>
+        <img src={pixelfood} className='w-full max-h-[400px]'/>
 
     </div>
   )

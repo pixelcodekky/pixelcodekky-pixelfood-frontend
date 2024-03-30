@@ -1,4 +1,4 @@
-export const cousineList = [
+export const cuisineList = [
     "American",
     "BBQ",
     "Breakfast",
