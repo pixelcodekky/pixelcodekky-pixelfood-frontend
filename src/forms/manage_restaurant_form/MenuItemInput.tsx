@@ -2,6 +2,7 @@ import { useFormContext } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Trash } from 'lucide-react';
 
 type Props = {
     index: number;
@@ -35,7 +36,8 @@ const MenuItemInput = ({index, removeMenuItem}: Props) => {
                     </FormControl>
                 </FormItem>
             )}/>
-            <Button type='button' onClick={removeMenuItem} className='bg-red-500 mx-h-fit'>Remove</Button>
+            {/* <Button type='button' onClick={removeMenuItem} className='bg-red-500 mx-h-fit'>Remove</Button> */}
+            <Button type='button' className='bg-white hover:bg-white'><Trash onClick={removeMenuItem} className='text-red-500 hover:text-red-600 h-fit' /></Button> 
         </div>
     )
 }

@@ -7,6 +7,8 @@ export const HomePage = () => {
 
     const navigate = useNavigate();
 
+    const hostedCountry = import.meta.env.VITE_HOSTED_COUNTRY;
+
     const handleSearchSubmit = (values: SearchForm) => {
         navigate({
             pathname: `/search/${values.searchQuery}`,
@@ -17,7 +19,7 @@ export const HomePage = () => {
         <div className='flex flex-col pag-12'>
             <div className='md:px-32 bg-white rounded-lg shadow-md py-8 flex flex-col gap-5 text-center -mt-16'>
                 <h1 className="text-5xl font-bold tracking-tight text-green-600 text-gradient">
-                    Welcome!
+                    {hostedCountry ? `Welcome ${hostedCountry}!` : `Welcome!`}
                 </h1>
                 {/* <span className="text-xl">Food is just on click</span> */}
                 <SearchBar placeHolder='Find your location' onSubmit={handleSearchSubmit} />

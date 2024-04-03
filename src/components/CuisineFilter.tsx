@@ -30,12 +30,14 @@ const CuisineFilter = ({onChange, selectedCuisines, isExpanded, onExpandedClick}
     
     return (
         <>
-            <div className="flex justify-between items-center px-2">
-                <div className="text-md font-semibold mb-2">Filter by Cuisines</div>
+            <div className="flex justify-between items-center">
+                <div className="text-2xl font-semibold mb-2">Filter</div>
                 <div onClick={handleCuisinesReset} className="text-sm font-semibold mb-2 underline cursor-pointer">Reset filter</div>
             </div>
+            
 
             <div className="space-y-2 flex flex-col">
+            <div className="text-md font-semibold">Cuisines</div>
                 {cuisineList.slice(0, isExpanded ? cuisineList.length : 7).map((cuisine) => {
                     const isSelected = selectedCuisines.includes(cuisine);
                     return (

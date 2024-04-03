@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { FormDescription, FormField, FormItem } from '@/components/ui/form';
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import MenuItemInput from './MenuItemInput';
+import { Plus } from 'lucide-react';
 
 const MenuSection = () => {
     const {control} = useFormContext();
@@ -18,6 +19,8 @@ const MenuSection = () => {
                 <h2 className='text-2xl font-bold'>Menu</h2>
                 <FormDescription>Create your own menu</FormDescription>
             </div>
+            <Button type='button' className='bg-white-500 hover:bg-green-100'
+                onClick={() => append({name:'', price:''})}><Plus className='text-green-600'></Plus></Button>
             <FormField control={control} 
                 name='menuItems' 
                 render={() => (
@@ -31,8 +34,7 @@ const MenuSection = () => {
                         ))}
                     </FormItem>
             )} />
-            <Button type='button'
-                onClick={() => append({name:'', price:''})}>Add</Button>
+            
         </div>
     )
 }
