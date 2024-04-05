@@ -1,4 +1,4 @@
-import { Restaurant } from "@/types";
+import { Order, Restaurant } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { error } from "console";
 import { useMutation, useQuery } from "react-query";
@@ -109,4 +109,78 @@ export const useUpdateRestaurant = () => {
     return {updateRestaurant, isLoading};
 }
 
+export const useGetMyRestaurantOrders = () => {
+    const {getAccessTokenSilently} = useAuth0();
+    
+    const GetMyRestaurantOrdersRequest = async (): Promise<Order[]> => {
+        const accessToken = await getAccessTokenSilently();
+        
+        const res = await fetch(`${API_BASE_URL}/api/my/restaurant/order`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch  orders: ${res.statusText}`);
+        }
+        return res.json();
+    }
+
+    const {data: orders, isLoading} = useQuery(
+        'fetchMyRestaurantOrders',
+        GetMyRestaurantOrdersRequest
+    );
+
+    return {orders, isLoading};
+}
+
+
+type UpdateOrderStatusRequest = {
+    orderId: string;
+    status: string;
+}
+
+export const useMyRestaurantUpdate = () => {
+    const {getAccessTokenSilently} = useAuth0();
+
+    const useMyRestaurantUpdateRequest = async (updateStatusOrderRequest: UpdateOrderStatusRequest): Promise<Restaurant> => {
+        const accessToken = await getAccessTokenSilently();
+
+        const res = await fetch(`${API_BASE_URL}/api/my/restaurant/order/${updateStatusOrderRequest.orderId}/status`, {
+            method: "PATCH",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({status: updateStatusOrderRequest.status}),
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch  orders: ${res.statusText}`);
+        }
+
+        return res.json();
+
+    }
+
+    const { mutateAsync: updateRestaurantStatus, 
+            isLoading, 
+            isError, 
+            isSuccess, 
+            reset} = useMutation(useMyRestaurantUpdateRequest);
+
+    if(isSuccess){
+        toast.success("Order updated");
+    }
+
+    if(isError){
+        toast.error("An error occurred while updating the order");
+        reset();
+    }
+
+    return {updateRestaurantStatus, isLoading};
+
+
+}
 
