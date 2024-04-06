@@ -15,6 +15,8 @@ type Props = {
 
 const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
     
+    const gstvalue = import.meta.env.VITE_GST_PERCENT;
+
     const getTotalCost = () => {
         const totalcost = cartItems.reduce((total, cartItem) => total + cartItem.price * cartItem.quantity, 0);
 
@@ -22,13 +24,27 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
 
         return ( totalWithDelivery / 100).toFixed(2);
     }
+
+    const getTotalCostWithGST = () => {
+        const gettotal = parseInt(getTotalCost());
+        const getgst = getGSTcost();
+        const total = parseFloat(gettotal.toFixed(2).toString()) + parseFloat(getgst);
+        console.log(`total: ${total}`)
+        return parseFloat(total.toString());
+    }
+
+    const getGSTcost = () => {
+        const gettotal = getTotalCost();
+        const gst = (parseInt(gettotal) / 100) * parseInt(gstvalue);
+        return gst.toFixed(2);
+    }
     
     return (
         <>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold tracking-tight flex justify-between">
                     <span>Your Order</span>
-                    <span>S${getTotalCost()}</span>
+                    <span>S${getTotalCostWithGST()}</span>
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
@@ -51,6 +67,10 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
                 <div className="flex justify-between">
                     <span>Delivery</span>
                     <span>S${(restaurant.deliveryPrice / 100).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                    <span>GST {gstvalue}%</span>
+                    <span>  S${getGSTcost()}</span>
                 </div>
             </CardContent>
         </>

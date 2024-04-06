@@ -6,11 +6,13 @@ import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MenuItem as MenuItemType } from '../types';
 import CheckoutButton from "@/components/CheckoutButton";
 import { UserFormData } from "@/forms/user_profile_form/UserProfileForm";
 import { useCreateCheckoutSession } from "@/api/OrderApi";
+import { Button } from "@/components/ui/button";
+import { CircleArrowLeft } from "lucide-react";
 
 export type CartItem = {
     _id: string;
@@ -20,7 +22,8 @@ export type CartItem = {
 }
 
 const DetailPage = () => {
-    
+    const navigate = useNavigate();
+
     const {restaurantId} = useParams();
     const {restaurant, isLoading: isRestaurantLoading} = useGetRestaurant(restaurantId);
     const { createCheckoutSession, isLoading: isCheckoutLoading } = useCreateCheckoutSession();
@@ -94,11 +97,25 @@ const DetailPage = () => {
         return <LoadingSkeleton />
     }
 
+    const handleRedirectPrevPage = () => {
+        navigate(-1);
+    }
+
     return (
+        <>
+        
         <div className="flex flex-col gap-10">
             <AspectRatio ratio={16/4}>
                 <img src={restaurant.imageUrl} className="rounded-md object-cover h-full w-full" />
             </AspectRatio>
+            <div className="flex flex-col gap-4">
+                <div className="flex justify-normal">
+                    <Button variant='link' className="text-green-500 gap-2" onClick={handleRedirectPrevPage}>
+                        <CircleArrowLeft  />
+                        go back to restaurants
+                    </Button>
+                </div>
+            </div>
             <div className="grid md:grid-cols-[4fr_2fr] gap-5 md:px-32">
                 <div className="flex flex-col gap-4">
                     <RestaurantInfo restaurant={restaurant} />
@@ -118,6 +135,8 @@ const DetailPage = () => {
                 </div>
             </div>
         </div>
+        </>
+        
     )
 }
 
