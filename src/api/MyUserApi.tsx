@@ -82,7 +82,9 @@ type updateUserRequest = {
     name: String,
     addressLine1: string,
     city: String,
-    country: String
+    country: String,
+    mobileNumber:string,
+    countryCode:string,
 }
 
 export const useUpdateMyUser = () => {
@@ -110,7 +112,6 @@ export const useUpdateMyUser = () => {
     const {mutateAsync: updateUser, 
             isLoading, 
             isSuccess, 
-            isError, 
             error, 
             reset 
         } = useMutation(updateUserData);

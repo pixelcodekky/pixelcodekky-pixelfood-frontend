@@ -7,6 +7,12 @@ import { LoadingButton } from '@/components/LoadingButton';
 import { Button } from '@/components/ui/button';
 import { User } from '@/types';
 import { useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { COUNTRY_CODE } from '@/config/country_code_config';
+
+const phoneValidation = new RegExp(
+    /^[89][0-9]{7}$/
+);
 
 const formSchema = z.object({
     email: z.string().optional(),
@@ -14,7 +20,11 @@ const formSchema = z.object({
     addressLine1: z.string().min(1, 'Address Line must be at least 1 character long'),
     city: z.string().min(1, 'City must be at least 1 character long'),
     country: z.string().min(1, 'Country must be at least 1 character long'),
-
+    mobileNumber: z.string({required_error: "Mobile number required."})
+                    .min(1, 'Phone number must be 8 character long.')
+                    .max(8,"Phone number must be 8 character long.")
+                    .regex(phoneValidation,{message:'invalid phone number'}),
+    countryCode: z.string({required_error: "Country Code required."}).min(1, 'Country Code is required'),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
@@ -43,12 +53,12 @@ export const UserProfileForm = ({ onSave, isLoading, currentUser,title = "User P
         <Form {...form}>
             <form 
                 onSubmit={form.handleSubmit(onSave)} 
-                className='space-y-4 bg-gray-50 rounded-lg md:p-10'>
+                className='space-y-4 bg-gray-50 rounded-lg md:p-8'>
             <div>
                 <h2 className='text-2xl font-bold'>{title}</h2>
-                <FormDescription>
+                {/* <FormDescription>
                     View | Change
-                </FormDescription>
+                </FormDescription> */}
             </div>
             <div className='flex flex-col md:flex-row gap-4'>
                 <FormField control={form.control} name='email' render={({field}) => (
@@ -94,7 +104,7 @@ export const UserProfileForm = ({ onSave, isLoading, currentUser,title = "User P
             <div  className='flex flex-col md:flex-row gap-4'>
                 <FormField control={form.control} name='addressLine1' render={({field}) => (
                     <FormItem className='flex-1'>
-                        <FormLabel>Address Line 1</FormLabel>
+                        <FormLabel>Address</FormLabel>
                         <FormControl>
                             <Input {...field} className='bg-white' />
                         </FormControl>
@@ -102,7 +112,40 @@ export const UserProfileForm = ({ onSave, isLoading, currentUser,title = "User P
                     </FormItem>
                 )}/>
             </div>
-            {isLoading ? <LoadingButton /> : <Button type='submit' className='bg-orange-500'>{buttonText}</Button>}
+            <div className='flex flex-col md:flex-row gap-4'>
+                <FormField control={form.control} name='countryCode' render={({field}) => (
+                    <FormItem className='w-2/6 md:w-auto'>
+                        <FormLabel>Country Code</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value || 'SG'}>
+                            <FormControl>
+                                <SelectTrigger id="countrycode">
+                                    <SelectValue placeholder= "Country Code" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent position="popper">
+                                {(COUNTRY_CODE).map((code, index) => (
+                                    <SelectItem key={index} value={code.code}>{code.dialcode} {code.country}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+
+                <FormField control={form.control} name='mobileNumber' render={({field}) => (
+                    <FormItem className='w-2/5 md:w-auto'>
+                        <FormLabel>Mobile Number</FormLabel>
+                        <FormControl>
+                            <Input {...field} className='bg-white' />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}/>
+            </div>
+            <div className='pt-10'>
+                {isLoading ? <LoadingButton /> : <Button type='submit' className='bg-orange-500'>{buttonText}</Button>}
+            </div>
+           
             </form>
 
         </Form>

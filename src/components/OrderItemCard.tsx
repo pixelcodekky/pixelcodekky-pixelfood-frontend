@@ -85,8 +85,8 @@ const OrderItemCard = ({order}: Props) => {
                             <SelectValue placeholder= "Status" />
                         </SelectTrigger>
                         <SelectContent position="popper">
-                        {(ORDER_STATUS).map((status)=>(
-                            <SelectItem value={status.value}>{status.label}</SelectItem>
+                        {(ORDER_STATUS).map((ostatus)=>(
+                            <SelectItem value={ostatus.value}>{ostatus.label}</SelectItem>
                         ))}
                         </SelectContent>
                     </Select>
@@ -97,7 +97,3 @@ const OrderItemCard = ({order}: Props) => {
 }
 
 export default OrderItemCard
-
-function useUpdateMyRestaurantOrder(): { updateRestaurantStatus: any; isLoading: any; } {
-    throw new Error("Function not implemented.");
-}

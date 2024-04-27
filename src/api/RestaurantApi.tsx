@@ -1,11 +1,10 @@
-import { SearchState } from "@/pages/SearchPage";
+import { SearchState } from "@/types";
 import { Restaurant, RestaurantSearchResponse } from "@/types";
 import { useQuery } from "react-query";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useSearchRestaurants = (searchState: SearchState,city?: string) => {
-
     const params = new URLSearchParams();
     params.set('searchQuery', searchState.searchQuery);
     params.set('page', searchState.page.toString());
@@ -20,8 +19,10 @@ export const useSearchRestaurants = (searchState: SearchState,city?: string) => 
         if(!res.ok){
             throw new Error('Fail to get Restaurant');
         }
-
-        return res.json();
+        console.log('createSearchRequest here');
+        const data:RestaurantSearchResponse = await res.json();
+        console.log('createSearchRequest response', data);
+        return data;
     }
 
     const {data: results, isLoading} = useQuery(

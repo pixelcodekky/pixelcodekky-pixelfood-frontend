@@ -16,7 +16,7 @@ const PaginationSelector = ({page, pages, onPageChange} :Props) => {
 
     return (
         <>
-            <Pagination>
+            <Pagination className="py-5">
                 <PaginationContent>
                     {page !== 1 && (
                         <PaginationItem>
@@ -24,8 +24,8 @@ const PaginationSelector = ({page, pages, onPageChange} :Props) => {
                         </PaginationItem>
                     )}
                     
-                    {pageNumber.map((number) => (
-                        <PaginationItem>
+                    {pageNumber.map((number,index) => (
+                        <PaginationItem key={index}>
                             <PaginationLink href='#' onClick={() => onPageChange(number)} isActive={page === number}>{number}</PaginationLink>
                         </PaginationItem>
                     ))}

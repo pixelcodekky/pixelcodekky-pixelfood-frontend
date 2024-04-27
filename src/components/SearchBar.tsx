@@ -20,9 +20,10 @@ type Props = {
     onSubmit: (formData: SearchForm) => void;
     placeHolder: string;
     onReset?: () => void;
+    className?: string;
 }
 
-export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery}: Props) => {
+export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, className}: Props) => {
 
     const form = useForm<SearchForm>({
         resolver: zodResolver(formSchema),
@@ -50,7 +51,7 @@ export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery}: Props) 
         <Form {...form}>
             <form 
                 onSubmit={form.handleSubmit(onSubmit)}
-                className={`flex items-center m-3 gap-3 justify-between flex-row border-2 rounded-full p-3 ${form.formState.errors.searchQuery && "border-red-500"}`}
+                className={`flex items-center m-2 gap-3 justify-between flex-row border-2 rounded-full p-3 ${className} ${form.formState.errors.searchQuery && "border-red-500"}`}
             >
                 <Search strokeWidth={2.5} size={30} className='ml-1 text-green-500 hidden md:block' />
                 <FormField 

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import MobileNav from "./MobileNav";
 import MainNav from "./MainNav";
-import pixelfootphoto from '../../public/pixel_food_logo.png';
+import pixelfootphoto from '../assets/pixel_food_logo.png';
 
 const Header = () => {
   return (

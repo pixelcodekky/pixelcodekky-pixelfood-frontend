@@ -3,9 +3,9 @@ import appDownloadImage from '../assets/appDownload.png';
 import { SearchBar, SearchForm } from '@/components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
-import mainimg1 from '../../public/main_1.png';
-import mainimg2 from '../../public/main_2.png';
-import { LucideTruck, MapPin, MapPinned, SquareMousePointer } from 'lucide-react';
+import mainimg1 from '../assets/main_1.png';
+import mainimg2 from '../assets/main_2.png';
+import { LucideTruck, MapPinned, SquareMousePointer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 export const HomePage = () => {

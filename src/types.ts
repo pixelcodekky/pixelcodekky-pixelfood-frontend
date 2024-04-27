@@ -5,6 +5,8 @@ export type User = {
     city: string;
     country: string;
     addressLine1: string;
+    countryCode: string;
+    mobileNumber: string;
 }
 
 export type MenuItem = {
@@ -58,3 +60,22 @@ export type Order = {
     restaurantId:string;
 }
 
+export interface ViewMapState {
+    mapStyle: string;
+    viewState: {
+        latitude: number,
+        longitude: number,
+        zoom: number,
+    }
+};
+
+export interface ShowonMap {
+    current: boolean;
+}
+
+export type SearchState = {
+    searchQuery: string;
+    page:number;
+    selectedCuisines: string[];
+    sortOption: string;
+}

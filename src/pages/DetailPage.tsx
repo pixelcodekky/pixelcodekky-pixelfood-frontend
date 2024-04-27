@@ -112,7 +112,7 @@ const DetailPage = () => {
                 <div className="flex justify-normal">
                     <Button variant='link' className="text-green-500 gap-2" onClick={handleRedirectPrevPage}>
                         <CircleArrowLeft  />
-                        go back to restaurants
+                        restaurants
                     </Button>
                 </div>
             </div>
