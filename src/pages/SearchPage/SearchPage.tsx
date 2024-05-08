@@ -8,13 +8,14 @@ import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { Button } from "@/components/ui/button";
 import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice";
 import { Map } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom"
 import { MapPage } from "../MapPage";
 import { SearchState } from "@/types";
 import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines, dataSortOption } from "@/statemgmt/map/SearchPageSlice";
 import { useAppSelector } from "@/statemgmt/hooks";
+import { AnimatedPage } from '@/animotion/AnimatedPage';
 
 export const SearchPage = () => {
     const dispatch = useDispatch();
@@ -22,13 +23,9 @@ export const SearchPage = () => {
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
     const {city} = useParams();
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
-
+    const arr = [];
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const { results, isLoading } = useSearchRestaurants(searchState ,city);
-
-    useEffect(() => {
-      
-    },[]);
 
     const setSortOption = async (sortOption: string) => {
       let newState = {...searchState}; //copy object to new one;
@@ -48,21 +45,21 @@ export const SearchPage = () => {
       let newState = {...searchState}; //copy object to new one;
       newState.page = page;
       await dispatch(dataPage(newState));
-      await setSearchQuery({...newState});
+      await setSearchState({...newState});
     }
 
     const setSearchQuery = async (searchFormData: SearchForm) => {
       let newState = {...searchState}; //copy object to new one;
       newState.searchQuery = searchFormData.searchQuery;
       await dispatch(dataSearchQuery(newState));
-      await setSearchQuery({...newState});
+      await setSearchState({...newState});
     }
 
     const resetSearch = async () => {
       let newState = {...searchState}; //copy object to new one;
       newState.searchQuery = "";
       await dispatch(dataResetSearch());
-      setSearchState(newState);
+      await setSearchState(newState);
     }
 
     const handleShowonMap = () => {
@@ -92,6 +89,7 @@ export const SearchPage = () => {
             <MapPage/>
           </div>
         ) : (
+          <AnimatedPage>
           <div className="container mx-auto py-3">
               <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
                 <div id="side-bar" className="">
@@ -136,8 +134,10 @@ export const SearchPage = () => {
                 </div>
               </div>
           </div>
-          
-         )}
+          </AnimatedPage>
+         )
+         
+         }
       </>
       
     )

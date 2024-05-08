@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from './components/ui/sonner';
 import { Provider } from 'react-redux';
 import { store } from './statemgmt/store';
+import { GlobalAnimation } from './animotion/GlobalAnimation';
 
 const queryClient = new QueryClient({
   defaultOptions:{
@@ -24,7 +25,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <Auth0ProviderWithNavigate>
-          <AppRoutes />
+            <GlobalAnimation>
+              <AppRoutes />
+            </GlobalAnimation>
           <Toaster visibleToasts={1} position='top-right' richColors/>
           </Auth0ProviderWithNavigate>
         </QueryClientProvider>

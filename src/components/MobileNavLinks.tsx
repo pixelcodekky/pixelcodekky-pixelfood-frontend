@@ -16,7 +16,7 @@ export const MobileNavLinks = () => {
         <Link to='/user_profile' className='flex bg-white items-center font-bold hover:text-green-500'>
             User Profile
         </Link>
-        <Button onClick={async () => await logout} className='flex items-center px-3 font-bold hover:bg-gray-500'>
+        <Button onClick={async () => await logout} className='flex items-center px-3 font-bold bg-red-400 hover:bg-red-500'>
             Log Out
         </Button>
     </>

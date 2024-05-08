@@ -11,13 +11,13 @@ const MobileNav = () => {
   return (
     <Sheet>
         <SheetTrigger>
-            <Menu className='text-orange-500'/>
+            <Menu className='text-green-500'/>
         </SheetTrigger>
         <SheetContent>
             <SheetTitle>
             { isAuthenticated ? 
                 <span className='flex items-center font-bold gap-2'>
-                    <CircleUserRound className='text-orange-500' />
+                    <CircleUserRound className='text-green-500' />
                     {user?.given_name}
                 </span> 
                 : 
