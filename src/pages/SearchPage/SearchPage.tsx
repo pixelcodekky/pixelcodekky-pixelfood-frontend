@@ -116,7 +116,7 @@ export const SearchPage = () => {
                   <SearchBar 
                     searchQuery={searchState.searchQuery}
                     onSubmit={setSearchQuery} 
-                    placeHolder="Find cuisines or restaurants name"
+                    placeHolder="Find cuisines or restaurants name" 
                     onReset={resetSearch}
                     />
                   <div className="flex justify-between flex-col gap-3 lg:flex-row">
@@ -124,9 +124,16 @@ export const SearchPage = () => {
                     <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
                   </div>
                   <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
-                  {results.data.map((d, index) => (
-                    <SearchResultCard restaurant={d} key={index} />
-                  ))}
+                  <div className="flex flex-col">
+                    <ul className="grid sm:grid-col-1 lg:grid-cols-4 md:grid-cols-3 gap-4">
+                      {results.data.map((d, index) => (
+                        <li key={index}>
+                          <SearchResultCard restaurant={d} key={index} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
                   <PaginationSelector 
                     page={results?.pagination.page} 
                     pages={results?.pagination.pages} 

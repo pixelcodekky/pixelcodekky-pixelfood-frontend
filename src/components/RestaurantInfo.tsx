@@ -7,6 +7,7 @@ type Props = {
 }
 
 const RestaurantInfo = ({restaurant}: Props) => {
+
     return (
         <Card className="border-sla">
             <CardHeader>

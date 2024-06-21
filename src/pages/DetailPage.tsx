@@ -5,7 +5,7 @@ import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MenuItem as MenuItemType } from '../types';
 import CheckoutButton from "@/components/CheckoutButton";
@@ -73,8 +73,6 @@ const DetailPage = () => {
             return updatedCartItem;
         });
     }
-
-    
 
     const removeFromCart = (cartItem: CartItem) => {
         setCardItems((prev) => {
@@ -155,65 +153,72 @@ const DetailPage = () => {
 
     return (
         <>
-        <div className="flex flex-col relative gap-10">
-            <AspectRatio ratio={16/4}>
-                <img src={restaurant.imageUrl} className="rounded-md object-cover h-full w-full" />
-            </AspectRatio>
-            <div className="flex flex-col gap-4">
-                <div className="flex justify-normal">
-                    <Button variant='link' className="text-green-500 gap-2" onClick={handleRedirectPrevPage}>
-                        <CircleArrowLeft  />
-                        restaurants
-                    </Button>
-                </div>
-            </div>
-            <RestaurantInfo restaurant={restaurant} />
-            <div className="grid md:grid-cols-[4fr_2fr] sm:grid-col relative gap-5 md:px-3">
-                <div className="flex flex-col gap-4">
-                    <span className="text-2xl font-bold tracking-tight">Menu</span>
-                    <ul className="grid sm:grid-col-1 md:grid-cols-2 gap-4"> 
-                        {restaurant.menuItems.map((item, idx) => (
-                            <li key={idx}>
-                                <MeuItem menuItem={item} key={idx} 
-                                    addquantity={() => addToCart(item, true)}
-                                    minusquantity={() => addToCart(item, false)}
-                                    currentQty={cartItems.find((x) => x._id === item._id)?.quantity ?? 0}
-                                />
-                            </li>
-                            
-                        ))}
-                    </ul>
-                </div>
-                <div className="sm:hidden md:block">
-                    {renderOrderSummary("")}
-                </div>
-            </div>
-            <div className="sm:visible md:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
-                <Dialog>
-                    <DialogTrigger asChild>
-                    <Button className="w-full h-15 bg-green-500 hover:bg-green-600 justify-between shadow-md">
-                        <div className="relative">
-                            <span className="absolute w-5 h-5 bottom-6 left-8 bg-white text-green-400 border-black rounded-full font-sm">
-                                {cartItems.reduce((total, item) => total + item.quantity, 0)}
-                            </span>
-                            <ShoppingBasket size={40} />
+            {isRestaurantLoading && !restaurant ? (
+                null
+            ): (
+                <div className="flex flex-col relative gap-10">
+                    <AspectRatio ratio={16/4}>
+                        <img src={restaurant.imageUrl} className="rounded-md object-cover h-full w-full" />
+                    </AspectRatio>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex justify-normal">
+                            <Button variant='link' className="text-green-500 gap-2" onClick={handleRedirectPrevPage}>
+                                <CircleArrowLeft  />
+                                restaurants
+                            </Button>
                         </div>
-                        <span className="text-xl">View Order</span>
-                        <div className="flex flex-col">
-                            <span className="font-bold text-xl">
-                                S$ {getTotalCostWithGST()}
-                            </span>
-                            <small className="text-xs">Delivery & GST inclusive</small>
+                    </div>
+                    <RestaurantInfo restaurant={restaurant} />
+                    <div className="grid md:grid-cols-[4fr_2fr] sm:grid-col relative gap-5 md:px-3">
+                        <div className="flex flex-col gap-4">
+                            <span className="text-2xl font-bold tracking-tight">Menu</span>
+                            <ul className="grid sm:grid-col-1 md:grid-cols-2 gap-4"> 
+                                {restaurant.menuItems.map((item, idx) => (
+                                    <li key={idx}>
+                                        <MeuItem menuItem={item} key={idx} 
+                                            addquantity={() => addToCart(item, true)}
+                                            minusquantity={() => addToCart(item, false)}
+                                            currentQty={cartItems.find((x) => x._id === item._id)?.quantity ?? 0}
+                                        />
+                                    </li>
+                                    
+                                ))}
+                            </ul>
                         </div>
-                        
-                    </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[625px] md:min-w-[700px] bg-gray-50">
-                        {renderOrderSummary("mt-5")}
-                    </DialogContent>
-                </Dialog>
-            </div>
-        </div>
+                        <div className="sm:hidden md:block">
+                            {renderOrderSummary("")}
+                        </div>
+                    </div>
+                    <div className="sm:visible md:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                            <Button className="w-full h-15 bg-green-500 hover:bg-green-600 justify-between shadow-md">
+                                <div className="relative">
+                                    <span className="absolute w-5 h-5 bottom-6 left-8 bg-white text-green-400 border-black rounded-full font-sm">
+                                        {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                                    </span>
+                                    <ShoppingBasket size={40} />
+                                </div>
+                                <span className="text-xl">View Order</span>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-xl">
+                                        S$ {getTotalCostWithGST()}
+                                    </span>
+                                    <small className="text-xs">Delivery & GST inclusive</small>
+                                </div>
+                                
+                            </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-[625px] md:min-w-[700px] bg-gray-50">
+                                {renderOrderSummary("mt-5")}
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                </div>
+            )}
+            
+
+        
         </>
         
     )

@@ -26,6 +26,27 @@ export type Restaurant = {
     cuisines: string[];
     menuItems: MenuItem[];
     imageUrl: string;
+    address: [{
+        display_name: string;
+        name: string;
+        lat: number;
+        lon: number;
+        city: string;
+        country: string;
+        country_code: string;
+        postcode: string;
+    }]
+}
+
+export type RestaurantAddress = {
+    display_name: string;
+    name: string;
+    lat: number;
+    lon: number;
+    city: string;
+    country: string;
+    country_code: string;
+    postcode: string;
 }
 
 export type RestaurantSearchResponse = {

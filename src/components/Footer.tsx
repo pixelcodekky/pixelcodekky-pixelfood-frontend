@@ -1,7 +1,7 @@
 
 export const Footer = () => {
   return (
-    <div className="bg-green-800 py-10">
+    <div className="bg-green-800 py-10 mt-auto">
         <div className="container max-auto flex flex-col md:flex-row justify-between items-center">
             <span className="text-3xl text-white font-bold tracking-tight">
                 Pixel Food

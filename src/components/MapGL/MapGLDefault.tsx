@@ -3,8 +3,6 @@ import Map, {
   Marker,
   Popup,
   NavigationControl,
-  FullscreenControl,
-  ScaleControl,
   GeolocateControl,
   MapLayerMouseEvent,
   ViewStateChangeEvent,
@@ -13,28 +11,56 @@ import Map, {
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useDispatch } from 'react-redux';
-import { SearchState, ViewMapState } from '@/types';
+import { Restaurant, RestaurantAddress, SearchState, ViewMapState } from '@/types';
 import { MapViewSelector, setViewport } from '@/statemgmt/map/MapViewSlice';
 import { useParams } from 'react-router-dom';
-import { useSearchRestaurants } from '@/api/RestaurantApi';
-import { LucidePersonStanding } from 'lucide-react';
 import { useAppSelector } from '@/statemgmt/hooks';
+import { useSearchRestaurants } from '@/api/RestaurantApi';
+import SearchResultCard from '../SearchResultCard';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
 export const MapGLDefault = () => {
-
+    const {city} = useParams();
     const dispatch = useDispatch();
     const mapState = useAppSelector(MapViewSelector);
     const searchStateSelector: SearchState = useAppSelector((s) => s.searchPage);
-    const {city} = useParams();
     const [searchState, setSearchState] = useState<SearchState>({
       ...searchStateSelector,
       page: 0
     });
-    const { results, isLoading } = useSearchRestaurants(searchState ,city);
+    const { results , isLoading } = useSearchRestaurants(searchState ,city);
+    //const restaurants: RestaurantSearchResponse = useAppSelector((s) => s.restaurants);
 
-    const [popupInfo, setPopupInfo] = useState("");
+    let initPopup: Restaurant = {
+      _id: '',
+    user: '',
+    restaurantName: '',
+    city: '',
+    country: '',
+    deliveryPrice: 0,
+    estimatedDeliveryTime: 0,
+    cuisines: [],
+    menuItems: [],
+    imageUrl: '',
+    address: [{
+        display_name: '',
+        name: '',
+        lat: 0,
+        lon: 0,
+        city: '',
+        country: '',
+        country_code: '',
+        postcode: '',
+    }]
+    }
+
+    interface PopupState {
+      isOpen: boolean;
+      data?: Restaurant;
+    }
+
+    const [popupInfo, setPopupInfo] = useState<PopupState>({isOpen: false});
     const mapRef = useRef<MapRef>(null);
 
     const [geoLocateLatSelected, setGeoLocateLatSelected] = useState<number>(0);
@@ -45,6 +71,7 @@ export const MapGLDefault = () => {
       setGeoLocateLonSelected(e.lngLat.lng);
     }
 
+    //only create function depend on event
     const onMove = useCallback((e: ViewStateChangeEvent) => {
         const onMoveState: ViewMapState = {
             mapStyle: mapState.mapStyle,
@@ -64,6 +91,65 @@ export const MapGLDefault = () => {
         //setGeoLocateLonSelected(e.coords.longitude);
     }
 
+    const RenderPopup = useMemo(() => {
+      if (!popupInfo.isOpen) return null;
+      
+      const popupAddress: RestaurantAddress = popupInfo.data?.address[0] as RestaurantAddress;
+      return (
+        <>
+          <Popup
+            key={`index_${popupAddress.lat}`}
+            latitude={popupAddress.lat}
+            longitude={popupAddress.lon}
+            anchor='bottom'
+            onClose={() => setPopupInfo({...popupInfo, isOpen: false})}
+            closeButton={true}
+          >
+            <div>
+            <SearchResultCard restaurant={popupInfo.data ?? initPopup} isPopup={false}/>
+            </div>
+            
+          </Popup>
+        </>
+        
+      )
+    }, [popupInfo])
+
+    const RenderMarker = useMemo(() => {
+      return results?.data.map((d, i) => {
+          let address: RestaurantAddress = d.address[0];
+          if(address){
+            return (
+              <>
+                <div>
+                  <Marker
+                    style={{
+                      cursor: 'pointer'
+                    }}
+                    key={`${d._id}`}
+                    latitude={address.lat}
+                    longitude={address.lon}
+                    anchor='top'
+                    onClick={(e) => {
+                        e.originalEvent.stopPropagation()
+                        setPopupInfo({...popupInfo, isOpen: true, data: d})
+                        mapRef.current?.flyTo({
+                          center: [address.lon, address.lat],
+                          zoom: 13
+                        })
+                      }
+                    }
+                  >
+                  </Marker>
+                 
+                </div>
+              </>
+              
+            )
+          }
+      })
+    },[results]);
+
     return (
     <>
         <Map
@@ -71,14 +157,15 @@ export const MapGLDefault = () => {
           ref={mapRef}
           style={{            
             width:'100%',
-            height: '50rem',
+            height: '43rem',
             position: "relative",
             zIndex:0,
           }}
-          reuseMaps
+          reuseMaps={true}
           mapStyle={mapState.mapStyle} 
           mapboxAccessToken={TOKEN}
-          onClick={(e) => {handleMapOnClick(e)}}
+          onClick={(e) => {
+          }}
           onMove={onMove}
           testMode={true}
         >
@@ -89,38 +176,14 @@ export const MapGLDefault = () => {
             showUserLocation={true}
             showUserHeading={true}
             onGeolocate={(e) => handleGeolocate(e)} />
-
-          {(geoLocateLatSelected && geoLocateLonSelected) && (
-             <Marker
-                latitude={geoLocateLatSelected}
-                longitude={geoLocateLonSelected}
-                anchor='bottom'
-                onClick={(e) => {
-                  e.originalEvent.stopPropagation();
-                  setPopupInfo(`You ${e.type}`);
-                }}
-              >
-             </Marker> 
-          )}
-
-          {popupInfo && (
-              <Popup
-                anchor='top'
-                latitude={geoLocateLatSelected}
-                longitude={geoLocateLonSelected}
-                onClose={() => setPopupInfo("")}
-              >
-                {popupInfo}
-              </Popup>
-          )}
-
-          {isLoading ? (
-            <LucidePersonStanding />
-          ) : (
-            <></>
-          )}
-
+          
+          {!isLoading && RenderMarker}
+          {popupInfo.isOpen && RenderPopup}
+          
         </Map>
     </>
     )
 }
+
+
+

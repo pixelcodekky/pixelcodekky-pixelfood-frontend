@@ -3,7 +3,7 @@ import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 
 
 const initialState: RestaurantSearchResponse = {
-    data:  [], 
+    data: [],
     pagination: {
         total: 0,
         page: 0,
@@ -18,7 +18,7 @@ const RestaurantSlice = createSlice({
     reducers: {
         setRestaurant: (state, action:PayloadAction<RestaurantSearchResponse>) => {
             state.data = action.payload.data;
-            state.pagination = action.payload.pagination; 
+            state.pagination = action.payload.pagination;
         },
     }
 });
