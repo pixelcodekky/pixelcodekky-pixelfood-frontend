@@ -11,7 +11,7 @@ import Map, {
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useDispatch } from 'react-redux';
-import { Restaurant, RestaurantAddress, SearchState, ViewMapState } from '@/types';
+import { Restaurant, RestaurantAddress, RestaurantSearchResponse, SearchState, ViewMapState } from '@/types';
 import { MapViewSelector, setViewport } from '@/statemgmt/map/MapViewSlice';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/statemgmt/hooks';
@@ -29,8 +29,14 @@ export const MapGLDefault = () => {
       ...searchStateSelector,
       page: 0
     });
+    
     const { results , isLoading } = useSearchRestaurants(searchState ,city);
-    //const restaurants: RestaurantSearchResponse = useAppSelector((s) => s.restaurants);
+
+    useEffect(() => {
+      let newState = {...searchState};
+      newState.selectedCuisines = searchStateSelector.selectedCuisines;
+      setSearchState({ ...newState});
+    },[searchStateSelector]);
 
     let initPopup: Restaurant = {
       _id: '',
@@ -103,7 +109,7 @@ export const MapGLDefault = () => {
             longitude={popupAddress.lon}
             anchor='bottom'
             onClose={() => setPopupInfo({...popupInfo, isOpen: false})}
-            closeButton={true}
+            closeButton={false}
           >
             <div>
             <SearchResultCard restaurant={popupInfo.data ?? initPopup} isPopup={false}/>

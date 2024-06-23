@@ -1,66 +1,90 @@
 import { Restaurant } from "@/types";
 import { Link } from "react-router-dom";
-import { AspectRatio } from "../ui/aspect-ratio";
 import { Clock, Dot, Truck } from "lucide-react";
-import { Card, CardContent, CardHeader } from "../ui/card";
 import { Badge } from "../ui/badge";
+import DefaultImage from '../../assets/800x400.svg';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 
 type Props = {
     restaurant: Restaurant;
 };
 
 const MainSearchCard = ({restaurant}: Props) => {
-  return (
-    <Link to={`/detail/${restaurant._id}`} className='gap-4 mb-3' >
-            <Card>
-                <CardHeader className="p-0 max-h-[90px] border">
-                    <div className="">
-                    <img src={restaurant.imageUrl} alt={restaurant.restaurantName} className="w-full h-[90ox] object-contain" />
+
+    const RenderCarousal = () => {
+        return (
+            <Carousel orientation="horizontal" 
+              className="md:w-full sm:w-full my-1">
+                <div className="">
+                    <CarouselContent className="mt-1 w-full">
+                        {restaurant.cuisines.map((d, idx) => (
+                            <>
+                                <CarouselItem key={idx} className="lg:basis-1/4 md:basis-1/3 sm:basis-1/4">
+                                    <div className="flex cursor:pointer">
+                                        <div className="p-1 text-white flex item-center justify-center">
+                                            {/* <span className="texdt-xs">{d}</span> */}
+                                            <Badge className="bg-green-500">{d}</Badge>
+                                        </div>
+                                    </div>
+                                </CarouselItem>
+                            </>
+                        ))}
+                    </CarouselContent>
+                </div>
+                <CarouselPrevious className="-left-8" />
+                <CarouselNext className="-right-8" />
+            </Carousel>
+        )
+    }
+
+    const RenderCrusines = () => {
+        return (
+            <>
+                <div className="flex flex-start gap-2">
+                    {restaurant.cuisines.slice(0, 2).map((d, index) => (
+                        <Badge variant={"outline"} key={index} className="border-green-400">{d}</Badge>
+                    ))}
+                </div>
+            </>
+        )
+    }
+
+
+    return (
+        <>
+        <div className="min-w-48 shadow-xl">
+            <div className="flex flex-col border rounded-md">
+                <div className="h-[90px] border flex">
+                    <img src={DefaultImage} alt={restaurant.restaurantName} className="w-full shadow-sm object-cover" />
+                </div>
+                <div className="p-2 h-[100px]">
+                    <div className="mb-2">
+                    <Link to={`/detail/${restaurant._id}`}>
+                        <h1 className="text-xl hover:underline">{restaurant.restaurantName}</h1>
+                    </Link>
                     </div>
-                </CardHeader>
-                <CardContent className="p-2 ">
-                    <div className="flex flex-col bg-white-500">
-                        <div className="flex">
-                            <h3 className="text-xl font-bold tracking-tight mb-2 w-full">
-                                {restaurant.restaurantName}
-                            </h3>
+                    <div className="flex gap-2 flex-row">
+                        <div className="flex items-center gap-1 font-bold text-xs">
+                            <Clock size={14} className="text-green-500" />
+                            {restaurant.estimatedDeliveryTime} mins
                         </div>
-                        <div className="flex mb-2">
-                            {restaurant.cuisines.slice(0, 3).map((d, idx) => (
-                                // <span className="flex" key={idx}>
-                                //     {idx < restaurant.cuisines.slice(0, 2).length - 1 && <Dot/>}
-                                // </span>
-                                <Badge key={idx} className="bg-green-500 mr-1">{d}</Badge>
-                            ))}
-                            {/* {restaurant.cuisines.length > 2 && (
-                                <span className="flex">
-                                    <Dot/>
-                                </span>
-                            )} */}
-                        </div>
-                        <div className="flex gap-2 flex-row">
-                            <div className="flex items-center gap-1 font-bold">
-                                <Clock size={15} className="text-green-500" />
-                                {restaurant.estimatedDeliveryTime} mins
-                            </div>
-                            <div className="flex items-center gap-1 font-bold">
-                                <Truck size={15}  className="text-green-500"/>
-                                S$ {(restaurant.deliveryPrice / 100).toFixed(2)}
-                            </div>
+                        <div className="flex items-center gap-1 font-bold text-xs">
+                            <Truck size={15}  className="text-green-500"/>
+                            S$ {(restaurant.deliveryPrice / 100).toFixed(2)}
                         </div>
                     </div>
-                </CardContent>
-            </Card>
-            
-            <div>
-                
-                <div id='card-content' className="grid md:grid-cols-2 gap-2">
-                    
+                    <div className="my-2">
+                        {RenderCrusines()}
+                    </div>
                     
                 </div>
-            </div>
-        </Link>
-  )
+            </div>    
+        </div>
+             
+            
+        </>
+        
+    )
 }
 
 export default MainSearchCard

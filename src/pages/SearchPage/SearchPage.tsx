@@ -8,7 +8,7 @@ import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { Button } from "@/components/ui/button";
 import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice";
 import { Map } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom"
 import { MapPage } from "../MapPage";
@@ -26,6 +26,11 @@ export const SearchPage = () => {
     const arr = [];
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const { results, isLoading } = useSearchRestaurants(searchState ,city);
+
+    //reload base on store state
+    useEffect(() => {
+      setSelectedCuisines(searchStateSelector.selectedCuisines);
+    },[searchStateSelector])
 
     const setSortOption = async (sortOption: string) => {
       let newState = {...searchState}; //copy object to new one;
@@ -125,7 +130,7 @@ export const SearchPage = () => {
                   </div>
                   <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
                   <div className="flex flex-col">
-                    <ul className="grid sm:grid-col-1 lg:grid-cols-4 md:grid-cols-3 gap-4">
+                    <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
                       {results.data.map((d, index) => (
                         <li key={index}>
                           <SearchResultCard restaurant={d} key={index} />

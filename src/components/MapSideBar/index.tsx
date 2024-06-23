@@ -11,7 +11,7 @@ type Props = {
 
 const ShowOnMapDefault = ({children}: Props) => {
     const dispatch = useDispatch();
-
+    
     const handleShowonList = () => {
       dispatch(setShowonMap());
     }
@@ -21,27 +21,21 @@ const ShowOnMapDefault = ({children}: Props) => {
       <div>
           <div id="mapPanel" className='relative'>
             <div id='search' className='absolute top-25 z-20'>
-              {/* <SearchBar 
-                  searchQuery={searchState.searchQuery}
-                  onSubmit={setSearchQuery} 
-                  placeHolder="Find cuisines or restaurants name"
-                  onReset={resetSearch}
-                  /> */}
             </div>
             {/* Start Filter Section */}
             <div className="absolute top-25 left-1/2 transform -translate-x-1/2 z-20 flex flex-row gap-2 py-3">
                 <MapFilter>
                   <button className="bg-white hover:bg-green-700 hover:text-white text-green-500 py-2 px-4 rounded-full shadow-xl gap-2 flex flex-row"
-                    onClick={() => {}}>
+                    >
                     Filters
                     <FilterIcon />
                   </button>
                 </MapFilter>
-                <button className="bg-white hover:bg-green-700 hover:text-white text-green-500 py-2 px-4 rounded-full shadow-xl gap-2 flex flex-row"
+                {/* <button className="bg-white hover:bg-green-700 hover:text-white text-green-500 py-2 px-4 rounded-full shadow-xl gap-2 flex flex-row"
                     onClick={() => {}}>
                       Search
                       <SearchIcon />
-                </button>
+                </button> */}
               
             </div>
             {/* End Filter Section */}
