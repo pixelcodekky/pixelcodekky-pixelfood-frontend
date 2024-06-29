@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { FormControl, FormField, FormItem, Form } from './ui/form';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+import { FormControl, FormField, FormItem, Form } from '../ui/form';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 import { useEffect } from 'react';
 
 const formSchema = z.object({
@@ -21,9 +21,10 @@ type Props = {
     placeHolder: string;
     onReset?: () => void;
     className?: string;
+    onChange?: (value:string) => void;
 }
 
-export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, className}: Props) => {
+export const SearchBar = ({onSubmit, onChange ,placeHolder, onReset, searchQuery, className}: Props) => {
 
     const form = useForm<SearchForm>({
         resolver: zodResolver(formSchema),
@@ -46,6 +47,12 @@ export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, classNam
         }
     }
 
+    const handleOnChange = (value:string) => {
+       if(onChange){
+        onChange(value);
+       }
+    }
+
     return (
         
         <Form {...form}>
@@ -62,14 +69,18 @@ export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, classNam
                             <FormControl>
                                 <Input {...field} 
                                 className='border-none shadow-none text-xl focus-visible:ring-0'
-                                placeholder={placeHolder}/>
+                                placeholder={placeHolder}
+                                />
                             </FormControl>
                         </FormItem>)} />
-                <Button 
+                {searchQuery !== "" ? (
+                    <Button 
                     onClick={handleReset}
                     type='button' 
                     variant='outline' 
                     className='rounded-full'>Reset</Button>
+                
+                ) : null}
                 
                 <Button type='submit' className='rounded-full bg-green-500'>Search</Button>
             </form>

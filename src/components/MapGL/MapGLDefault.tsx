@@ -158,6 +158,10 @@ export const MapGLDefault = () => {
 
     return (
     <>
+        {isLoading ?? (
+          <div>Loading...</div>
+        )}
+
         <Map
           {...mapState.viewState}
           ref={mapRef}

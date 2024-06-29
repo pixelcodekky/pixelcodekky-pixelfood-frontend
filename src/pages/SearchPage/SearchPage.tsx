@@ -1,7 +1,7 @@
 import { useSearchRestaurants } from "@/api/RestaurantApi";
 import CuisineFilter from "@/components/CuisineFilter";
 import PaginationSelector from "@/components/PaginationSelector";
-import { SearchBar, SearchForm } from "@/components/SearchBar";
+import { SearchBar, SearchForm } from "@/components/Search/SearchBar";
 import SearchResultCard from "@/components/SearchResultCard";
 import { SearchResultInfo } from "@/components/SearchResultInfo";
 import SortOptionDropdown from "@/components/SortOptionDropdown";

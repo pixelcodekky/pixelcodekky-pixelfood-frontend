@@ -1,36 +1,129 @@
 import landingImage from '../assets/landing.png';
 import appDownloadImage from '../assets/appDownload.png';
-import { SearchBar, SearchForm } from '@/components/SearchBar';
+import { SearchForm } from '@/components/Search/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import mainimg1 from '../assets/main_1.png';
 import mainimg2 from '../assets/main_2.png';
 import { LucideTruck, MapPinned, SquareMousePointer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useGetMapboxGeocodingForward, getMapGeocodingForward } from '@/api/GeocodingApi';
+import { useEffect, useState } from 'react';
+import { Feature, GeocodedFeature, SearchResultType } from '@/types';
+import { geocodingmapping } from '@/common/GoecodingTypeMatch';
+import SearchBarGeolocation from '@/components/Search/SearchBarGeolocation';
+import SearchResultList from '@/components/Search/SearchResultList';
+import { useDebounce } from '@/common/Utilities';
 
 export const HomePage = () => {
 
     const navigate = useNavigate();
-
     //const hostedCountry = import.meta.env.VITE_HOSTED_COUNTRY;
+    const [selectedAddress, setSelectedAddress] = useState("");
+    const [goecodingvalue, setGeocodingValue] = useState("");
+    const [inputValue, setInputValue] = useState("");
+    const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
+    const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
+    const { isLoading, results } = useGetMapboxGeocodingForward(goecodingvalue);
+    const [hideSuggestion, setHideSuggestion] = useState(false);
+    const [isRequesting, setIsRequesting] = useState(false);
+    let geocodingCollection:Feature[] = [];
+ 
+    useEffect(() => {
+        debounceOnChange(inputValue);
+    }, [inputValue])
 
     const handleSearchSubmit = (values: SearchForm) => {
-        navigate({
-            pathname: `/search/${values.searchQuery}`,
-        })
+        setGeocodingValue(values.searchQuery);
+        
+        geocodingCollection = geocodingmapping(results);
+        setGeocodingCollectionState(geocodingCollection);
+
+        // navigate({
+        //     pathname: `/search/${values.searchQuery}`,
+        // })
+    }
+
+    const handleOnChange = async (value: string) => {
+        console.log(value);
+        if(value.length > 0) setIsRequesting(true);
+        setGeocodingValue(value);
+        
+        if(value.length == 0) {
+            setHideSuggestion(true);
+            setTimeout(() => {
+                setIsRequesting(false)
+            }, 1000);
+        }else{
+            let res = await getMapGeocodingForward(value);
+            geocodingCollection = geocodingmapping(res);
+            setGeocodingCollectionState(geocodingCollection);
+            populateSearchResult();
+        }
+    }
+
+    const handleClearGeocoder = () => {
+        setGeocodingCollectionState([]);
+        setHideSuggestion(true);
+        setSelectedAddress("");
+        setIsRequesting(false);
+    }
+
+    //const debounceOnChange = useDebounce(handleOnChange, 800, handleSearchLoading);
+    const debounceOnChange = useDebounce(handleOnChange, 800);
+
+    const populateSearchResult = () => {
+        let res = geocodingCollectionState.map((data, index) => {
+            return {
+                value: data.properties.full_address,
+                key: data.properties.mapbox_id
+            }
+        });
+        if(res.length > 0){
+            setHideSuggestion(false);
+            setIsRequesting(false);
+        }
+        setSearchResultsType(res);
+    }
+
+    const handleSearchSelected = (value:string) => {
+        setInputValue(value);
     }
 
     return (
         <>
-        <div className='flex flex-col pag-12'>
-            <div className='md:px-32 bg-white rounded-lg shadow-md py-8 flex flex-col gap-5 text-center -mt-16'>
-                <h1 className="text-5xl font-bold tracking-tight text-green-600 text-gradient">
+        <div className='flex flex-col pag-12 relative'>
+            <div className='md:px-52 sm:px-5 bg-white rounded-lg shadow-md py-3 flex flex-col text-center -mt-20'>
+                <h1 className="text-3xl my-5 font-bold tracking-tight text-green-600 text-gradient">
                     {/* {hostedCountry ? `Welcome ${hostedCountry}!` : `Welcome!`} */}
-                    Explore near you!
+                    Restaurant Food, Delivered.
                 </h1>
-                {/* <span className="text-xl">Food is just on click</span> */}
-                <SearchBar placeHolder='Your Location, City name etc' onSubmit={handleSearchSubmit} />
+                {/* <SearchBar placeHolder='enter address or postcode' onSubmit={handleSearchSubmit} onChange={handleOnChange} /> */}
+                <SearchBarGeolocation 
+                    placeHolder='enter address or postcode' 
+                    onChange={debounceOnChange} 
+                    setGeocodingCollectionState={handleClearGeocoder}
+                    clearInput={hideSuggestion}
+                    InputValue={inputValue}
+                    SetInputValue={setInputValue}
+                    selectedAddress={selectedAddress}
+                />
+
+                {isRequesting && (
+                    <div className='w-full flex flex-col relative'>
+                        <div className='flex flex-col p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
+                            <span className='animate-bounce'>Loading...</span>
+                        </div>
+                    </div>
+                )}
+
+                {searchResultsType.length > 0 ? (
+                    <div className='w-full flex flex-col relative'>
+                         <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
+                    </div>
+                ) : null}
             </div>
+            
         </div>
         {/* Start Content */}
         <div className='py-5'>
