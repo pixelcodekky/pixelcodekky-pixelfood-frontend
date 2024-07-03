@@ -4,14 +4,10 @@ import { Map, MapPin } from "lucide-react";
 type Props = {
     className?: string;
     results: SearchResultType[];
-    handler: (value:string) => void;
+    handler: (searchResult:SearchResultType) => void;
 }
 
 const SearchResultList = ({className, results, handler}: Props) => {
-    
-    const handleOnclick = (value: string) => {
-        handler(value);
-    }
     
     return (
         <>
@@ -23,13 +19,18 @@ const SearchResultList = ({className, results, handler}: Props) => {
                                 className='flex flex-row p-4 gap-2 min-h-10 border-l-gray-300 text-left cursor-pointer hover:bg-green-200'
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    handleOnclick(data.value);
+                                    handler(data);
                                 }}
                             >
                                 <MapPin />
-                                {data.value}
+                                {data.full_value}
                             </li>
                         ))}
+                        <li key={`powerbyMapbox`}
+                            className={`flex flex-col p-1 gap-2 min-h-7 border-l-gray-300 text-sm text-right bg-slate-300`}
+                        >   
+                            Powered by Mapbox
+                        </li>
                     </ul>
                 </div>
             ) : null}

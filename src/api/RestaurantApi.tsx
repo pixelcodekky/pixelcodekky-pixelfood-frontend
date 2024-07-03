@@ -16,7 +16,7 @@ export const useSearchRestaurants = (searchState: SearchState,city?: string) => 
 
     const createSearchRequest = async (): Promise<RestaurantSearchResponse> => {
         const res = await fetch(
-            `${API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`,
+            `${API_BASE_URL}/api/restaurant/search/Singapore?${params.toString()}`,
         );
 
         if(!res.ok){
@@ -34,7 +34,7 @@ export const useSearchRestaurants = (searchState: SearchState,city?: string) => 
     const {data: results, isLoading} = useQuery(
         ['searchRestaurants', searchState],
         createSearchRequest,
-        { enabled: !!city }
+        //{ enabled: !!city }
     );
 
     return {results, isLoading};

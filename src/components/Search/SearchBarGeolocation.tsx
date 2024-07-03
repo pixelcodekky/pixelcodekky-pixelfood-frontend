@@ -30,7 +30,6 @@ const SearchBarGeolocation = ({ placeHolder, onChange, onSubmit, setGeocodingCol
     // }, [selectedAddress])
 
     const handleOnChange = (value: string) => {
-        console.log(value);
         onChange(value);
     }
 

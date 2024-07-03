@@ -1,4 +1,3 @@
-import { GeocodedFeature } from "@/types";
 import { useQuery } from "react-query";
 
 const MAPBOX_GEOCODING_URL = import.meta.env.VITE_MAPBOX_GEOCODING_URL;
@@ -10,8 +9,9 @@ export const getMapGeocodingForward = async (value:string) => {
 
     const buildParams = {
         q: value,
+        limit: "5",
         country:"sg",
-        types:"postcode,address",
+        types:"postcode,address,secondary_address,street",
         access_token: accessToken
     }
 
@@ -40,7 +40,7 @@ export const useGetMapboxGeocodingForward = (location:string) => {
         const params = {
             q:location,
             country:"sg",
-            types:"postcode,address",
+            types:"postcode,address,secondary_address,street",
             access_token: accessToken
         }
 

@@ -3,6 +3,7 @@ import MapViewSlice from "./map/MapViewSlice";
 import ShowonMapSlice from "./map/ShowonMapSlice";
 import SearchPageReducer from "./map/SearchPageSlice";
 import RestaurantReducer from "./restaurant/RestaurantReducer";
+import ProfileReducer from "./profile/ProfileReducer";
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         showOnMap: ShowonMapSlice,
         searchPage: SearchPageReducer,
         restaurants: RestaurantReducer,
+        profile: ProfileReducer,
     }
 });
 

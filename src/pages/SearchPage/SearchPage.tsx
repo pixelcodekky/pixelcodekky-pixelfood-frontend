@@ -10,22 +10,35 @@ import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice"
 import { Map } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { MapPage } from "../MapPage";
 import { SearchState } from "@/types";
 import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines, dataSortOption } from "@/statemgmt/map/SearchPageSlice";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { AnimatedPage } from '@/animotion/AnimatedPage';
+import { haversineDistance } from '@/common/Utilities';
 
 export const SearchPage = () => {
-    const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
-    const {city} = useParams();
+    //const {lng, lat} = useParams();
+    const profileState = useAppSelector((x) => x.profile);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
-    const arr = [];
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-    const { results, isLoading } = useSearchRestaurants(searchState ,city);
+    const { results, isLoading } = useSearchRestaurants(searchState ,"");
+
+    useEffect(() => {
+      if(profileState.full_value === ''){
+        navigate('/');
+      }
+    }, [profileState]);
+
+    //page start
+    // useEffect(() => {
+
+    // }, [results])
 
     //reload base on store state
     useEffect(() => {
@@ -75,10 +88,10 @@ export const SearchPage = () => {
       <span>Loading...</span>
     }
 
-    if(results == undefined || !results?.data || !city){
+    if(results == undefined || !results?.data || !profileState.full_value){
       return (
         <>
-          <span>No Results found for {city}.</span>
+          <span>No Results found for {profileState.full_value}.</span>
           <Link to='/' 
                 className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
                   Change Location
@@ -125,7 +138,7 @@ export const SearchPage = () => {
                     onReset={resetSearch}
                     />
                   <div className="flex justify-between flex-col gap-3 lg:flex-row">
-                    <SearchResultInfo total={results?.pagination.total} city={city} />
+                    <SearchResultInfo total={results?.pagination.total} city={profileState.value} />
                     <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
                   </div>
                   <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>

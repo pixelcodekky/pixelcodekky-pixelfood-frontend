@@ -1,9 +1,10 @@
 import { Restaurant } from "@/types";
 import { Link } from "react-router-dom";
-import { Clock, Dot, Truck } from "lucide-react";
+import { Clock, Dot, MapPin, Truck } from "lucide-react";
 import { Badge } from "../ui/badge";
 import DefaultImage from '../../assets/800x400.svg';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { useAppSelector } from "@/statemgmt/hooks";
+import { haversineDistance } from '@/common/Utilities';
 
 type Props = {
     restaurant: Restaurant;
@@ -11,29 +12,27 @@ type Props = {
 
 const MainSearchCard = ({restaurant}: Props) => {
 
-    const RenderCarousal = () => {
+    let profileState = useAppSelector((x) => x.profile);
+     
+    const RenderDistance = () => {
+        let result = '';
+        
+        if(profileState.full_value != '' && restaurant.address[0] !== undefined){
+            let pointA: [number, number] = [profileState.lng, profileState.lat];
+            let pointB: [number, number] = [restaurant.address[0].lon, restaurant.address[0].lat ]
+            let distance = haversineDistance(pointA, pointB);
+            result = `${distance.toFixed(0)}`
+        }
+
         return (
-            <Carousel orientation="horizontal" 
-              className="md:w-full sm:w-full my-1">
-                <div className="">
-                    <CarouselContent className="mt-1 w-full">
-                        {restaurant.cuisines.map((d, idx) => (
-                            <>
-                                <CarouselItem key={idx} className="lg:basis-1/4 md:basis-1/3 sm:basis-1/4">
-                                    <div className="flex cursor:pointer">
-                                        <div className="p-1 text-white flex item-center justify-center">
-                                            {/* <span className="texdt-xs">{d}</span> */}
-                                            <Badge className="bg-green-500">{d}</Badge>
-                                        </div>
-                                    </div>
-                                </CarouselItem>
-                            </>
-                        ))}
-                    </CarouselContent>
-                </div>
-                <CarouselPrevious className="-left-8" />
-                <CarouselNext className="-right-8" />
-            </Carousel>
+            <>
+                {result !== '' ? (
+                    <>
+                        <MapPin size={13} className="text-green-500"/>
+                        <span>{`${result} km`}</span>
+                    </>
+                ) : null}
+            </>
         )
     }
 
@@ -71,6 +70,9 @@ const MainSearchCard = ({restaurant}: Props) => {
                         <div className="flex items-center gap-1 font-bold text-xs">
                             <Truck size={15}  className="text-green-500"/>
                             S$ {(restaurant.deliveryPrice / 100).toFixed(2)}
+                        </div>
+                        <div className="flex items-center gap-1 font-bold text-xs">
+                            {RenderDistance()}
                         </div>
                     </div>
                     <div className="my-2">

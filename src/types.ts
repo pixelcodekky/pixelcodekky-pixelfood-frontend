@@ -201,5 +201,8 @@ export interface GeocodedFeature {
   export type SearchResultType = {
     value: string;
     key: string;
+    full_value: string;
+    lat:number;
+    lng:number;
   }
 

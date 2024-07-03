@@ -5,26 +5,33 @@ import { useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import mainimg1 from '../assets/main_1.png';
 import mainimg2 from '../assets/main_2.png';
-import { LucideTruck, MapPinned, SquareMousePointer } from 'lucide-react';
+import { LucideTruck, MapPinned, Search, SquareMousePointer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useGetMapboxGeocodingForward, getMapGeocodingForward } from '@/api/GeocodingApi';
-import { useEffect, useState } from 'react';
-import { Feature, GeocodedFeature, SearchResultType } from '@/types';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { Feature, SearchResultType } from '@/types';
 import { geocodingmapping } from '@/common/GoecodingTypeMatch';
 import SearchBarGeolocation from '@/components/Search/SearchBarGeolocation';
 import SearchResultList from '@/components/Search/SearchResultList';
 import { useDebounce } from '@/common/Utilities';
+import { clearTimeout } from 'timers';
+import { setProfile } from '@/statemgmt/profile/ProfileReducer';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/statemgmt/hooks';
 
 export const HomePage = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     //const hostedCountry = import.meta.env.VITE_HOSTED_COUNTRY;
+    const profileState = useAppSelector((x) => x.profile);
     const [selectedAddress, setSelectedAddress] = useState("");
     const [goecodingvalue, setGeocodingValue] = useState("");
     const [inputValue, setInputValue] = useState("");
+    const [isSelected, setIsSelected] = useState(false);
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
-    const { isLoading, results } = useGetMapboxGeocodingForward(goecodingvalue);
+    //const { isLoading, results } = useGetMapboxGeocodingForward(goecodingvalue);
     const [hideSuggestion, setHideSuggestion] = useState(false);
     const [isRequesting, setIsRequesting] = useState(false);
     let geocodingCollection:Feature[] = [];
@@ -33,32 +40,54 @@ export const HomePage = () => {
         debounceOnChange(inputValue);
     }, [inputValue])
 
-    const handleSearchSubmit = (values: SearchForm) => {
-        setGeocodingValue(values.searchQuery);
-        
-        geocodingCollection = geocodingmapping(results);
-        setGeocodingCollectionState(geocodingCollection);
+    const handleSearchSubmit = (values: string) => {
 
-        // navigate({
-        //     pathname: `/search/${values.searchQuery}`,
-        // })
+        //find selected address
+        let address = profileState;
+
+        if(isSelected){
+            navigate({
+                pathname: `/search/${address.lng}/${address.lat}`,
+            })
+        }
+        
     }
 
+    // const handleSearchSubmit = (values: SearchForm) => {
+    //     setGeocodingValue(values.searchQuery);
+        
+    //     geocodingCollection = geocodingmapping(results);
+    //     setGeocodingCollectionState(geocodingCollection);
+
+    //     // navigate({
+    //     //     pathname: `/search/${values.searchQuery}`,
+    //     // })
+    // }
+
     const handleOnChange = async (value: string) => {
-        console.log(value);
-        if(value.length > 0) setIsRequesting(true);
+        if(value.length > 0) {
+            setIsRequesting(true);
+        }
+
+        if(value.length == 0){
+            setIsSelected(false);
+        }
+         
         setGeocodingValue(value);
         
         if(value.length == 0) {
+            hideIsRequesting();
             setHideSuggestion(true);
-            setTimeout(() => {
-                setIsRequesting(false)
-            }, 1000);
+            setInputValue("");
         }else{
-            let res = await getMapGeocodingForward(value);
-            geocodingCollection = geocodingmapping(res);
-            setGeocodingCollectionState(geocodingCollection);
-            populateSearchResult();
+            if(!isSelected){
+                setHideSuggestion(false);
+                let res = await getMapGeocodingForward(value); // API Call
+                geocodingCollection = geocodingmapping(res);
+                setGeocodingCollectionState(geocodingCollection);
+                populateSearchResult();
+            }
+            
         }
     }
 
@@ -66,28 +95,47 @@ export const HomePage = () => {
         setGeocodingCollectionState([]);
         setHideSuggestion(true);
         setSelectedAddress("");
-        setIsRequesting(false);
+        hideIsRequesting();
+        setInputValue("");
+        setIsSelected(false);
     }
 
     //const debounceOnChange = useDebounce(handleOnChange, 800, handleSearchLoading);
-    const debounceOnChange = useDebounce(handleOnChange, 800);
-
+    const debounceOnChange = useDebounce(handleOnChange, 500);
+    
     const populateSearchResult = () => {
         let res = geocodingCollectionState.map((data, index) => {
             return {
-                value: data.properties.full_address,
-                key: data.properties.mapbox_id
+                value: data.properties.name,
+                key: data.properties.mapbox_id,
+                full_value: data.properties.full_address,
+                lat: data.properties.coordinates.latitude,
+                lng: data.properties.coordinates.longitude
             }
         });
-        if(res.length > 0){
-            setHideSuggestion(false);
-            setIsRequesting(false);
+        if(res.length == 0){
+            setHideSuggestion(true);
+            hideIsRequesting();
         }
         setSearchResultsType(res);
     }
 
-    const handleSearchSelected = (value:string) => {
+    const handleSearchSelected = (searchResult:SearchResultType) => {
+        //dispatch to store
+        dispatch(setProfile(searchResult));
+        setInputValue(searchResult.full_value);
+        setIsSelected(true);
+    }
+
+    const hideIsRequesting = () => {
+        setIsRequesting(false);
+    }
+
+    const debounceRequest = useCallback((value: string) => debounceOnChange(value), []);
+
+    const onChange = (value: string) => {
         setInputValue(value);
+        debounceRequest(value);
     }
 
     return (
@@ -100,22 +148,23 @@ export const HomePage = () => {
                 </h1>
                 {/* <SearchBar placeHolder='enter address or postcode' onSubmit={handleSearchSubmit} onChange={handleOnChange} /> */}
                 <SearchBarGeolocation 
-                    placeHolder='enter address or postcode' 
-                    onChange={debounceOnChange} 
+                    placeHolder='enter street or postcode and select' 
+                    onChange={onChange} 
                     setGeocodingCollectionState={handleClearGeocoder}
                     clearInput={hideSuggestion}
                     InputValue={inputValue}
                     SetInputValue={setInputValue}
                     selectedAddress={selectedAddress}
+                    onSubmit={handleSearchSubmit}
                 />
 
-                {isRequesting && (
+                {isRequesting ? (
                     <div className='w-full flex flex-col relative'>
-                        <div className='flex flex-col p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
-                            <span className='animate-bounce'>Loading...</span>
+                        <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
+                        <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {searchResultsType.length > 0 ? (
                     <div className='w-full flex flex-col relative'>

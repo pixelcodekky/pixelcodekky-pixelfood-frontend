@@ -21,7 +21,7 @@ import SearchResultCard from '../SearchResultCard';
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
 export const MapGLDefault = () => {
-    const {city} = useParams();
+    const params = useParams();
     const dispatch = useDispatch();
     const mapState = useAppSelector(MapViewSelector);
     const searchStateSelector: SearchState = useAppSelector((s) => s.searchPage);
@@ -30,8 +30,14 @@ export const MapGLDefault = () => {
       page: 0
     });
     
-    const { results , isLoading } = useSearchRestaurants(searchState ,city);
+    const { results , isLoading } = useSearchRestaurants(searchState ,"");
 
+    //results reload
+    useEffect(() => {
+
+    },[results]);
+
+    //searchSelect reload
     useEffect(() => {
       let newState = {...searchState};
       newState.selectedCuisines = searchStateSelector.selectedCuisines;
