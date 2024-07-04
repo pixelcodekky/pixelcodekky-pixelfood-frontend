@@ -35,7 +35,8 @@ export type Restaurant = {
         country: string;
         country_code: string;
         postcode: string;
-    }]
+    }],
+    distance?:number,
 }
 
 export type RestaurantAddress = {
@@ -55,7 +56,7 @@ export type RestaurantSearchResponse = {
         total: number;
         page: number;
         pages: number;
-    }
+    },
 }
 
 export type OrderStatus = "placed" | "paid" | "inProgress" | "outForDelivery" | "delivered"; 

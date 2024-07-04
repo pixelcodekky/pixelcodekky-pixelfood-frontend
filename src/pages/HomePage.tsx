@@ -35,10 +35,15 @@ export const HomePage = () => {
     const [hideSuggestion, setHideSuggestion] = useState(false);
     const [isRequesting, setIsRequesting] = useState(false);
     let geocodingCollection:Feature[] = [];
- 
+    
+    //trigger inputvalue onchange
     useEffect(() => {
-        debounceOnChange(inputValue);
-    }, [inputValue])
+        debounceRequest(inputValue);
+    }, [inputValue]);
+
+    useEffect(() => {
+        populateSearchResult();
+    }, [geocodingCollectionState])
 
     const handleSearchSubmit = (values: string) => {
 
@@ -68,24 +73,19 @@ export const HomePage = () => {
         if(value.length > 0) {
             setIsRequesting(true);
         }
-
-        if(value.length == 0){
-            setIsSelected(false);
-        }
-         
-        setGeocodingValue(value);
-        
         if(value.length == 0) {
             hideIsRequesting();
             setHideSuggestion(true);
             setInputValue("");
+            setIsSelected(false);
+            clearDebounce();
         }else{
             if(!isSelected){
+                setGeocodingValue(value);
                 setHideSuggestion(false);
                 let res = await getMapGeocodingForward(value); // API Call
                 geocodingCollection = geocodingmapping(res);
                 setGeocodingCollectionState(geocodingCollection);
-                populateSearchResult();
             }
             
         }
@@ -98,10 +98,11 @@ export const HomePage = () => {
         hideIsRequesting();
         setInputValue("");
         setIsSelected(false);
+        clearDebounce();
     }
 
     //const debounceOnChange = useDebounce(handleOnChange, 800, handleSearchLoading);
-    const debounceOnChange = useDebounce(handleOnChange, 500);
+    const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
     
     const populateSearchResult = () => {
         let res = geocodingCollectionState.map((data, index) => {
@@ -115,9 +116,9 @@ export const HomePage = () => {
         });
         if(res.length == 0){
             setHideSuggestion(true);
-            hideIsRequesting();
         }
         setSearchResultsType(res);
+        hideIsRequesting();
     }
 
     const handleSearchSelected = (searchResult:SearchResultType) => {
@@ -131,7 +132,7 @@ export const HomePage = () => {
         setIsRequesting(false);
     }
 
-    const debounceRequest = useCallback((value: string) => debounceOnChange(value), []);
+    const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue]);
 
     const onChange = (value: string) => {
         setInputValue(value);

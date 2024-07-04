@@ -18,7 +18,11 @@ const SORT_OPTIONS = [
     {
         label: "Estimated delivery time",
         value: "estimatedDeliveryTime"
-    }
+    },
+    {
+        label: "Distance",
+        value: "distance"
+    },
 ]
 
 const SortOptionDropdown = ({onChange, sortOption}: Props) => {
@@ -28,9 +32,10 @@ const SortOptionDropdown = ({onChange, sortOption}: Props) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="cursor-pointer">
-                <label  className="w-full">
+                {/* <label  className="w-full">
                     sort by: {selectedSortLabel}
-                </label>
+                </label> */}
+                <Button variant="outline">Sort By: {selectedSortLabel}</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 {SORT_OPTIONS.map((opt, idx) => (

@@ -17,14 +17,27 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/statemgmt/hooks';
 import { useSearchRestaurants } from '@/api/RestaurantApi';
 import SearchResultCard from '../SearchResultCard';
+import CurrentPin from '../MapResource/CurrentPin';
+import { calculateDistanceHelper } from '@/common/Utilities';
+import { setRestaurant as dispatchRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
+const initialRestaurant: RestaurantSearchResponse = {
+  data: [],
+  pagination: {
+      total: 0,
+      page: 0,
+      pages: 0,
+  }
+};
 
 export const MapGLDefault = () => {
     const params = useParams();
     const dispatch = useDispatch();
     const mapState = useAppSelector(MapViewSelector);
+    const profileState = useAppSelector((x) => x.profile);
     const searchStateSelector: SearchState = useAppSelector((s) => s.searchPage);
+    const [restaurants, setRestaurants] = useState<RestaurantSearchResponse>(initialRestaurant);
     const [searchState, setSearchState] = useState<SearchState>({
       ...searchStateSelector,
       page: 0
@@ -33,9 +46,14 @@ export const MapGLDefault = () => {
     const { results , isLoading } = useSearchRestaurants(searchState ,"");
 
     //results reload
+    //page start
     useEffect(() => {
-
-    },[results]);
+      const load = () => {
+        let res = calculateDistanceHelper(profileState, results ?? undefined);
+        setRestaurants(res);
+      }
+      load();
+    }, [results])
 
     //searchSelect reload
     useEffect(() => {
@@ -127,8 +145,28 @@ export const MapGLDefault = () => {
       )
     }, [popupInfo])
 
+    const RenderCurrentLocation = useMemo(() => {
+      if(profileState.full_value !== ''){
+        return (
+          <>
+            <div className='animate-bounce'>
+              <Marker 
+                key={profileState.key}
+                latitude={profileState.lat}
+                longitude={profileState.lng}
+                anchor='top'
+              >
+              <CurrentPin className={`animate-bounce`} />
+              </Marker>
+              
+            </div>
+          </>
+        )
+      }
+    }, [])
+
     const RenderMarker = useMemo(() => {
-      return results?.data.map((d, i) => {
+      return restaurants?.data.map((d, i) => {
           let address: RestaurantAddress = d.address[0];
           if(address){
             return (
@@ -147,7 +185,7 @@ export const MapGLDefault = () => {
                         setPopupInfo({...popupInfo, isOpen: true, data: d})
                         mapRef.current?.flyTo({
                           center: [address.lon, address.lat],
-                          zoom: 13
+                          //zoom: 13
                         })
                       }
                     }
@@ -160,7 +198,7 @@ export const MapGLDefault = () => {
             )
           }
       })
-    },[results]);
+    },[restaurants]);
 
     return (
     <>
@@ -195,6 +233,7 @@ export const MapGLDefault = () => {
           
           {!isLoading && RenderMarker}
           {popupInfo.isOpen && RenderPopup}
+          {RenderCurrentLocation}
           
         </Map>
     </>

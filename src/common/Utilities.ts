@@ -1,26 +1,38 @@
-import { useEffect, useState } from "react";
+import { RestaurantSearchResponse, SearchResultType } from "@/types";
+import { useEffect, useRef, useState } from "react";
 
 
 type Timer = ReturnType<typeof setTimeout>;
 type handler = (...args: any[]) => void;
 
+//Function Debounce
 export const useDebounce = <Func extends handler> (
     func: Func,
     delay = 1000,
 ) => {
     const [timer, setTimer] = useState<Timer>();
+    const timerRef = useRef<Timer | undefined>(timer);
 
     const debounceFunction = ((...args) => {
+        clearTimeout(timerRef.current);
         const newTimer = setTimeout(() => {
             func(...args);
         }, delay);
-        clearTimeout(timer);
+        timerRef.current = newTimer;
         setTimer(newTimer);
     }) as Func;
 
-    return debounceFunction;
+
+    const clearDebounce = () => {
+        clearTimeout(timerRef.current);
+        timerRef.current = undefined;
+        setTimer(undefined);
+    }
+
+    return {debounceFunction, clearDebounce, setTimer: setTimer as React.Dispatch<React.SetStateAction<Timer | undefined>>};
 }
 
+// Value Debounce
 // export const useDebounce = <T>(value: T, delay = 500) => {
 //     const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
@@ -51,6 +63,35 @@ export const haversineDistance = (pointAlonlat:[number, number], pointBlonlat:[n
     const c =   2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c; // Distance in kilometer
+}
+
+export const calculateDistanceHelper = (profile: SearchResultType, restaurants?:RestaurantSearchResponse):RestaurantSearchResponse => {
+    let results: RestaurantSearchResponse = {
+        data: [],
+        pagination: {
+            total: 0,
+            page: 0,
+            pages: 0,
+        }
+    }
+    if(profile.full_value !== '' && restaurants !== undefined  && restaurants.data.length > 0){
+        
+        let pointA: [number, number] = [profile.lng, profile.lat];
+        for(let restaurant of restaurants.data){
+            let tmpRestaurant = {...restaurant}
+            if(tmpRestaurant.address[0] !== undefined){
+                let pointB: [number, number] = [tmpRestaurant.address[0].lon, tmpRestaurant.address[0].lat ]
+                let distance = haversineDistance(pointA, pointB);
+                
+                tmpRestaurant.distance = distance;
+                results.data.push(tmpRestaurant);
+                results.pagination = restaurants.pagination;
+            }
+            
+        }
+    }
+
+    return results;
 }
 
 

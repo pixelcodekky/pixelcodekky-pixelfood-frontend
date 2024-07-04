@@ -14,7 +14,6 @@ const SearchResultCard = ({restaurant, isPopup = false}: Props) => {
    if(!isPopup) {
     return (
         <>
-        
             <MainSearchCard restaurant={restaurant} />
         </>
     ) 

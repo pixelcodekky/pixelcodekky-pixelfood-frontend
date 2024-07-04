@@ -12,33 +12,45 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { MapPage } from "../MapPage";
-import { SearchState } from "@/types";
+import { RestaurantSearchResponse, SearchState } from "@/types";
 import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines, dataSortOption } from "@/statemgmt/map/SearchPageSlice";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { AnimatedPage } from '@/animotion/AnimatedPage';
-import { haversineDistance } from '@/common/Utilities';
+import { calculateDistanceHelper } from "@/common/Utilities";
+import { setRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
+
+const initialRestaurant: RestaurantSearchResponse = {
+  data: [],
+  pagination: {
+      total: 0,
+      page: 0,
+      pages: 0,
+  }
+};
+
 
 export const SearchPage = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
     //const {lng, lat} = useParams();
     const profileState = useAppSelector((x) => x.profile);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [restaurants, setRestaurants] = useState<RestaurantSearchResponse>(initialRestaurant);
     const { results, isLoading } = useSearchRestaurants(searchState ,"");
 
-    useEffect(() => {
-      if(profileState.full_value === ''){
-        navigate('/');
-      }
-    }, [profileState]);
-
     //page start
-    // useEffect(() => {
-
-    // }, [results])
+    useEffect(() => {
+      const load = () => {
+        let res = calculateDistanceHelper(profileState, results ?? undefined);
+        setRestaurants(res);
+        //dispatch
+        dispatch(setRestaurant(res));
+      }
+      load();
+    }, [results])
 
     //reload base on store state
     useEffect(() => {
@@ -46,31 +58,39 @@ export const SearchPage = () => {
     },[searchStateSelector])
 
     const setSortOption = async (sortOption: string) => {
+      
+      if(sortOption === 'distance'){
+        let tmpSortByDistance = {
+          ...restaurants,
+          data: [...restaurants.data].sort((a, b) => (a.distance || 0) - (b.distance || 0))
+        }
+        setRestaurants(tmpSortByDistance);
+      }
       let newState = {...searchState}; //copy object to new one;
       newState.sortOption = sortOption;
-      await dispatch(dataSortOption(newState));
-      await setSearchState({ ...newState});
+      //dispatch(dataSortOption(newState));
+      setSearchState({ ...newState});
     }
 
     const setSelectedCuisines = async (_selectedCuisines: string[]) => {
       let newState = {...searchState}; //copy object to new one;
       newState.selectedCuisines = _selectedCuisines;
-      await dispatch(dataSelectedCuisines(newState));
-      await setSearchState({ ...newState});
+      dispatch(dataSelectedCuisines(newState));
+      setSearchState({ ...newState});
     }
 
     const setPage = async (page: number) => {
       let newState = {...searchState}; //copy object to new one;
       newState.page = page;
-      await dispatch(dataPage(newState));
-      await setSearchState({...newState});
+      dispatch(dataPage(newState));
+      setSearchState({...newState});
     }
 
     const setSearchQuery = async (searchFormData: SearchForm) => {
       let newState = {...searchState}; //copy object to new one;
       newState.searchQuery = searchFormData.searchQuery;
-      await dispatch(dataSearchQuery(newState));
-      await setSearchState({...newState});
+      dispatch(dataSearchQuery(newState));
+      setSearchState({...newState});
     }
 
     const resetSearch = async () => {
@@ -88,14 +108,20 @@ export const SearchPage = () => {
       <span>Loading...</span>
     }
 
-    if(results == undefined || !results?.data || !profileState.full_value){
+    if(restaurants == undefined || !restaurants?.data || !profileState.full_value){
       return (
         <>
-          <span>No Results found for {profileState.full_value}.</span>
-          <Link to='/' 
-                className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
-                  Change Location
-          </Link>
+        <div className="container mx-auto py-3">
+          <div className="flex flex-row gap-5">
+            <span>No Results found for {profileState.full_value}.</span>
+            <Link to='/' 
+                  className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
+                    Change Location
+            </Link>
+          </div>
+          
+        </div>
+          
         </>
       )
     }
@@ -138,13 +164,13 @@ export const SearchPage = () => {
                     onReset={resetSearch}
                     />
                   <div className="flex justify-between flex-col gap-3 lg:flex-row">
-                    <SearchResultInfo total={results?.pagination.total} city={profileState.value} />
+                    <SearchResultInfo total={restaurants?.pagination.total} city={profileState.value} />
                     <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
                   </div>
                   <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
                   <div className="flex flex-col">
                     <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
-                      {results.data.map((d, index) => (
+                      {restaurants.data.map((d, index) => (
                         <li key={index}>
                           <SearchResultCard restaurant={d} key={index} />
                         </li>
@@ -153,8 +179,8 @@ export const SearchPage = () => {
                   </div>
                   
                   <PaginationSelector 
-                    page={results?.pagination.page} 
-                    pages={results?.pagination.pages} 
+                    page={restaurants?.pagination.page} 
+                    pages={restaurants?.pagination.pages} 
                     onPageChange={setPage}/>
                 </div>
               </div>

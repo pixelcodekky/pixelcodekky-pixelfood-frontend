@@ -11,31 +11,7 @@ type Props = {
 };
 
 const MainSearchCard = ({restaurant}: Props) => {
-
-    let profileState = useAppSelector((x) => x.profile);
      
-    const RenderDistance = () => {
-        let result = '';
-        
-        if(profileState.full_value != '' && restaurant.address[0] !== undefined){
-            let pointA: [number, number] = [profileState.lng, profileState.lat];
-            let pointB: [number, number] = [restaurant.address[0].lon, restaurant.address[0].lat ]
-            let distance = haversineDistance(pointA, pointB);
-            result = `${distance.toFixed(0)}`
-        }
-
-        return (
-            <>
-                {result !== '' ? (
-                    <>
-                        <MapPin size={13} className="text-green-500"/>
-                        <span>{`${result} km`}</span>
-                    </>
-                ) : null}
-            </>
-        )
-    }
-
     const RenderCrusines = () => {
         return (
             <>
@@ -72,7 +48,9 @@ const MainSearchCard = ({restaurant}: Props) => {
                             S$ {(restaurant.deliveryPrice / 100).toFixed(2)}
                         </div>
                         <div className="flex items-center gap-1 font-bold text-xs">
-                            {RenderDistance()}
+                            {/* {RenderDistance()} */}
+                            <MapPin size={15} className="text-green-500"/>
+                            <span>{`${restaurant.distance?.toFixed(1)}km`}</span>
                         </div>
                     </div>
                     <div className="my-2">

@@ -126,7 +126,6 @@ const DetailPage = () => {
         const gettotal = parseInt(getTotalCost());
         const getgst = getGSTcost();
         const total = parseFloat(gettotal.toFixed(2).toString()) + parseFloat(getgst);
-        console.log(`total: ${total}`)
         return parseFloat(total.toString());
     }
 
