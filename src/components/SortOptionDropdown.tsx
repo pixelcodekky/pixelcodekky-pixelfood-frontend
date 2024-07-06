@@ -1,5 +1,4 @@
-import { Badge, Link } from "lucide-react";
-import { Button, buttonVariants } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Label } from "./ui/label";
 
