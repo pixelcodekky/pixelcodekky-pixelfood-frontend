@@ -22,7 +22,7 @@ const BaseSearchPage = ({children}: Props) => {
     useEffect(() => {
         const load = async () => {
           if((lng !== undefined || lng !== "") && (lat !== undefined || lat !== "")){
-            if(!profileLoading){
+            if(!profileLoading && profileResult !== undefined){
               var formatdata = geocodingmapping(profileResult);
               let searchResult = {
                       value: formatdata[0].properties.name,
@@ -37,6 +37,9 @@ const BaseSearchPage = ({children}: Props) => {
         }
         load();
     }, [lng, lat, profileLoading, profileResult])
+
+
+
 
     return (
         <div>

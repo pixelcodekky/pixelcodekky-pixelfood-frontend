@@ -154,7 +154,8 @@ export const SearchPage = () => {
         <>
           <div className="container mx-auto py-3">
             <div className="flex flex-row gap-5">
-              <span>No Results found for {profileState.full_value}.</span>
+              {/* <span>No Results found for {profileState.full_value}.</span> */}
+              <span>No Restaurant found.</span>
               <Link to='/' 
                     className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
                       Change Location

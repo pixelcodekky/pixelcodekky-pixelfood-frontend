@@ -3,6 +3,7 @@ import { Feature } from "@/types";
 export const geocodingmapping = (results: any):Feature[] => {
     let obj = results;
     let collections:Feature[] = [];
+    console.log(obj);
     if(obj['features']){
         for(let i=0;i<obj['features'].length;i++){
             collections.push(obj['features'][i]);

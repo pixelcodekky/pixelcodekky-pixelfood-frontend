@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/statemgmt/hooks";
 import { useQuery } from "react-query";
 
 const MAPBOX_GEOCODING_URL = import.meta.env.VITE_MAPBOX_GEOCODING_URL;
@@ -69,6 +70,8 @@ export const useGetMapboxGeocodingForward = (location:string) => {
 }
 
 export const useGetMapboxGeocodingReverse = (lng: string, lat:string) => {
+    const profile = useAppSelector((x) => x.profile);
+    
     const getMapGeocodingReverse = async () => { 
         const accessToken = MAPBOX_API_KEY;
         const url = `${MAPBOX_GEOCODING_URL}reverse?`
@@ -97,7 +100,10 @@ export const useGetMapboxGeocodingReverse = (lng: string, lat:string) => {
 
     const {data: results, isLoading, isError, isFetching} = useQuery(
         'fetchGeocodingReverse',
-        getMapGeocodingReverse
+        async () => {
+            return getMapGeocodingReverse();
+        },
+        { enabled: profile.lat === 0 && profile.lng === 0 }
     )
 
     return {results, isLoading, isFetching, isError};
