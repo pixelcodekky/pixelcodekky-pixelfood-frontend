@@ -10,27 +10,14 @@ import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice"
 import { Map } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { MapPage } from "../MapPage";
-import { RestaurantSearchResponse, SearchState } from "@/types";
-import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines, dataSortOption } from "@/statemgmt/map/SearchPageSlice";
+import { SearchState } from "@/types";
+import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines } from "@/statemgmt/map/SearchPageSlice";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { AnimatedPage } from '@/animotion/AnimatedPage';
-import { calculateDistanceHelper } from "@/common/Utilities";
-import { setRestaurant as dispatchRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
-
-const initialRestaurant: RestaurantSearchResponse = {
-  data: [],
-  pagination: {
-      total: 0,
-      page: 0,
-      pages: 0,
-  }
-};
-
 
 export const SearchPage = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
@@ -38,8 +25,7 @@ export const SearchPage = () => {
     const profileState = useAppSelector((x) => x.profile);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-    const [restaurants, setRestaurants] = useState<RestaurantSearchResponse>(initialRestaurant);
-    const { results, isLoading } = useSearchRestaurants(searchState ,"");
+    const { results, isLoading } = useSearchRestaurants(searchState);
 
     //page start
     // useEffect(() => {

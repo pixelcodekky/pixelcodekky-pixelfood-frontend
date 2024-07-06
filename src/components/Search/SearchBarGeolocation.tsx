@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Search, X } from 'lucide-react';
@@ -21,17 +21,9 @@ type Props = {
 }
 
 
-const SearchBarGeolocation = ({ placeHolder, onChange, onSubmit, setGeocodingCollectionState, InputValue, SetInputValue, clearInput = false, selectedAddress } : Props) => {
+const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionState, InputValue, SetInputValue, clearInput = false } : Props) => {
 
     const [inputState, setInputState] = useState("");
-
-    // useEffect(() => {
-    //     setInputState(selectedAddress);
-    // }, [selectedAddress])
-
-    const handleOnChange = (value: string) => {
-        onChange(value);
-    }
 
     const handleOnClick = () => {
         if(onSubmit){
@@ -59,7 +51,7 @@ const SearchBarGeolocation = ({ placeHolder, onChange, onSubmit, setGeocodingCol
                     <X  strokeWidth={3}
                     size={18}  
                     className='rounded-full b-[10px] border bg-white-400 text-black w-[30px] hover:pointer hover:text-black hover:bg-gray-200' 
-                    onClick={(e) => {
+                    onClick={() => {
                         setInputState("");
                         setGeocodingCollectionState();
                     }}

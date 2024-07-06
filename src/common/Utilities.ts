@@ -1,5 +1,5 @@
 import { RestaurantSearchResponse, SearchResultType } from "@/types";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 
 type Timer = ReturnType<typeof setTimeout>;

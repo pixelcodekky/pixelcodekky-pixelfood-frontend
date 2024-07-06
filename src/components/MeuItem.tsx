@@ -1,8 +1,5 @@
 import { MenuItem } from "@/types"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { CirclePlus, Plus } from "lucide-react";
 import menuItem_bg from '../assets/menuItem_bg.jpg'
-import { AspectRatio } from "./ui/aspect-ratio";
 import { QuantityButton } from "./QuantityButton";
 
 type Props = {

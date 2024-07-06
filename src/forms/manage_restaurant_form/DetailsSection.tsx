@@ -1,7 +1,5 @@
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { defaultMaxListeners } from 'events'
-import React from 'react'
 import { useFormContext } from 'react-hook-form'
 
 const DetailsSection = () => {

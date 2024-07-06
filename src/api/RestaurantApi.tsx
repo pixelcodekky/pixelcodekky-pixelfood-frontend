@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const useSearchRestaurants = (searchState: SearchState,city = "") => {
+export const useSearchRestaurants = (searchState: SearchState) => {
     const profile = useAppSelector((x) => x.profile);
     const params = new URLSearchParams();
     const dispatch = useDispatch();

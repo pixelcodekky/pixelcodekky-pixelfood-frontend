@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './index.css';
-import { FilterIcon, List, SearchIcon } from 'lucide-react';
+import { FilterIcon, List } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { setShowonMap } from '@/statemgmt/map/ShowonMapSlice';
 import { MapFilter } from '../MapGL/MapFilter';

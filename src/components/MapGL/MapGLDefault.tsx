@@ -4,16 +4,13 @@ import Map, {
   Popup,
   NavigationControl,
   GeolocateControl,
-  MapLayerMouseEvent,
   ViewStateChangeEvent,
-  GeolocateResultEvent,
   MapRef
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useDispatch } from 'react-redux';
-import { Restaurant, RestaurantAddress, RestaurantSearchResponse, SearchState, ViewMapState } from '@/types';
+import { Restaurant, RestaurantAddress, SearchState, ViewMapState } from '@/types';
 import { MapViewSelector, setViewport } from '@/statemgmt/map/MapViewSlice';
-import { useParams } from 'react-router-dom';
 import { useAppSelector } from '@/statemgmt/hooks';
 import { useSearchRestaurants } from '@/api/RestaurantApi';
 import SearchResultCard from '../SearchResultCard';
@@ -31,7 +28,7 @@ export const MapGLDefault = () => {
       page: 0
     });
     
-    const { results , isLoading } = useSearchRestaurants(searchState ,"");
+    const { results , isLoading } = useSearchRestaurants(searchState);
 
     //results reload
     //page start
@@ -95,11 +92,11 @@ export const MapGLDefault = () => {
         dispatch(setViewport(onMoveState));
     }, []);
 
-    const handleGeolocate = (e: GeolocateResultEvent) => {
-        //drop custom pin on Map
-        //setGeoLocateLatSelected(e.coords.latitude);
-        //setGeoLocateLonSelected(e.coords.longitude);
-    }
+    // const handleGeolocate = (e: GeolocateResultEvent) => {
+    //     //drop custom pin on Map
+    //     //setGeoLocateLatSelected(e.coords.latitude);
+    //     //setGeoLocateLonSelected(e.coords.longitude);
+    // }
 
     const RenderPopup = useMemo(() => {
       if (!popupInfo.isOpen) return null;
@@ -151,7 +148,7 @@ export const MapGLDefault = () => {
           if(address){
             return (
               <>
-                <div key={`${d._id}`}>
+                <div key={`${d._id}_${i}`}>
                   <Marker
                     style={{
                       cursor: 'pointer'
@@ -198,8 +195,6 @@ export const MapGLDefault = () => {
           reuseMaps={true}
           mapStyle={mapState.mapStyle} 
           mapboxAccessToken={TOKEN}
-          onClick={(e) => {
-          }}
           onMove={onMove}
           testMode={true}
         >
@@ -209,7 +204,7 @@ export const MapGLDefault = () => {
             showAccuracyCircle={false} 
             showUserLocation={true}
             showUserHeading={true}
-            onGeolocate={(e) => handleGeolocate(e)} />
+             />
           
           {!isLoading && RenderMarker}
           {popupInfo.isOpen && RenderPopup}

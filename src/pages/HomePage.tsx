@@ -1,20 +1,18 @@
 import landingImage from '../assets/landing.png';
 import appDownloadImage from '../assets/appDownload.png';
-import { SearchForm } from '@/components/Search/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import mainimg1 from '../assets/main_1.png';
 import mainimg2 from '../assets/main_2.png';
 import { LucideTruck, MapPinned, Search, SquareMousePointer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { useGetMapboxGeocodingForward, getMapGeocodingForward } from '@/api/GeocodingApi';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { getMapGeocodingForward } from '@/api/GeocodingApi';
+import { useCallback, useEffect, useState } from 'react';
 import { Feature, SearchResultType } from '@/types';
 import { geocodingmapping } from '@/common/GoecodingTypeMatch';
 import SearchBarGeolocation from '@/components/Search/SearchBarGeolocation';
 import SearchResultList from '@/components/Search/SearchResultList';
 import { useDebounce } from '@/common/Utilities';
-import { clearTimeout } from 'timers';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/statemgmt/hooks';
@@ -26,7 +24,7 @@ export const HomePage = () => {
     //const hostedCountry = import.meta.env.VITE_HOSTED_COUNTRY;
     const profileState = useAppSelector((x) => x.profile);
     const [selectedAddress, setSelectedAddress] = useState("");
-    const [goecodingvalue, setGeocodingValue] = useState("");
+    //const [goecodingvalue, setGeocodingValue] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [isSelected, setIsSelected] = useState(false);
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
@@ -45,7 +43,7 @@ export const HomePage = () => {
         populateSearchResult();
     }, [geocodingCollectionState])
 
-    const handleSearchSubmit = (values: string) => {
+    const handleSearchSubmit = () => {
 
         //find selected address
         let address = profileState;
@@ -81,7 +79,6 @@ export const HomePage = () => {
             clearDebounce();
         }else{
             if(!isSelected){
-                setGeocodingValue(value);
                 setHideSuggestion(false);
                 let res = await getMapGeocodingForward(value); // API Call
                 geocodingCollection = geocodingmapping(res);
@@ -105,7 +102,7 @@ export const HomePage = () => {
     const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
     
     const populateSearchResult = () => {
-        let res = geocodingCollectionState.map((data, index) => {
+        let res = geocodingCollectionState.map((data) => {
             return {
                 value: data.properties.name,
                 key: data.properties.mapbox_id,

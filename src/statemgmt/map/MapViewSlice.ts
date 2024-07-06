@@ -1,4 +1,4 @@
-import { ShowonMap, ViewMapState } from "@/types";
+import { ViewMapState } from "@/types";
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
 import { RootState } from "../store";
 

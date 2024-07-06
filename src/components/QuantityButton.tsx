@@ -1,5 +1,5 @@
 import { Input } from './ui/input'
-import { CircleMinus, CirclePlus, Trash2Icon, TrashIcon } from 'lucide-react'
+import { CircleMinus, CirclePlus, TrashIcon } from 'lucide-react'
 
 type Props = {
     addquantity: ()=> void;

@@ -1,5 +1,5 @@
 import { SearchResultType } from "@/types";
-import { Map, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 type Props = {
     className?: string;

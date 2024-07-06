@@ -24,7 +24,7 @@ type Props = {
     onChange?: (value:string) => void;
 }
 
-export const SearchBar = ({onSubmit, onChange ,placeHolder, onReset, searchQuery, className}: Props) => {
+export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, className}: Props) => {
 
     const form = useForm<SearchForm>({
         resolver: zodResolver(formSchema),
@@ -45,12 +45,6 @@ export const SearchBar = ({onSubmit, onChange ,placeHolder, onReset, searchQuery
         if(onReset){
             onReset(); 
         }
-    }
-
-    const handleOnChange = (value:string) => {
-       if(onChange){
-        onChange(value);
-       }
     }
 
     return (

@@ -1,4 +1,3 @@
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 
 type Props = {
@@ -8,8 +7,7 @@ type Props = {
 export const MapSearch = ({children}: Props) => {
     return (
         <>
-        
-        
+            {children}
         </>
         
     )

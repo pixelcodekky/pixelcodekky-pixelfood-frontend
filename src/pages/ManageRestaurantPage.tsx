@@ -20,7 +20,7 @@ export const ManageRestaurantPage = () => {
 
         <TabsContent value='orders' className='space-y-5 bg-gray-50 rounded-lg'>
           <h2 className='text-2xl font-bold '>{orders?.length} active orders</h2>
-          {orders?.map((order,index) => (
+          {!ordersLoading && orders?.map((order,index) => (
             <OrderItemCard key={index} order={order} />
           ))}
         </TabsContent>

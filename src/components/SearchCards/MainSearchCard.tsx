@@ -1,10 +1,9 @@
 import { Restaurant } from "@/types";
 import { Link } from "react-router-dom";
-import { Clock, Dot, MapPin, Truck } from "lucide-react";
+import { Clock, MapPin, Truck } from "lucide-react";
 import { Badge } from "../ui/badge";
 import DefaultImage from '../../assets/800x400.svg';
-import { useAppSelector } from "@/statemgmt/hooks";
-import { haversineDistance } from '@/common/Utilities';
+
 
 type Props = {
     restaurant: Restaurant;

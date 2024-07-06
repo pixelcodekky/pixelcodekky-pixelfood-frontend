@@ -5,14 +5,14 @@ import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MenuItem as MenuItemType } from '../types';
 import CheckoutButton from "@/components/CheckoutButton";
-import { UserFormData, UserProfileForm } from "@/forms/user_profile_form/UserProfileForm";
+import { UserFormData } from "@/forms/user_profile_form/UserProfileForm";
 import { useCreateCheckoutSession } from "@/api/OrderApi";
 import { Button } from "@/components/ui/button";
-import { CircleArrowLeft, ShoppingBag, ShoppingBasket } from "lucide-react";
+import { CircleArrowLeft, ShoppingBasket } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export type CartItem = {
