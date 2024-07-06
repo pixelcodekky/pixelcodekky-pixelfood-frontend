@@ -18,26 +18,14 @@ import { useAppSelector } from '@/statemgmt/hooks';
 import { useSearchRestaurants } from '@/api/RestaurantApi';
 import SearchResultCard from '../SearchResultCard';
 import CurrentPin from '../MapResource/CurrentPin';
-import { calculateDistanceHelper } from '@/common/Utilities';
-import { setRestaurant as dispatchRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-const initialRestaurant: RestaurantSearchResponse = {
-  data: [],
-  pagination: {
-      total: 0,
-      page: 0,
-      pages: 0,
-  }
-};
 
 export const MapGLDefault = () => {
-    const params = useParams();
     const dispatch = useDispatch();
     const mapState = useAppSelector(MapViewSelector);
     const profileState = useAppSelector((x) => x.profile);
     const searchStateSelector: SearchState = useAppSelector((s) => s.searchPage);
-    const [restaurants, setRestaurants] = useState<RestaurantSearchResponse>(initialRestaurant);
     const [searchState, setSearchState] = useState<SearchState>({
       ...searchStateSelector,
       page: 0
@@ -47,13 +35,13 @@ export const MapGLDefault = () => {
 
     //results reload
     //page start
-    useEffect(() => {
-      const load = () => {
-        let res = calculateDistanceHelper(profileState, results ?? undefined);
-        setRestaurants(res);
-      }
-      load();
-    }, [results])
+    // useEffect(() => {
+    //   const load = () => {
+    //     let res = calculateDistanceHelper(profileState, results ?? undefined);
+    //     setRestaurants(res);
+    //   }
+    //   load();
+    // }, [results])
 
     //searchSelect reload
     useEffect(() => {
@@ -92,14 +80,6 @@ export const MapGLDefault = () => {
 
     const [popupInfo, setPopupInfo] = useState<PopupState>({isOpen: false});
     const mapRef = useRef<MapRef>(null);
-
-    const [geoLocateLatSelected, setGeoLocateLatSelected] = useState<number>(0);
-    const [geoLocateLonSelected, setGeoLocateLonSelected] = useState<number>(0);
-
-    const handleMapOnClick = (e: MapLayerMouseEvent) => {
-      setGeoLocateLatSelected(e.lngLat.lat);
-      setGeoLocateLonSelected(e.lngLat.lng);
-    }
 
     //only create function depend on event
     const onMove = useCallback((e: ViewStateChangeEvent) => {
@@ -166,12 +146,12 @@ export const MapGLDefault = () => {
     }, [])
 
     const RenderMarker = useMemo(() => {
-      return restaurants?.data.map((d, i) => {
+      return results?.data.map((d, i) => {
           let address: RestaurantAddress = d.address[0];
           if(address){
             return (
               <>
-                <div>
+                <div key={`${d._id}`}>
                   <Marker
                     style={{
                       cursor: 'pointer'
@@ -198,7 +178,7 @@ export const MapGLDefault = () => {
             )
           }
       })
-    },[restaurants]);
+    },[results]);
 
     return (
     <>

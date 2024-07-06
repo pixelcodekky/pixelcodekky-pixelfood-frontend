@@ -49,8 +49,15 @@ const MainSearchCard = ({restaurant}: Props) => {
                         </div>
                         <div className="flex items-center gap-1 font-bold text-xs">
                             {/* {RenderDistance()} */}
-                            <MapPin size={15} className="text-green-500"/>
-                            <span>{`${restaurant.distance?.toFixed(1)}km`}</span>
+                            {restaurant.distance !== undefined ? (
+                                <>
+                                <MapPin size={15} className="text-green-500"/>
+                                <span>{`${restaurant.distance?.toFixed(1)}km`}</span>
+                                </>
+                                
+                            ): null}
+                            
+                            
                         </div>
                     </div>
                     <div className="my-2">

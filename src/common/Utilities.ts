@@ -85,10 +85,9 @@ export const calculateDistanceHelper = (profile: SearchResultType, restaurants?:
                 
                 tmpRestaurant.distance = distance;
                 results.data.push(tmpRestaurant);
-                results.pagination = restaurants.pagination;
             }
-            
         }
+        results.pagination = restaurants.pagination;
     }
 
     return results;

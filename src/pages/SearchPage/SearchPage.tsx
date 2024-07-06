@@ -17,7 +17,7 @@ import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSel
 import { useAppSelector } from "@/statemgmt/hooks";
 import { AnimatedPage } from '@/animotion/AnimatedPage';
 import { calculateDistanceHelper } from "@/common/Utilities";
-import { setRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
+import { setRestaurant as dispatchRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
 
 const initialRestaurant: RestaurantSearchResponse = {
   data: [],
@@ -42,15 +42,15 @@ export const SearchPage = () => {
     const { results, isLoading } = useSearchRestaurants(searchState ,"");
 
     //page start
-    useEffect(() => {
-      const load = () => {
-        let res = calculateDistanceHelper(profileState, results ?? undefined);
-        setRestaurants(res);
-        //dispatch
-        dispatch(setRestaurant(res));
-      }
-      load();
-    }, [results])
+    // useEffect(() => {
+    //   const load = () => {
+    //     let res = calculateDistanceHelper(profileState, results ?? undefined);
+    //     setRestaurants(res);
+    //     //dispatch
+    //     dispatch(dispatchRestaurant(restaurants));
+    //   }
+    //   load();
+    // }, [results])
 
     //reload base on store state
     useEffect(() => {
@@ -59,13 +59,6 @@ export const SearchPage = () => {
 
     const setSortOption = async (sortOption: string) => {
       
-      if(sortOption === 'distance'){
-        let tmpSortByDistance = {
-          ...restaurants,
-          data: [...restaurants.data].sort((a, b) => (a.distance || 0) - (b.distance || 0))
-        }
-        setRestaurants(tmpSortByDistance);
-      }
       let newState = {...searchState}; //copy object to new one;
       newState.sortOption = sortOption;
       //dispatch(dataSortOption(newState));
@@ -108,7 +101,7 @@ export const SearchPage = () => {
       <span>Loading...</span>
     }
 
-    if(restaurants == undefined || !restaurants?.data || !profileState.full_value){
+    if(results == undefined || !results?.data || !profileState.full_value){
       return (
         <>
         <div className="container mx-auto py-3">
@@ -164,13 +157,13 @@ export const SearchPage = () => {
                     onReset={resetSearch}
                     />
                   <div className="flex justify-between flex-col gap-3 lg:flex-row">
-                    <SearchResultInfo total={restaurants?.pagination.total} city={profileState.value} />
+                    <SearchResultInfo total={results?.pagination.total} city={profileState.value} />
                     <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
                   </div>
                   <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
                   <div className="flex flex-col">
                     <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
-                      {restaurants.data.map((d, index) => (
+                      {results.data.map((d, index) => (
                         <li key={index}>
                           <SearchResultCard restaurant={d} key={index} />
                         </li>
@@ -179,8 +172,8 @@ export const SearchPage = () => {
                   </div>
                   
                   <PaginationSelector 
-                    page={restaurants?.pagination.page} 
-                    pages={restaurants?.pagination.pages} 
+                    page={results?.pagination.page} 
+                    pages={results?.pagination.pages} 
                     onPageChange={setPage}/>
                 </div>
               </div>
