@@ -12,6 +12,7 @@ import DetailPage from "./pages/DetailPage";
 import OrderStatusPage from "./pages/OrderStatusPage";
 import { AnimatePresence } from "framer-motion";
 import { AnimatedPage } from "./animotion/AnimatedPage";
+import BaseSearchPage from "./pages/SearchPage/BaseSearchPage";
 
 
 const AppRoutes = () => {
@@ -26,9 +27,10 @@ const AppRoutes = () => {
                         <SearchPageLayout 
                         showHero={false}>
                             <AnimatedPage>
-                                <SearchPage />
+                                <BaseSearchPage>
+                                    <SearchPage />
+                                </BaseSearchPage>
                             </AnimatedPage>
-                            
                         </SearchPageLayout> } />
                 <Route path='/detail/:restaurantId' element={<Layout showHero={false}><DetailPage /></Layout> } />
                 <Route element={<ProtectedRoute />}>

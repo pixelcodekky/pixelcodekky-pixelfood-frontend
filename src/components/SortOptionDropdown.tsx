@@ -1,5 +1,7 @@
-import { Button } from "./ui/button";
+import { Badge, Link } from "lucide-react";
+import { Button, buttonVariants } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Label } from "./ui/label";
 
 type Props = {
     onChange: (value: string) => void;
@@ -35,14 +37,20 @@ const SortOptionDropdown = ({onChange, sortOption}: Props) => {
                 {/* <label  className="w-full">
                     sort by: {selectedSortLabel}
                 </label> */}
-                <Button variant="outline">Sort By: {selectedSortLabel}</Button>
+                <div>
+                    <Label className={buttonVariants({variant: "outline"})}>Sort By: {selectedSortLabel}</Label>
+                </div>
+                
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                {SORT_OPTIONS.map((opt, idx) => (
-                    <DropdownMenuItem key={idx} className='cursor-pointer' onClick={() => onChange(opt.value)}>
-                        {opt.label}
-                    </DropdownMenuItem>
-                ))}
+                <div>
+                    {SORT_OPTIONS.map((opt, idx) => (
+                        <DropdownMenuItem key={idx} className='cursor-pointer' onClick={() => onChange(opt.value)}>
+                            {opt.label}
+                        </DropdownMenuItem>
+                    ))}
+                </div>
+                
             </DropdownMenuContent>
         </DropdownMenu>
     )

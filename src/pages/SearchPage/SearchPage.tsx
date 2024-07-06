@@ -21,22 +21,10 @@ export const SearchPage = () => {
     const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
-    //const {lng, lat} = useParams();
     const profileState = useAppSelector((x) => x.profile);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const { results, isLoading } = useSearchRestaurants(searchState);
-
-    //page start
-    // useEffect(() => {
-    //   const load = () => {
-    //     let res = calculateDistanceHelper(profileState, results ?? undefined);
-    //     setRestaurants(res);
-    //     //dispatch
-    //     dispatch(dispatchRestaurant(restaurants));
-    //   }
-    //   load();
-    // }, [results])
 
     //reload base on store state
     useEffect(() => {
@@ -44,7 +32,6 @@ export const SearchPage = () => {
     },[searchStateSelector])
 
     const setSortOption = async (sortOption: string) => {
-      
       let newState = {...searchState}; //copy object to new one;
       newState.sortOption = sortOption;
       //dispatch(dataSortOption(newState));
@@ -84,90 +71,98 @@ export const SearchPage = () => {
     }
 
     if(isLoading){
-      <span>Loading...</span>
-    }
-
-    if(results == undefined || !results?.data || !profileState.full_value){
       return (
         <>
-        <div className="container mx-auto py-3">
-          <div className="flex flex-row gap-5">
-            <span>No Results found for {profileState.full_value}.</span>
-            <Link to='/' 
-                  className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
-                    Change Location
-            </Link>
+          <div className="container mx-auto py-3">
+            <div className="flex flex-row gap-5">
+              <span>Loading...</span>
+            </div>
           </div>
-          
-        </div>
-          
         </>
+        
       )
     }
-
+    
     return (
       <>
-        {showOnMap.current ? (
-          <div className="">
-            <MapPage/>
-          </div>
-        ) : (
-          <AnimatedPage>
-          <div className="container mx-auto py-3">
-              <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-                <div id="side-bar" className="">
-                  <div id="map-restaurants" className="flex flex-col m-3 gap-3">
-                    <div className="flex flex-row justify-center">
-                      <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
-                        Show Map
-                        <Map strokeWidth={2.5} className='ml-1 text-black-500 hidden md:block' />
-                      </Button>
-                    </div>
-                    
-                  </div>
-                  <div id='cuisines-list'>
-                    <CuisineFilter 
-                      selectedCuisines={searchState.selectedCuisines} 
-                      onChange={setSelectedCuisines}
-                      isExpanded={isExpanded}
-                      onExpandedClick={() => setIsExpanded((prev) => !prev)}
-                      className="flex flex-wrap justify-center gap-2"
-                    />
-                  </div>
-                </div>
-                <div id='main-content' className="flex flex-col">
-                  <SearchBar 
-                    searchQuery={searchState.searchQuery}
-                    onSubmit={setSearchQuery} 
-                    placeHolder="Find cuisines or restaurants name" 
-                    onReset={resetSearch}
-                    />
-                  <div className="flex justify-between flex-col gap-3 lg:flex-row">
-                    <SearchResultInfo total={results?.pagination.total} city={profileState.value} />
-                    <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
-                  </div>
-                  <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
-                  <div className="flex flex-col">
-                    <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
-                      {results.data.map((d, index) => (
-                        <li key={index}>
-                          <SearchResultCard restaurant={d} key={index} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <PaginationSelector 
-                    page={results?.pagination.page} 
-                    pages={results?.pagination.pages} 
-                    onPageChange={setPage}/>
-                </div>
+      {(!isLoading && results !== undefined && results?.data.length > 0) ? (
+        <>
+          {showOnMap.current ? (
+              <div className="">
+                <MapPage/>
               </div>
+            ) : (
+              <AnimatedPage>
+              <div className="container mx-auto py-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
+                    <div id="side-bar" className="">
+                      <div id="map-restaurants" className="flex flex-col m-3 gap-3">
+                        <div className="flex flex-row justify-center">
+                          <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
+                            Show Map
+                            <Map strokeWidth={2.5} className='ml-1 text-black-500 hidden md:block' />
+                          </Button>
+                        </div>
+                        
+                      </div>
+                      <div id='cuisines-list'>
+                        <CuisineFilter 
+                          selectedCuisines={searchState.selectedCuisines} 
+                          onChange={setSelectedCuisines}
+                          isExpanded={isExpanded}
+                          onExpandedClick={() => setIsExpanded((prev) => !prev)}
+                          className="flex flex-wrap justify-center gap-2"
+                        />
+                      </div>
+                    </div>
+                    <div id='main-content' className="flex flex-col">
+                      <SearchBar 
+                        searchQuery={searchState.searchQuery}
+                        onSubmit={setSearchQuery} 
+                        placeHolder="Find cuisines or restaurants name" 
+                        onReset={resetSearch}
+                        />
+                      <div className="flex justify-between flex-col gap-3 lg:flex-row">
+                        <SearchResultInfo total={results?.pagination.total || 0} city={profileState.value} />
+                        <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
+                      </div>
+                      <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
+                      <div className="flex flex-col">
+                        <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
+                          {results?.data.map((d, index) => (
+                            <li key={index}>
+                              <SearchResultCard restaurant={d} key={index} />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <PaginationSelector 
+                        page={results?.pagination.page || 0} 
+                        pages={results?.pagination.pages || 0} 
+                        onPageChange={setPage}/>
+                    </div>
+                  </div>
+              </div>
+              </AnimatedPage>
+            )
+            
+            }
+        </>
+          
+      ) : (
+        <>
+          <div className="container mx-auto py-3">
+            <div className="flex flex-row gap-5">
+              <span>No Results found for {profileState.full_value}.</span>
+              <Link to='/' 
+                    className='ml-2 text-sm font-semibold underline cursor-pointer text-green-500'>
+                      Change Location
+              </Link>
+            </div>
           </div>
-          </AnimatedPage>
-         )
-         
-         }
+        </>
+      )}
       </>
       
     )
