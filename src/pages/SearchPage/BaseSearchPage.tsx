@@ -38,9 +38,6 @@ const BaseSearchPage = ({children}: Props) => {
         load();
     }, [lng, lat, profileLoading, profileResult])
 
-
-
-
     return (
         <div>
             {children}

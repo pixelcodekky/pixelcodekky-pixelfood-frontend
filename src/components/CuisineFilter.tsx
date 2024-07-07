@@ -1,7 +1,7 @@
 import { cuisineList } from '@/config/restaurant_options_config';
 import { Label } from './ui/label';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, memo } from 'react';
 import { Button } from './ui/button';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
     className?: string;
 }
 
-const CuisineFilter = ({onChange, selectedCuisines, isExpanded, onExpandedClick, className}: Props) => {
+const CuisineFilter = memo(({onChange, selectedCuisines, isExpanded, onExpandedClick, className}: Props) => {
     
     const handleCuisinesReset = () => {
         onChange([]);
@@ -74,6 +74,6 @@ const CuisineFilter = ({onChange, selectedCuisines, isExpanded, onExpandedClick,
             </div>
         </>
     )
-}
+})
 
 export default CuisineFilter

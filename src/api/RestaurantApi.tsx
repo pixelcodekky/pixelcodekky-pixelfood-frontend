@@ -36,7 +36,7 @@ export const useSearchRestaurants = (searchState: SearchState) => {
     const {data: results, isLoading} = useQuery(
         ['searchRestaurants', searchState],
         async () => {
-            //await new Promise(d => setTimeout(d, 5000));
+            await new Promise(d => setTimeout(d, 500));
             return createSearchRequest();
         },
         { enabled: !!profile.lat && !!profile.lng }
