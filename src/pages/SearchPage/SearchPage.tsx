@@ -5,14 +5,14 @@ import { SearchResultInfo } from "@/components/SearchResultInfo";
 import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { Button } from "@/components/ui/button";
 import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice";
-import { Map } from "lucide-react";
+import { Loader, Map } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapPage } from "../MapPage";
 import { SearchState } from "@/types";
 import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSelectedCuisines } from "@/statemgmt/map/SearchPageSlice";
 import { useAppSelector } from "@/statemgmt/hooks";
-import { AnimatedPage } from '@/animotion/AnimatedPage';
+import { AnimatedPage, LoadingAnimation } from '@/animotion/AnimatedPage';
 import RestaurantList from "@/components/RestaurantList";
 
 export const SearchPage = () => {
@@ -81,9 +81,9 @@ export const SearchPage = () => {
     return (
       <>
         <AnimatedPage>
-        <div className="container mx-auto py-3">
-            <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-              <div id="side-bar" className="">
+        <div className="container mx-auto min-h-[500px] py-3">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr] lg:grid-cols-[250px_1fr] gap-5">
+              <div id="side-bar" className="lg:visible md:visible sm:invisible">
                 <div id="map-restaurants" className="flex flex-col m-3 gap-3">
                   <div className="flex flex-row justify-center">
                     <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
@@ -117,9 +117,14 @@ export const SearchPage = () => {
 
                 {isLoading ? (
                   <>
-                    <div className="flex flex-row gap-5">
-                      <span>Loading...</span>
-                    </div>
+                  <div className="item-center min-h-[400px]">
+                    <div className="gap-5 flex flex-row justify-center item-center py-20 h-full">
+                      <span>Loading</span>
+                        <LoadingAnimation>
+                          <Loader size={20} />
+                        </LoadingAnimation>                          
+                      </div>
+                  </div>
                   </>
                 ) : results !== undefined && results?.data.length > 0 ? (
                   <>
