@@ -93,7 +93,11 @@ export const calculateDistanceHelper = (profile: SearchResultType, restaurants?:
     return results;
 }
 
-
+export const fetchWithTimeout = async (delay = 7000) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), delay);
+    return {controller, timeout};
+}
 
 
 

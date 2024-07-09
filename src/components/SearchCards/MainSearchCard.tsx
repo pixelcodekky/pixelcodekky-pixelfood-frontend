@@ -23,13 +23,20 @@ const MainSearchCard = ({restaurant}: Props) => {
         )
     }
 
-
     return (
         <>
         <div className="min-w-48 shadow-xl">
             <div className="flex flex-col border rounded-md">
-                <div className="h-[90px] border flex">
-                    <img src={DefaultImage} alt={restaurant.restaurantName} className="w-full shadow-sm object-cover" />
+                <div className="relative h-[90px] border flex">
+                    <img src={DefaultImage} alt={restaurant.restaurantName} className="w-full object-cover" />
+                    <div className="absolute bottom-0 left-0 m-1 shadow-sm">
+                        <div className="flex items-center gap-1 font-bold rounded-full p-1">
+                            <Badge className="bg-green-600 gap-1">
+                                <Truck size={14} strokeWidth="2"/>
+                                <span className="text-xs">S$ {(restaurant.deliveryPrice / 100).toFixed(2)}</span>
+                            </Badge>
+                        </div>
+                    </div>
                 </div>
                 <div className="p-2 h-[100px]">
                     <div className="mb-2">
@@ -42,10 +49,10 @@ const MainSearchCard = ({restaurant}: Props) => {
                             <Clock size={14} className="text-green-500" />
                             {restaurant.estimatedDeliveryTime} mins
                         </div>
-                        <div className="flex items-center gap-1 font-bold text-xs">
+                        {/* <div className="flex items-center gap-1 font-bold text-xs">
                             <Truck size={15}  className="text-green-500"/>
                             S$ {(restaurant.deliveryPrice / 100).toFixed(2)}
-                        </div>
+                        </div> */}
                         <div className="flex items-center gap-1 font-bold text-xs">
                             {/* {RenderDistance()} */}
                             {restaurant.distance !== undefined ? (
@@ -53,23 +60,16 @@ const MainSearchCard = ({restaurant}: Props) => {
                                 <MapPin size={15} className="text-green-500"/>
                                 <span>{`${restaurant.distance?.toFixed(1)}km`}</span>
                                 </>
-                                
                             ): null}
-                            
-                            
                         </div>
                     </div>
                     <div className="my-2">
                         {RenderCrusines()}
                     </div>
-                    
                 </div>
             </div>    
         </div>
-             
-            
         </>
-        
     )
 }
 

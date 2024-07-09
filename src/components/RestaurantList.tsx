@@ -31,7 +31,7 @@ const RestaurantList = ({data, setPage}: Props) => {
           initial='hidden'
           animate='show'>
           <div className="flex flex-col min-h-[400px]">
-            <ul className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
+            <ul className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
               {data?.data.map((d, index) => (
                 <li key={index}>
                   <motion.div variants={SearchResultGrid}>

@@ -15,12 +15,13 @@ const RestaurantInfo = ({restaurant}: Props) => {
                     {restaurant.restaurantName}
                 </CardTitle>
                 <CardDescription>
-                    {restaurant.city}, {restaurant.country}
+                    {restaurant.distance !== undefined ? (`${restaurant.distance} km away | `) : null}
+                    {`${restaurant.address[0].display_name}`}
                 </CardDescription>
             </CardHeader>
             <CardContent className='flex'>
                 {restaurant.cuisines.map((d, idx) => (
-                    <span className="flex" key={idx}>
+                    <span className="flex text-xs font-bold" key={idx}>
                         <span>{d}</span>
                         {idx < restaurant.cuisines.length - 1 && <Dot/>}
                     </span>

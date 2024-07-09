@@ -62,7 +62,7 @@ export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, classNam
                         <FormItem className='flex-1'>
                             <FormControl>
                                 <Input {...field} 
-                                className='border-none shadow-none text-xl focus-visible:ring-0'
+                                className='border-none shadow-none lg:text-xl md:text-md sm:text-sm focus-visible:ring-0'
                                 placeholder={placeHolder}
                                 />
                             </FormControl>

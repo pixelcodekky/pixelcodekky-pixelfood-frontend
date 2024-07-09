@@ -83,7 +83,7 @@ export const SearchPage = () => {
         <AnimatedPage>
         <div className="container mx-auto min-h-[500px] py-3">
             <div className="grid grid-cols-1 md:grid-cols-[1fr] lg:grid-cols-[250px_1fr] gap-5">
-              <div id="side-bar" className="lg:visible md:visible sm:invisible">
+              <div id="side-bar" className="">
                 <div id="map-restaurants" className="flex flex-col m-3 gap-3">
                   <div className="flex flex-row justify-center">
                     <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
@@ -103,7 +103,7 @@ export const SearchPage = () => {
                   />
                 </div>
               </div>
-              <div id='main-content' className="flex flex-col">
+              <div id='main-content' className="flex flex-col md:flex-col-1">
                 <SearchBar 
                   searchQuery={searchState.searchQuery}
                   onSubmit={setSearchQuery} 
@@ -134,7 +134,7 @@ export const SearchPage = () => {
                 ) : (
                     <>
                       <div className="container mx-auto py-3">
-                        <div className="flex flex-row gap-5">
+                        <div className="flex flex-row justify-center py-20 gap-5">
                           <span>No Restaurant found.</span>
                         </div>
                       </div>

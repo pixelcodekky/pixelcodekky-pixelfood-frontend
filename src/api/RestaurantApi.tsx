@@ -1,3 +1,4 @@
+import { fetchWithTimeout } from "@/common/Utilities";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { setRestaurant } from "@/statemgmt/restaurant/RestaurantReducer";
 import { SearchState } from "@/types";
@@ -9,8 +10,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const useSearchRestaurants = (searchState: SearchState) => {
     const profile = useAppSelector((x) => x.profile);
-    const params = new URLSearchParams();
     const dispatch = useDispatch();
+    
+    const params = new URLSearchParams();
     params.set('searchQuery', searchState.searchQuery);
     params.set('page', searchState.page.toString());
     params.set('selectedCuisines', searchState.selectedCuisines.join(','));
@@ -19,18 +21,33 @@ export const useSearchRestaurants = (searchState: SearchState) => {
     params.set('longitude',profile.lng.toString());
 
     const createSearchRequest = async (): Promise<RestaurantSearchResponse> => {
-        const res = await fetch(
-            `${API_BASE_URL}/api/restaurant/search/Singapore?${params.toString()}`);
-        if(!res.ok){
+        let abortController = fetchWithTimeout();
+        try {
+            const res = await fetch(
+                `${API_BASE_URL}/api/restaurant/search/Singapore?${params.toString()}`, {
+                    signal: (await abortController).controller.signal,
+                });
+
+            if(!res.ok){
+                throw new Error('Fail to get Restaurants');
+            }
+
+            const data:RestaurantSearchResponse = await res.json();
+
+            //store in redux
+            await dispatch(setRestaurant(data));
+
+            return data;
+        } catch (error) {
+            if((await abortController).controller.signal.aborted){
+                throw new Error('Request time out.');
+            }
             throw new Error('Fail to get Restaurants');
         }
-
-        const data:RestaurantSearchResponse = await res.json();
-
-        //store in redux
-        await dispatch(setRestaurant(data));
-
-        return data;
+        finally{
+            clearTimeout((await abortController).timeout);
+        }
+        
     }
 
     const {data: results, isLoading} = useQuery(
@@ -39,7 +56,9 @@ export const useSearchRestaurants = (searchState: SearchState) => {
             await new Promise(d => setTimeout(d, 500));
             return createSearchRequest();
         },
-        { enabled: !!profile.lat && !!profile.lng }
+        { 
+            enabled: !!profile.lat && !!profile.lng, 
+        },
     );
 
     return {results, isLoading};
