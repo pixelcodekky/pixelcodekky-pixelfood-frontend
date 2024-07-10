@@ -1,11 +1,9 @@
 import { useSearchRestaurants } from "@/api/RestaurantApi";
 import CuisineFilter from "@/components/CuisineFilter";
 import { SearchBar, SearchForm } from "@/components/Search/SearchBar";
-import { SearchResultInfo } from "@/components/SearchResultInfo";
-import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { Button } from "@/components/ui/button";
 import { ShowOnMapSelector, setShowonMap } from "@/statemgmt/map/ShowonMapSlice";
-import { Loader, Map } from "lucide-react";
+import { ListFilter, Loader, Map } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapPage } from "../MapPage";
@@ -14,14 +12,17 @@ import { SearchPageSelector, dataPage, dataResetSearch, dataSearchQuery, dataSel
 import { useAppSelector } from "@/statemgmt/hooks";
 import { AnimatedPage, LoadingAnimation } from '@/animotion/AnimatedPage';
 import RestaurantList from "@/components/RestaurantList";
+import SortOptionRadio from "@/components/SortOptionRadio";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import SearchFooter from "@/components/Search/SearchFooter";
 
 export const SearchPage = () => {
     const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
-    const profileState = useAppSelector((x) => x.profile);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
     const { results, isLoading } = useSearchRestaurants(searchState);
 
     //reload base on store state
@@ -68,6 +69,37 @@ export const SearchPage = () => {
       dispatch(setShowonMap());
     }
 
+    const showRestaurantCount = () => {
+      let result = "All";
+      if(searchState.selectedCuisines.length > 0 || searchState.searchQuery !== ""){
+         result = `(${results?.pagination.total.toString()})` || "All";
+      }
+      return (
+        <>
+          {`${result}`}
+        </>
+       )
+    }
+
+    const RenderFilter = () => {
+      return (
+        <>
+          <div id="sortby" className="mb-5">
+            <SortOptionRadio sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
+          </div>
+          <div id='cuisines-list'>
+              <CuisineFilter 
+                selectedCuisines={searchState.selectedCuisines} 
+                onChange={setSelectedCuisines}
+                isExpanded={isExpanded}
+                onExpandedClick={() => setIsExpanded((prev) => !prev)}
+                className="flex flex-wrap justify-center gap-2"
+              />
+          </div>
+        </>
+      )
+    }
+
     if(showOnMap.current){
       return (
         <>
@@ -81,17 +113,25 @@ export const SearchPage = () => {
     return (
       <>
         <AnimatedPage>
-        <div className="container mx-auto min-h-[500px] py-3">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr] lg:grid-cols-[250px_1fr] gap-5">
+        <div className="container mx-auto min-h-[500px] py-3 mb-10">
+            <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
               <div id="side-bar" className="">
-                <div id="map-restaurants" className="flex flex-col m-3 gap-3">
-                  <div className="flex flex-row justify-center">
+                <div id="map-restaurants" className="flex flex-col m-3 gap-3 mb-5">
+                  <div className="flex flex-row justify-between md:justify-center gap-2">
                     <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
                       Show Map
                       <Map strokeWidth={2.5} className='ml-1 text-black-500 hidden md:block' />
                     </Button>
+                    <div className="md:hidden">
+                      <Button onClick={() => {setIsFilterOpen(!!!isFilterOpen)}} className='flex flex-row justify-center text-green-500 bg-white-200 rounded-full hover:bg-green-200  p-5'>
+                        Filters
+                        <ListFilter strokeWidth={2} />
+                      </Button>
+                    </div>
                   </div>
-                  
+                </div>
+                {/* <div id="sortby" className="mb-5">
+                  <SortOptionRadio sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
                 </div>
                 <div id='cuisines-list'>
                   <CuisineFilter 
@@ -101,6 +141,21 @@ export const SearchPage = () => {
                     onExpandedClick={() => setIsExpanded((prev) => !prev)}
                     className="flex flex-wrap justify-center gap-2"
                   />
+                </div> */}
+                <div className="hidden md:block">
+                  {RenderFilter()}
+                </div>
+                <div className="md:hidden">
+                  <Collapsible
+                    open={isFilterOpen}
+                    onOpenChange={setIsFilterOpen}
+                    >
+                      <CollapsibleContent className="space-y-2 border-1 p-2 rounded-md shadow-md">
+                      <AnimatedPage>
+                        {RenderFilter()}
+                      </AnimatedPage>
+                      </CollapsibleContent>
+                  </Collapsible>
                 </div>
               </div>
               <div id='main-content' className="flex flex-col md:flex-col-1">
@@ -111,8 +166,8 @@ export const SearchPage = () => {
                   onReset={resetSearch}
                   />
                 <div className="flex justify-between flex-col gap-3 lg:flex-row">
-                  <SearchResultInfo total={results?.pagination.total || 0} city={profileState.value} />
-                  <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} />
+                  {/* <SearchResultInfo total={results?.pagination.total || 0} city={profileState.value} /> */}
+                  {/* <SortOptionDropdown sortOption={searchState.sortOption} onChange={(value) => setSortOption(value)} /> */}
                 </div>
 
                 {isLoading ? (
@@ -128,18 +183,20 @@ export const SearchPage = () => {
                   </>
                 ) : results !== undefined && results?.data.length > 0 ? (
                   <>
-                    <h1 className="text-2xl tracking-tight mb-2">All Restaurants</h1>
+                    <h1 className="text-2xl tracking-tight mb-2">{showRestaurantCount()} Restaurants</h1>
                     <RestaurantList data={results} setPage={setPage} />
                   </>
                 ) : (
                     <>
+                    {console.log(results)}
                       <div className="container mx-auto py-3">
                         <div className="flex flex-row justify-center py-20 gap-5">
-                          <span>No Restaurant found.</span>
+                          <h1 className="text-2xl tracking-tight mb-2">No Restaurant found.</h1>
                         </div>
                       </div>
                     </>
                 )}
+                <SearchFooter/>
               </div>
             </div>
         </div>

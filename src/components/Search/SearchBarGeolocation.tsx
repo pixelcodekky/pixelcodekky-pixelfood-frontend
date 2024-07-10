@@ -34,11 +34,11 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
     return (
         <>
         <div>
-            <div className='flex items-center m-2 gap-3 justify-between flex-row border-2 rounded-full p-2'>
+            <div className='flex items-center m-2 gap-3 justify-between flex-row border-2 rounded-full p-1'>
                 <Search strokeWidth={2.5} size={30} className='ml-1 text-green-500 hidden md:block' />
                 <Input 
                     type='text'
-                    className='border-none shadow-none text-xl focus-visible:ring-0' 
+                    className='border-none shadow-none lg:text-xl md:text-md sm:text-sm focus-visible:ring-0' 
                     placeholder={placeHolder} 
                     value={InputValue}
                     onChange={(e) => {

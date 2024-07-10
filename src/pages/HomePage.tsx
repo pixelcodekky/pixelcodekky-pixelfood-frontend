@@ -17,6 +17,14 @@ import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/statemgmt/hooks';
 
+const initialState : SearchResultType = {
+    value: '',
+    key: '',
+    full_value: '',
+    lat: 0,
+    lng: 0,
+  }
+
 export const HomePage = () => {
 
     const navigate = useNavigate();
@@ -29,11 +37,21 @@ export const HomePage = () => {
     const [isSelected, setIsSelected] = useState(false);
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
+    const [selectedSearchResultType, setSelectedSearchResultType] = useState<SearchResultType>(initialState);
     //const { isLoading, results } = useGetMapboxGeocodingForward(goecodingvalue);
     const [hideSuggestion, setHideSuggestion] = useState(false);
     const [isRequesting, setIsRequesting] = useState(false);
     let geocodingCollection:Feature[] = [];
     
+    useEffect(() => {
+        if(profileState.lat !== 0 && profileState.lng !== 0){
+            let address = profileState;
+            navigate({
+                pathname: `/search/${address.lng}/${address.lat}`,
+            })
+        }
+    },[]);
+
     //trigger inputvalue onchange
     useEffect(() => {
         debounceRequest(inputValue);
@@ -44,11 +62,11 @@ export const HomePage = () => {
     }, [geocodingCollectionState])
 
     const handleSearchSubmit = () => {
-
         //find selected address
-        let address = profileState;
-
         if(isSelected){
+            dispatch(setProfile(selectedSearchResultType));
+            let address = selectedSearchResultType;
+
             navigate({
                 pathname: `/search/${address.lng}/${address.lat}`,
             })
@@ -119,9 +137,10 @@ export const HomePage = () => {
     }
 
     const handleSearchSelected = (searchResult:SearchResultType) => {
-        //dispatch to store
-        dispatch(setProfile(searchResult));
+        //dispatch(resetProfile());
+        //dispatch(setProfile(searchResult));
         setInputValue(searchResult.full_value);
+        setSelectedSearchResultType(searchResult);
         setIsSelected(true);
     }
 
@@ -138,15 +157,15 @@ export const HomePage = () => {
 
     return (
         <>
-        <div className='flex flex-col pag-12 relative'>
-            <div className='md:px-52 sm:px-5 bg-white rounded-lg shadow-md py-3 flex flex-col text-center -mt-20'>
-                <h1 className="text-3xl my-5 font-bold tracking-tight text-green-600 text-gradient">
+        <div className='flex flex-col md:px-20 pag-12 relative'>
+            <div className='md:px-20 bg-white rounded-lg shadow-md py-2 flex flex-col text-center -mt-20'>
+                <h1 className="lg:text-3xl md:text-2xl sm:text-xl my-5 font-bold tracking-tight text-green-600 text-gradient">
                     {/* {hostedCountry ? `Welcome ${hostedCountry}!` : `Welcome!`} */}
                     Restaurant Food, Delivered.
                 </h1>
                 {/* <SearchBar placeHolder='enter address or postcode' onSubmit={handleSearchSubmit} onChange={handleOnChange} /> */}
                 <SearchBarGeolocation 
-                    placeHolder='enter street or postcode and select' 
+                    placeHolder='enter street name or postcode and select' 
                     onChange={onChange} 
                     setGeocodingCollectionState={handleClearGeocoder}
                     clearInput={hideSuggestion}

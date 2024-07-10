@@ -42,11 +42,13 @@ const RestaurantList = ({data, setPage}: Props) => {
             </ul>
           </div>
         </motion.section>
+          {data.pagination.pages > 1 ? (
+            <PaginationSelector 
+              page={data?.pagination.page || 0} 
+              pages={data?.pagination.pages || 0} 
+              onPageChange={setPage}/>
+          ): null}
           
-          <PaginationSelector 
-            page={data?.pagination.page || 0} 
-            pages={data?.pagination.pages || 0} 
-            onPageChange={setPage}/>
         </>
     )
 }

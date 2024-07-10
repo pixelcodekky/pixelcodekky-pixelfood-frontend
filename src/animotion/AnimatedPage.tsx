@@ -9,7 +9,7 @@ const animations = {
     initial: {opacity: 0},
     animate: {
         opacity:1,
-        transition: {duration:0.05, ease: 'easeInOut'}
+        transition: {duration:0.5, ease: 'easeInOut'}
     },
     exit: {opacity: 0}
 }
@@ -54,12 +54,11 @@ const loadinganimate = {
 
 export const LoadingAnimation = ({children}: Props) => {
     return (
-
         <motion.div
             className='flex flex-row justify-center h-[20px] w-[20px]'
             animate ='animate'
             variants={loadinganimate}
-            transition={{duration:1, repeat:Infinity,repeatDelay:0.5, type: 'spring'}}
+            transition={{duration:1, repeat:Infinity,repeatDelay:0.3, type: 'spring'}}
         >
             {children}
         </motion.div>
@@ -67,4 +66,11 @@ export const LoadingAnimation = ({children}: Props) => {
     )
 }
 
+export const HoverItem = ({children}: Props) => {
+    return (
+        <motion.div whileHover={{scale: 1.1}} whileTap={{scale: 1}}>
+            {children}
+        </motion.div>
+    )
+} 
 

@@ -30,15 +30,13 @@ export const MapGLDefault = () => {
     
     const { results , isLoading } = useSearchRestaurants(searchState);
 
-    //results reload
-    //page start
-    // useEffect(() => {
-    //   const load = () => {
-    //     let res = calculateDistanceHelper(profileState, results ?? undefined);
-    //     setRestaurants(res);
-    //   }
-    //   load();
-    // }, [results])
+    useEffect(() => {
+      let updatedCoord = {...mapState};
+      if(profileState.lat !== 0 && profileState.lng !== 0){
+        updatedCoord = {...mapState, viewState:{latitude: profileState.lat, longitude: profileState.lng, zoom: 16} }
+      }
+      dispatch(setViewport(updatedCoord));
+    },[profileState])
 
     //searchSelect reload
     useEffect(() => {

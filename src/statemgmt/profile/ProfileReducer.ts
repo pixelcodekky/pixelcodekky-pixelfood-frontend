@@ -15,10 +15,13 @@ const profileSlice = createSlice({
     reducers: {
         setProfile: (state, action:PayloadAction<SearchResultType>) => {
             return {...state, ...action.payload};
+        },
+        resetProfile: () => {
+            return initialState;
         }
     }
 });
 
-export const { setProfile } = profileSlice.actions;
+export const { setProfile, resetProfile } = profileSlice.actions;
 export default profileSlice.reducer;
 
