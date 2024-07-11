@@ -6,14 +6,16 @@ type  Props = {
 }
 
 const animations = {
-    initial: {opacity: 0},
+    initial: {opacity: 0,
+        
+    },
     animate: {
         opacity:1,
-        transition: {duration:0.5, ease: 'easeIn'}
+        transition: {duration:0.5, ease: 'easeOut'}
     },
     exit: {
         opacity: 0.5,
-        transition: {duration:0.5, ease: 'easeOut'}
+        transition: {duration:0.2, ease: 'easeIn'}
     }
 }
 

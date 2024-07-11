@@ -155,15 +155,15 @@ const DetailPage = () => {
             {isRestaurantLoading && !restaurant ? (
                 null
             ): (
-                <div className="flex flex-col relative gap-10">
+                <div className="flex flex-col relative gap-4">
                     <AspectRatio ratio={16/4}>
                         <img src={restaurant.imageUrl} className="rounded-md object-cover h-full w-full" />
                     </AspectRatio>
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
                         <div className="flex justify-normal">
                             <Button variant='link' className="text-green-500 gap-2" onClick={handleRedirectPrevPage}>
                                 <CircleArrowLeft  />
-                                restaurants
+                                Restaurants List
                             </Button>
                         </div>
                     </div>
