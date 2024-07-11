@@ -65,18 +65,26 @@ export const useSearchRestaurants = (searchState: SearchState) => {
 }
 
 export const useGetRestaurant = (restaurantId?: string) => {
+    const profile = useAppSelector((x) => x.profile);
     const getMyRestaurantRequest = async (): Promise<Restaurant> => {
+        try {
+            const params = new URLSearchParams();
+            params.set('latitude',profile.lat.toString());
+            params.set('longitude',profile.lng.toString());
 
-        const res = await fetch(
-            `${API_BASE_URL}/api/restaurant/${restaurantId}`,
-        );
-        
-        if(!res.ok){
-            throw new Error(`Failed to get  restaurant with id ${restaurantId}`);
+            const res = await fetch(
+                `${API_BASE_URL}/api/restaurant/${restaurantId}?${params.toString()}`,
+            );
+            
+            if(!res.ok){
+                throw new Error(`Failed to get  restaurant with id ${restaurantId}`);
+            }
+
+            return res.json();
+        } catch (error) {
+            throw new Error(`Fail to get Restaurants, ${error}`);
         }
         
-
-        return res.json();
     }
 
     const {

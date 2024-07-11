@@ -188,7 +188,6 @@ export const SearchPage = () => {
                   </>
                 ) : (
                     <>
-                    {console.log(results)}
                       <div className="container mx-auto py-3">
                         <div className="flex flex-row justify-center py-20 gap-5">
                           <h1 className="text-2xl tracking-tight mb-2">No Restaurant found.</h1>

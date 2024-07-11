@@ -9,9 +9,12 @@ const animations = {
     initial: {opacity: 0},
     animate: {
         opacity:1,
-        transition: {duration:0.5, ease: 'easeInOut'}
+        transition: {duration:0.5, ease: 'easeIn'}
     },
-    exit: {opacity: 0}
+    exit: {
+        opacity: 0.5,
+        transition: {duration:0.5, ease: 'easeOut'}
+    }
 }
 
 export const AnimatedPage = ({children}: Props) => {

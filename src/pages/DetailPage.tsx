@@ -168,10 +168,10 @@ const DetailPage = () => {
                         </div>
                     </div>
                     <RestaurantInfo restaurant={restaurant} />
-                    <div className="grid md:grid-cols-[4fr_2fr] sm:grid-col relative gap-5 md:px-3">
+                    <div className="grid lg:grid-cols-[4fr_2fr] sm:grid-col relative gap-5 md:px-3">
                         <div className="flex flex-col gap-4">
                             <span className="text-2xl font-bold tracking-tight">Menu</span>
-                            <ul className="grid sm:grid-col-1 md:grid-cols-2 gap-4"> 
+                            <ul className="grid md:grid-cols-2 gap-4"> 
                                 {restaurant.menuItems.map((item, idx) => (
                                     <li key={idx}>
                                         <MeuItem menuItem={item} key={idx} 
@@ -184,11 +184,11 @@ const DetailPage = () => {
                                 ))}
                             </ul>
                         </div>
-                        <div className="sm:hidden md:block">
+                        <div className="invisible lg:visible">
                             {renderOrderSummary("")}
                         </div>
                     </div>
-                    <div className="sm:visible md:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
+                    <div className="lg:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
                         <Dialog>
                             <DialogTrigger asChild>
                             <Button className="w-full h-15 bg-green-500 hover:bg-green-600 justify-between shadow-md">

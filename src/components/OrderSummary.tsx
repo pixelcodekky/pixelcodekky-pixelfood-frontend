@@ -26,10 +26,10 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
     }
 
     const getTotalCostWithGST = () => {
-        const gettotal = parseInt(getTotalCost());
+        const gettotal = parseFloat(getTotalCost());
         const getgst = getGSTcost();
-        const total = parseFloat(gettotal.toFixed(2).toString()) + parseFloat(getgst);
-        return parseFloat(total.toString());
+        const total = parseFloat(gettotal.toString()) + parseFloat(getgst);
+        return parseFloat(total.toString()).toFixed(2);
     }
 
     const getGSTcost = () => {
@@ -42,7 +42,7 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
         <>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold tracking-tight flex justify-between">
-                    <span>Your Order</span>
+                    <span>Total</span>
                     <span>S${getTotalCostWithGST()}</span>
                 </CardTitle>
             </CardHeader>
@@ -56,9 +56,8 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
                             {item.name}
                         </span>
                         <span className="flex items-center gap-1">
-                        <Trash className="cursor-pointer" color="red" size={20} onClick={() => removeFromCart(item)} />
                             S${((item.price * item.quantity) / 100).toFixed(2)}
-                            
+                            <Trash className="cursor-pointer" color="red" size={20} onClick={() => removeFromCart(item)} />
                         </span>
                     </div>
                 ))}
