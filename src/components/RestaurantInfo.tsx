@@ -6,7 +6,7 @@ import { getGeocodingStaticMapAPI } from "@/api/GeocodingApi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
-import { AnimatedPage } from "@/animotion/AnimatedPage";
+import { AccordionAnimation } from "@/animotion/AnimatedPage";
 
 type Props = {
     restaurant: Restaurant;
@@ -78,34 +78,32 @@ const RestaurantInfo = ({restaurant}: Props) => {
                     >
                         <div className="flex">
                             <CollapsibleContent className="space-y-2 border-1 p-2 rounded-md shadow-md">
-                                <div className="flex">
-                                    <AnimatedPage>
-                                        <div className="flex flex-col py-1 gap-2">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs">Address</span>
-                                                <span className="md:text-xl">
-                                                    {`${
-                                                        restaurant.address[0] !== undefined ?
-                                                        restaurant.address[0].display_name : ""
-                                                    }`}</span> 
-                                            </div>
-                                            <div className="flex flex-row gap-1 items-center py-2">
-                                                <MapPinned size={15} />
-                                                <a 
-                                                    href={`${showinMap}`} 
-                                                    target="_blank" 
-                                                    className="hover:underline hover:text-green-500 font-bold">
-                                                        <span>Show in Map</span>
-                                                </a> 
-                                            </div>
-                                            <div className="flex flex-col w-full items-center">
-                                                {staticMap !== "" ? (
-                                                    <img src={staticMap} className="rounded-md shadow-md" />
-                                                ):null}
-                                            </div>
+                                <AccordionAnimation>
+                                    <div className="flex flex-col py-1 gap-2">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs">Address</span>
+                                            <span className="md:text-xl">
+                                                {`${
+                                                    restaurant.address[0] !== undefined ?
+                                                    restaurant.address[0].display_name : ""
+                                                }`}</span> 
                                         </div>
-                                    </AnimatedPage>
-                                </div>
+                                        <div className="flex flex-row gap-1 items-center py-2">
+                                            <MapPinned size={15} />
+                                            <a 
+                                                href={`${showinMap}`} 
+                                                target="_blank" 
+                                                className="hover:underline hover:text-green-500 font-bold">
+                                                    <span>Show in Map</span>
+                                            </a> 
+                                        </div>
+                                        <div className="flex flex-col w-full items-center">
+                                            {staticMap !== "" ? (
+                                                <img src={staticMap} className="rounded-md shadow-md" />
+                                            ):null}
+                                        </div>
+                                    </div>
+                                </AccordionAnimation>
                             </CollapsibleContent>
                         </div>
                     </Collapsible>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from './ui/button'
 import { useAuth0 } from '@auth0/auth0-react';
+import { LogOut } from 'lucide-react';
 
 export const MobileNavLinks = () => {
     const { logout } = useAuth0();
@@ -15,8 +16,8 @@ export const MobileNavLinks = () => {
         <Link to='/user_profile' className='flex bg-white items-center font-bold hover:text-green-500'>
             User Profile
         </Link>
-        <Button onClick={async () => await logout} className='flex items-center px-3 font-bold bg-red-400 hover:bg-red-500'>
-            Log Out
+        <Button onClick={async () => await logout} className='flex flex-1 font-bold text-red-400 bg-white-200 hover:bg-red-400 hover:text-white gap-2'>
+            <LogOut/> Log Out
         </Button>
     </>
   )

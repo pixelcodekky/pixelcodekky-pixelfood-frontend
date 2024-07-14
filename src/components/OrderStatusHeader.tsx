@@ -1,6 +1,7 @@
 import { Order } from "@/types"
 import { Progress } from "./ui/progress";
 import { ORDER_STATUS } from "@/config/order_status_config";
+import {CalendarDays } from "lucide-react";
 
 type Props = {
     order: Order;
@@ -52,13 +53,24 @@ const OrderStatusHeader = ({order}: Props) => {
 
     return (
         <>
-            <h1 className="text-4xl font-bold tracking-tighter flex flex-col gap-5 md:flex-row md:justify-between">
-                <div>
-                <span>Order Status: {getOrderStatusInfo().label} </span><br/>
-                <small>Order Date: {getCreatedDate()}</small>
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-row items-center gap-2" title="ordered date">
+                    <span><CalendarDays /></span>
+                    <small className="text-gray-600 font-bold">{getCreatedDate()}</small>
                 </div>
-                <span>Expected By: {getExpectedDelivery()}</span>
-            </h1>
+            </div>
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-col">
+                    <div className="flex flex-col">
+                        <span>Order Status</span>
+                        <span className="font-bold">{getOrderStatusInfo().label}</span>
+                    </div>
+                </div>
+                <div className="flex flex-col">
+                    <span>Expected By</span>
+                    <span className="font-bold">{getExpectedDelivery()}</span>
+                </div>
+            </div>
             <Progress className="animate-pulse" value={getOrderStatusInfo().progressValue} />
         </>
     )

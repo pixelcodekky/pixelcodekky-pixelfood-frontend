@@ -11,12 +11,15 @@ const animations = {
     },
     animate: {
         opacity:1,
-        transition: {duration:0.5, ease: 'easeOut'}
     },
     exit: {
-        opacity: 0.5,
-        transition: {duration:0.2, ease: 'easeIn'}
+        opacity: 0,
     }
+}
+
+const pageTransition = {
+    duration:0.8,
+    ease: [0.04, 0.62, 0.23, 0.98]
 }
 
 export const AnimatedPage = ({children}: Props) => {
@@ -25,7 +28,7 @@ export const AnimatedPage = ({children}: Props) => {
         initial='initial'
         animate='animate'
         exit={'exit'}
-        transition={{duration:0.25, delay:0.11}}
+        transition={pageTransition}
         >
             {children}
         </motion.div>
@@ -79,3 +82,23 @@ export const HoverItem = ({children}: Props) => {
     )
 } 
 
+
+const accordionVariants = {
+    open:{opacity:1, height:"auto"},
+    collapsed: {opacity:0, height:0, duration:1}
+}
+
+export const AccordionAnimation = ({children}: Props) => {
+    return (
+        <motion.div
+            key="content"
+            variants={accordionVariants}
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            transition={{duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98]}} 
+        >
+            {children}
+        </motion.div>
+    )
+}

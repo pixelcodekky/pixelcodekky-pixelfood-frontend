@@ -1,4 +1,4 @@
-import { CircleUserRound, Menu } from 'lucide-react';
+import { CircleUserRound, LogIn, Menu } from 'lucide-react';
 import { Sheet, SheetTrigger,SheetContent, SheetTitle, SheetDescription } from './ui/sheet'
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
@@ -29,7 +29,9 @@ const MobileNav = () => {
                 {isAuthenticated ? 
                     <MobileNavLinks/> 
                     : 
-                    <Button onClick={async () => await loginWithRedirect} className='flex-1 font-bold bg-orange-500'>Log In</Button>
+                    <Button onClick={async () => await loginWithRedirect} className='flex-1 font-bold bg-orange-500'>
+                        <LogIn size={15}/> Log In
+                    </Button>
                 }
             </SheetDescription>
         </SheetContent>

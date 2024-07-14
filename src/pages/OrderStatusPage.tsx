@@ -2,30 +2,27 @@ import { useGetMyOrders } from "@/api/OrderApi"
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import OrderStatusDetails from "@/components/OrderStatusDetails";
 import OrderStatusHeader from "@/components/OrderStatusHeader";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Separator } from "@/components/ui/separator";
 
 const OrderStatusPage = () => {
-
     const {orders, isLoading} = useGetMyOrders();
 
     if(isLoading){
         return <LoadingSkeleton />
     }
 
-    if(!orders || orders.length == 0){
+    if(!orders || orders.length == 0){ 
         return "No Orders found."
     }
 
     return (
-        <div className="space-y-10">
+        <div className="flex flex-col items-center justify-center space-y-5 px-10">
             {orders.map((order) => (
-                <div className="space-y-10 bg-gray-50 p-10 rounded-lg">
+                <div key={`${order.restaurantId}${order._id}`} className="w-full lg:w-1/2 space-y-3 bg-white border p-5 rounded-lg">
                     <OrderStatusHeader order={order} />
-                    <div className="grid gap-10 md:grid-cols-2">
+                    <Separator />
+                    <div key={order.restaurantId} >
                         <OrderStatusDetails order={order} />
-                        <AspectRatio ratio={16/5}>
-                            <img src={order.restaurant.imageUrl} className="rounded-md object-cover h-full w-full"/>
-                        </AspectRatio>
                     </div>
                 </div>
             ))}

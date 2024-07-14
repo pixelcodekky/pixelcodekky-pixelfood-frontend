@@ -67,9 +67,6 @@ const DetailPage = () => {
                 ]
             }
 
-            //in future replace with redux
-            sessionStorage.setItem(`cartItems-${restaurantId}`,JSON.stringify(updatedCartItem));
-
             return updatedCartItem;
         });
     }
@@ -94,6 +91,7 @@ const DetailPage = () => {
                 menuItemId: cartItem._id,
                 name: cartItem.name,
                 quantity: cartItem.quantity.toString(),
+                price: 0,
             })),
             restaurantId: restaurant?._id,
             deliveryDetails: {
@@ -101,7 +99,10 @@ const DetailPage = () => {
                 addressLine1: userFormData.addressLine1,
                 city: userFormData.city,
                 email: userFormData.email as string,
+                phone: userFormData.mobileNumber,
             },
+            gst:gstvalue,
+            deliveryfee: restaurant.deliveryPrice,
         };
 
         const data = await createCheckoutSession(checkoutData);

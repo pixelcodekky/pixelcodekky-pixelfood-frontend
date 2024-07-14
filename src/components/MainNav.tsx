@@ -2,7 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from './ui/button'
 import { UsernameMenu } from './UsernameMenu';
 import { Link } from 'react-router-dom';
-import { FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet, LogIn } from 'lucide-react';
 
 const MainNav = () => {
     const {loginWithRedirect, isAuthenticated} = useAuth0();
@@ -22,10 +22,10 @@ const MainNav = () => {
           ) : 
         <Button 
             variant='ghost'
-            className='font-bold hover:text-green-500 hover:bg-white'
+            className='font-bold hover:text-green-500 hover:bg-white gap-2 items-center'
             onClick={async () => await loginWithRedirect()}
             >
-            Log In
+            <LogIn size={15} /> Log In
         </Button>
       }
       </span>

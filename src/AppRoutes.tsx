@@ -13,12 +13,13 @@ import OrderStatusPage from "./pages/OrderStatusPage";
 import { AnimatePresence } from "framer-motion";
 import { AnimatedPage } from "./animotion/AnimatedPage";
 import BaseSearchPage from "./pages/SearchPage/BaseSearchPage";
+import OrderPageLayout from "./pages/Orders/OrderPageLayout";
 
 
 const AppRoutes = () => {
     const location = useLocation();
     return(
-        <AnimatePresence  mode="wait" initial={true}>
+        <AnimatePresence initial={false}>
             <Routes key={location.pathname} location={location}>
                 <Route path="/" element={<Layout showHero><HomePage/></Layout>} />
                 <Route path='/auth_callback' element={<AuthCallbackpage/>} />
@@ -36,8 +37,10 @@ const AppRoutes = () => {
                 <Route element={<ProtectedRoute />}>
                     <Route 
                         path="/order_status" 
-                        element={ <Layout showHero={false}>
-                            <OrderStatusPage /></Layout> } />
+                        element={ 
+                            <OrderPageLayout showHero={false}>
+                                <OrderStatusPage />
+                            </OrderPageLayout> } />
                     <Route 
                         path="/user_profile" 
                         element={ <Layout showHero={false}>

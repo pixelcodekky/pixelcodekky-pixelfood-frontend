@@ -69,6 +69,7 @@ export type Order = {
         menuItemId: string,
         name: string,
         quantity: number;
+        price?:number;
     }[],
     deliveryDetails: {
         name: string;
@@ -80,6 +81,8 @@ export type Order = {
     status: OrderStatus;
     createdAt: Date;
     restaurantId:string;
+    gst:number;
+    deliveryfee?:number;
 }
 
 export interface ViewMapState {
