@@ -2,51 +2,31 @@ import { Restaurant } from "@/types";
 import { Badge } from "./ui/badge";
 import { CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CartItem } from "@/pages/DetailPage";
-
 import { Trash } from "lucide-react";
 import { Separator } from "./ui/separator";
-
 
 type Props = {
     restaurant: Restaurant;
     cartItems: CartItem[];
     removeFromCart: (cartItem: CartItem) => void;
+    getgst: () => string;
+    gettotalwithgst: () => string;
+    gettotalwithoutdelivery: () => string;
 }
 
-const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
+const OrderSummary = ({restaurant, cartItems, removeFromCart, getgst,gettotalwithgst, gettotalwithoutdelivery}: Props) => {
     
     const gstvalue = import.meta.env.VITE_GST_PERCENT;
-
-    const getTotalCost = () => {
-        const totalcost = cartItems.reduce((total, cartItem) => total + cartItem.price * cartItem.quantity, 0);
-
-        const totalWithDelivery = totalcost + restaurant.deliveryPrice;
-
-        return ( totalWithDelivery / 100).toFixed(2);
-    }
-
-    const getTotalCostWithGST = () => {
-        const gettotal = parseFloat(getTotalCost());
-        const getgst = getGSTcost();
-        const total = parseFloat(gettotal.toString()) + parseFloat(getgst);
-        return parseFloat(total.toString()).toFixed(2);
-    }
-
-    const getGSTcost = () => {
-        const gettotal = getTotalCost();
-        const gst = (parseInt(gettotal) / 100) * parseInt(gstvalue);
-        return gst.toFixed(2);
-    }
     
     return (
         <>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold tracking-tight flex justify-between">
                     <span>Total</span>
-                    <span>S${getTotalCostWithGST()}</span>
+                    <span>S${gettotalwithgst()}</span>
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
+            <CardContent className="flex flex-col gap-2">
                 {cartItems.map((item, idx) => (
                     <div key={idx} className="flex justify-between">
                         <span>
@@ -62,13 +42,21 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart}: Props) => {
                     </div>
                 ))}
                 <Separator/>
-                <div className="flex justify-between">
-                    <span>Delivery</span>
+                <div className="flex justify-between text-sm font-medium">
+                    <span>Sub-charge</span>
+                    <span>S${gettotalwithoutdelivery()}</span>
+                </div>
+                <div className="flex justify-between text-sm font-medium">
+                    <span>Delivery fee</span>
                     <span>S${(restaurant.deliveryPrice / 100).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
-                    <span>GST {gstvalue}%</span>
-                    <span>  S${getGSTcost()}</span>
+                <div className="flex justify-between text-sm font-medium">
+                    <span>Platform fee</span>
+                    <span>S$ 0</span>
+                </div>
+                <div className="flex justify-between text-sm font-medium">
+                    <span>GST ({gstvalue}% exclusive)</span>
+                    <span>  S${getgst()}</span>
                 </div>
             </CardContent>
         </>

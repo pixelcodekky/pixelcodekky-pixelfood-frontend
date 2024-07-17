@@ -15,7 +15,6 @@ import SearchResultList from '@/components/Search/SearchResultList';
 import { useDebounce } from '@/common/Utilities';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { useDispatch } from 'react-redux';
-import { useAppSelector } from '@/statemgmt/hooks';
 
 const initialState : SearchResultType = {
     value: '',
@@ -30,7 +29,6 @@ export const HomePage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     //const hostedCountry = import.meta.env.VITE_HOSTED_COUNTRY;
-    const profileState = useAppSelector((x) => x.profile);
     const [selectedAddress, setSelectedAddress] = useState("");
     //const [goecodingvalue, setGeocodingValue] = useState("");
     const [inputValue, setInputValue] = useState("");
@@ -43,15 +41,6 @@ export const HomePage = () => {
     const [isRequesting, setIsRequesting] = useState(false);
     let geocodingCollection:Feature[] = [];
     
-    useEffect(() => {
-        if(profileState.lat !== 0 && profileState.lng !== 0){
-            let address = profileState;
-            navigate({
-                pathname: `/search/${address.lng}/${address.lat}`,
-            })
-        }
-    },[]);
-
     //trigger inputvalue onchange
     useEffect(() => {
         debounceRequest(inputValue);

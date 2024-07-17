@@ -108,7 +108,6 @@ const DetailPage = () => {
         const data = await createCheckoutSession(checkoutData);
 
         window.location.href = data.url; // redirect to stripe;
-
     }
 
     if(isRestaurantLoading || !restaurant){
@@ -120,20 +119,25 @@ const DetailPage = () => {
 
         const totalWithDelivery = totalcost + restaurant.deliveryPrice;
 
-        return ( totalWithDelivery / 100).toFixed(2);
+        return (totalWithDelivery / 100).toFixed(2);
+    }
+
+    const getTotalWithoutDelivery = () => {
+        const totalcost = cartItems.reduce((total, cartItem) => total + cartItem.price * cartItem.quantity, 0);
+        return (totalcost / 100).toFixed(2);
     }
 
     const getTotalCostWithGST = () => {
-        const gettotal = parseInt(getTotalCost());
+        const gettotal = parseFloat(getTotalCost());
         const getgst = getGSTcost();
-        const total = parseFloat(gettotal.toFixed(2).toString()) + parseFloat(getgst);
-        return parseFloat(total.toString());
+        const total = parseFloat(gettotal.toString()) + parseFloat(getgst);
+        return parseFloat(total.toString()).toFixed(2);
     }
-
+    
     const getGSTcost = () => {
         const gettotal = getTotalCost();
-        const gst = (parseInt(gettotal) / 100) * parseInt(gstvalue);
-        return gst.toFixed(2);
+        const total = (parseFloat(gettotal)  * gstvalue) / 100
+        return total.toFixed(2);
     }
 
     const handleRedirectPrevPage = () => {
@@ -143,7 +147,14 @@ const DetailPage = () => {
     const renderOrderSummary = (classname:string) => {
         return (
             <Card className={classname}>
-                <OrderSummary restaurant={restaurant} cartItems={cartItems} removeFromCart={removeFromCart}/>
+                <OrderSummary 
+                    restaurant={restaurant} 
+                    cartItems={cartItems} 
+                    removeFromCart={removeFromCart}
+                    getgst={getGSTcost}
+                    gettotalwithgst={getTotalCostWithGST}
+                    gettotalwithoutdelivery={getTotalWithoutDelivery}
+                    />
                 <CardFooter>
                     <CheckoutButton isLoading={isCheckoutLoading} disabled={cartItems.length === 0} onCheckout={onCheckout}/>
                 </CardFooter>
@@ -192,7 +203,7 @@ const DetailPage = () => {
                     <div className="lg:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
                         <Dialog>
                             <DialogTrigger asChild>
-                            <Button className="w-full h-15 bg-green-500 hover:bg-green-600 justify-between shadow-md">
+                            <Button className="w-full h-15 bg-green-700 hover:bg-green-600 justify-between shadow-md">
                                 <div className="relative">
                                     <span className="absolute w-5 h-5 bottom-6 left-8 bg-white text-green-400 border-black rounded-full font-sm">
                                         {cartItems.reduce((total, item) => total + item.quantity, 0)}

@@ -10,7 +10,6 @@ import SearchPageLayout from "./pages/SearchPage/layout";
 
 import DetailPage from "./pages/DetailPage";
 import OrderStatusPage from "./pages/OrderStatusPage";
-import { AnimatePresence } from "framer-motion";
 import { AnimatedPage } from "./animotion/AnimatedPage";
 import BaseSearchPage from "./pages/SearchPage/BaseSearchPage";
 import OrderPageLayout from "./pages/Orders/OrderPageLayout";
@@ -19,40 +18,38 @@ import OrderPageLayout from "./pages/Orders/OrderPageLayout";
 const AppRoutes = () => {
     const location = useLocation();
     return(
-        <AnimatePresence initial={false}>
-            <Routes key={location.pathname} location={location}>
-                <Route path="/" element={<Layout showHero><HomePage/></Layout>} />
-                <Route path='/auth_callback' element={<AuthCallbackpage/>} />
-                <Route path='/search/:lng/:lat' 
-                    element={
-                        <SearchPageLayout 
-                        showHero={false}>
-                            <AnimatedPage>
-                                <BaseSearchPage>
-                                    <SearchPage />
-                                </BaseSearchPage>
-                            </AnimatedPage>
-                        </SearchPageLayout> } />
-                <Route path='/detail/:restaurantId' element={<Layout showHero={false}><DetailPage /></Layout> } />
-                <Route element={<ProtectedRoute />}>
-                    <Route 
-                        path="/order_status" 
-                        element={ 
-                            <OrderPageLayout showHero={false}>
-                                <OrderStatusPage />
-                            </OrderPageLayout> } />
-                    <Route 
-                        path="/user_profile" 
-                        element={ <Layout showHero={false}>
-                            <UserProfilepage /></Layout> } />
-                    <Route 
-                        path="/manage_restaurant" 
-                        element={ <Layout showHero={false}>
-                            <ManageRestaurantPage /></Layout> } />
-                </Route>
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-        </AnimatePresence>
+        <Routes key={location.pathname} location={location}>
+            <Route path="/" element={<Layout showHero><HomePage/></Layout>} />
+            <Route path='/auth_callback' element={<AuthCallbackpage/>} />
+            <Route path='/search/:lng/:lat' 
+                element={
+                    <SearchPageLayout 
+                    showHero={false}>
+                        <AnimatedPage>
+                            <BaseSearchPage>
+                                <SearchPage />
+                            </BaseSearchPage>
+                        </AnimatedPage>
+                    </SearchPageLayout> } />
+            <Route path='/detail/:restaurantId' element={<Layout showHero={false}><DetailPage /></Layout> } />
+            <Route element={<ProtectedRoute />}>
+                <Route 
+                    path="/order_status" 
+                    element={ 
+                        <OrderPageLayout showHero={false}>
+                            <OrderStatusPage />
+                        </OrderPageLayout> } />
+                <Route 
+                    path="/user_profile" 
+                    element={ <Layout showHero={false}>
+                        <UserProfilepage /></Layout> } />
+                <Route 
+                    path="/manage_restaurant" 
+                    element={ <Layout showHero={false}>
+                        <ManageRestaurantPage /></Layout> } />
+            </Route>
+            <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
         
     )
 }

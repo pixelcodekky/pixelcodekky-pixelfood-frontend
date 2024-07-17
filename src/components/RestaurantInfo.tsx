@@ -1,5 +1,5 @@
 import { Restaurant } from "@/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CircleChevronDown, CircleChevronUp, Clock, Dot, MapPin, MapPinned, Truck } from "lucide-react";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { getGeocodingStaticMapAPI } from "@/api/GeocodingApi";
@@ -50,10 +50,10 @@ const RestaurantInfo = ({restaurant}: Props) => {
     }
 
     return (
-        <Card className="border-sla">
+        <Card className="border-1">
             <CardHeader>
                 <CardTitle className='text-3xl font-bold tracking-tight'>
-                    <div className="flex flex-row gap-5 items-center">
+                    <div className="flex flex-row gap-2 items-center">
                         {restaurant.restaurantName}
                         {staticMap === "" ? (
                             null
@@ -71,46 +71,44 @@ const RestaurantInfo = ({restaurant}: Props) => {
                         
                     </div>
                 </CardTitle>
-                <CardDescription>
-                    <Collapsible
-                        open={isMoreInfoOpen}
-                        onOpenChange={setIsMoreInfoOpen}
-                    >
-                        <div className="flex">
-                            <CollapsibleContent className="space-y-2 border-1 p-2 rounded-md shadow-md">
-                                <AccordionAnimation>
-                                    <div className="flex flex-col py-1 gap-2">
-                                        <div className="flex flex-col">
-                                            <span className="text-xs">Address</span>
-                                            <span className="md:text-xl">
-                                                {`${
-                                                    restaurant.address[0] !== undefined ?
-                                                    restaurant.address[0].display_name : ""
-                                                }`}</span> 
-                                        </div>
-                                        <div className="flex flex-row gap-1 items-center py-2">
-                                            <MapPinned size={15} />
-                                            <a 
-                                                href={`${showinMap}`} 
-                                                target="_blank" 
-                                                className="hover:underline hover:text-green-500 font-bold">
-                                                    <span>Show in Map</span>
-                                            </a> 
-                                        </div>
-                                        <div className="flex flex-col w-full items-center">
-                                            {staticMap !== "" ? (
-                                                <img src={staticMap} className="rounded-md shadow-md" />
-                                            ):null}
-                                        </div>
-                                    </div>
-                                </AccordionAnimation>
-                            </CollapsibleContent>
-                        </div>
-                    </Collapsible>
-                </CardDescription>
             </CardHeader>
             <CardContent className='flex flex-col'>
-                <div className="flex flex-col py-2 gap-1">
+                <Collapsible
+                    open={isMoreInfoOpen}
+                    onOpenChange={setIsMoreInfoOpen}
+                >
+                    <div className={`flex ${isMoreInfoOpen ? "pb-5" : ""}`}>
+                        <CollapsibleContent className="space-y-2 border-1 p-2 rounded-md shadow-md">
+                            <AccordionAnimation>
+                                <div className="flex flex-col py-1 gap-2">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs">Address</span>
+                                        <span className="md:text-xl">
+                                            {`${
+                                                restaurant.address[0] !== undefined ?
+                                                restaurant.address[0].display_name : ""
+                                            }`}</span> 
+                                    </div>
+                                    <div className="flex flex-row gap-1 items-center py-2">
+                                        <MapPinned size={15} />
+                                        <a 
+                                            href={`${showinMap}`} 
+                                            target="_blank" 
+                                            className="hover:underline hover:text-green-500 font-bold">
+                                                <span>Show in Map</span>
+                                        </a> 
+                                    </div>
+                                    <div className="flex flex-col w-full items-center">
+                                        {staticMap !== "" ? (
+                                            <img src={staticMap} className="rounded-md shadow-md" />
+                                        ):null}
+                                    </div>
+                                </div>
+                            </AccordionAnimation>
+                        </CollapsibleContent>
+                    </div>
+                </Collapsible>
+                <div className="flex flex-col gap-1">
                     <div className="flex flex-row gap-2 text-xs">
                         <div className="flex flex-row items-center gap-1">
                             <MapPin size={14} className="text-green-500"/>

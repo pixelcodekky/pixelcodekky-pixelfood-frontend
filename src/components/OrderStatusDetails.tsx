@@ -1,9 +1,9 @@
 import { Order } from "@/types";
 import { Separator } from "./ui/separator";
-import { CircleChevronDown, CircleChevronUp, MapPin } from "lucide-react";
-import { useState } from "react";
+import { CircleChevronDown, MapPin } from "lucide-react";
+import { useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { AnimatedPage } from "@/animotion/AnimatedPage";
+import { generateuuid } from "@/common/Utilities";
 
 type Props = {
     order: Order;
@@ -12,6 +12,18 @@ type Props = {
 const OrderStatusDetails = ({order}: Props) => {
 
     const [isOpen, setIsOpen] = useState(false);
+    const ref = useRef(null);
+
+    const getgst = () => {
+        const total = parseFloat((order.totalAmount / 100).toFixed(2));
+        const inclgst = (total * order.gst) / (100 + order.gst)
+        return inclgst.toFixed(2);
+    }
+
+    const getsubcharge = () => {
+        const total = order.cartItems.reduce((total, item) => total + (item.price ?? 0) * (item.quantity ?? 0), 0);
+        return total;
+    }
 
     return (
         <>
@@ -21,17 +33,15 @@ const OrderStatusDetails = ({order}: Props) => {
                     onClick={() => setIsOpen(!isOpen)}
                     >
                     Order Details 
-                    {isOpen ? (
-                        <CircleChevronUp size={15} />
-                    ): (
-                        <CircleChevronDown size={15} />
-                    )}
+                    <CircleChevronDown size={15} className={`transition-transform ${isOpen ? "rotate-180" : ""}`}/>
                     
                 </Button>
             </div>
-            <AnimatedPage>
-                <div key={order._id} className={`space-y-5 ${isOpen ? "block" : "hidden"} `}>
-                    <div className="flex flex-col">
+            <div 
+                className={`space-y-5 overflow-y-hidden transition-transform ease`}
+                style={{height: isOpen ? "auto" : 0}}>
+                <div ref={ref}>
+                    <div className="flex flex-col py-2">
                         <div className="flex flex-row items-center gap-1 text-sm">
                             <MapPin size={18} className="text-green-500" />
                             <span className="font-medium">
@@ -42,18 +52,18 @@ const OrderStatusDetails = ({order}: Props) => {
                     </div>
                     <div className="flex flex-col">
                         <div className="flex flex-row items-center gap-1 text-sm">
-                            <MapPin size={18} className="text-green-500" />
+                            <MapPin size={18} className="text-red-500" />
                             <span className="font-medium">Deliver to</span>
                         </div>
                         {/* <span>{order.deliveryDetails.name}</span> */}
                         <span>{order.deliveryDetails.addressLine1}, {order.deliveryDetails.city}</span>
                         {/* <span>{order.deliveryDetails.email}</span> */}
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col py-2">
                         <span className="font-medium">Order Summary</span>
                         <ul>
                             {order.cartItems.map((item) => (
-                                <li key={item.menuItemId}>
+                                <li key={`${generateuuid()}`}>
                                     <div className="flex flex-row justify-between">
                                         <div className="flex gap-2">
                                             <span>{item.quantity}X</span>
@@ -67,31 +77,36 @@ const OrderStatusDetails = ({order}: Props) => {
                         </ul>
                     </div>
                     <Separator />
-                    <div>
+                    <div className="py-1">
                         <div className="flex flex-row justify-between">
-                            <span className="font-medium">Delivery</span>
-                            <span className="font-medium">S$ {order.deliveryfee ? parseFloat((order.deliveryfee / 100).toFixed(2)) : 0}</span>
+                            <span className="font-medium text-sm">Sub-charge</span>
+                            <span className="font-medium text-sm">S$ {getsubcharge()}</span>
                         </div>
                         <div className="flex flex-row justify-between">
-                            <span className="font-medium">GST ({order.gst ? order.gst : 0}%)</span>
-                            <span className="font-medium">{`processing...`}</span>
+                            <span className="font-medium text-sm">Delivery fee</span>
+                            <span className="font-medium text-sm">S$ {order.deliveryfee ? parseFloat((order.deliveryfee / 100).toFixed(2)) : 0}</span>
                         </div>
                         <div className="flex flex-row justify-between">
-                            <span className="font-medium">Platform fee</span>
-                            <span className="font-medium">S$0</span>
+                            <span className="font-medium text-sm">Platform fee</span>
+                            <span className="font-medium text-sm">S$0</span>
                         </div>
                         <div className="flex flex-row justify-between">
+                            <span className="font-medium text-sm">GST ({order.gst ? order.gst : 0}% exclusive)</span>
+                            <span className="font-medium text-sm">{getgst()}</span>
+                        </div>
+                        <div className="flex flex-row justify-between pt-3">
                             <span className="font-bold">Total</span>
                             <div>
                             {order.totalAmount && (
-                                <span className="font-medium">S$ {(order.totalAmount / 100).toFixed(2)}</span>
+                                <span className="font-semibold">S$ {(order.totalAmount / 100).toFixed(2)}</span>
                             )}
                             </div>
                         </div>
                     </div>
-                    
                 </div>
-            </AnimatedPage>
+                
+                
+            </div>
             
         </>
         

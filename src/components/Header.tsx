@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import MobileNav from "./MobileNav";
 import MainNav from "./MainNav";
 import pixelfootphoto from '../assets/pixel_food_logo.png';
@@ -44,11 +44,22 @@ const Header = () => {
     }
 
     const RenderLogo = () => {
+      const handleLogo = () => {
+        if(profileState.full_value === ''){
+          navigation('/');
+        }
+      }
+
       return (
         <>
-          <Link to="/">
-              <img src={pixelfootphoto} alt="Pixel Food Delivery" className="font-bold w-[60px] h-[60px] object-cover" />
-          </Link>
+          <img 
+              src={pixelfootphoto} 
+              alt="Pixel Food Delivery" 
+              className="font-bold w-[60px] h-[60px] object-cover cursor-pointer" 
+              onClick={() => {
+                handleLogo();
+              }}
+          />
         </>
       )
     }

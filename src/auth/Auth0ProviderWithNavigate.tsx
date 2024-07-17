@@ -7,7 +7,7 @@ type Props = {
 }
 
 const Auth0ProviderWithNavigate = ({children}: Props) => {
-
+    
     const navigate = useNavigate();
     //const { getAccessTokenSilently } = useAuth0();
     const domain = import.meta.env.VITE_AUTH0_DOMAIN;
@@ -21,7 +21,6 @@ const Auth0ProviderWithNavigate = ({children}: Props) => {
 
     const onRedirectcallback = async (appState?: AppState) => {
         navigate(appState?.returnTo || '/auth_callback');
-
     }
 
     return(
