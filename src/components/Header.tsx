@@ -47,6 +47,8 @@ const Header = () => {
       const handleLogo = () => {
         if(profileState.full_value === ''){
           navigation('/');
+        }else{
+          navigation(`/search/${profileState.lng}/${profileState.lat}`);
         }
       }
 
