@@ -227,11 +227,7 @@ const DetailPage = () => {
                     </div>
                 </div>
             )}
-            
-
-        
         </>
-        
     )
 }
 

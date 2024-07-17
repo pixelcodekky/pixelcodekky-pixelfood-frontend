@@ -23,7 +23,7 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart, getgst,gettotalwit
             <CardHeader>
                 <CardTitle className="text-2xl font-bold tracking-tight flex justify-between">
                     <span>Total</span>
-                    <span>S${gettotalwithgst()}</span>
+                    <span>S$ {gettotalwithgst()}</span>
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
@@ -44,11 +44,11 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart, getgst,gettotalwit
                 <Separator/>
                 <div className="flex justify-between text-sm font-medium">
                     <span>Sub-charge</span>
-                    <span>S${gettotalwithoutdelivery()}</span>
+                    <span>S$ {gettotalwithoutdelivery()}</span>
                 </div>
                 <div className="flex justify-between text-sm font-medium">
                     <span>Delivery fee</span>
-                    <span>S${(restaurant.deliveryPrice / 100).toFixed(2)}</span>
+                    <span>S$ {(restaurant.deliveryPrice / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-medium">
                     <span>Platform fee</span>
@@ -56,7 +56,7 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart, getgst,gettotalwit
                 </div>
                 <div className="flex justify-between text-sm font-medium">
                     <span>GST ({gstvalue}% exclusive)</span>
-                    <span>  S${getgst()}</span>
+                    <span>S$ {getgst()}</span>
                 </div>
             </CardContent>
         </>

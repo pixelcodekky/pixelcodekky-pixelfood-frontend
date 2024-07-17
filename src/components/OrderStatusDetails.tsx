@@ -88,11 +88,11 @@ const OrderStatusDetails = ({order}: Props) => {
                         </div>
                         <div className="flex flex-row justify-between">
                             <span className="font-medium text-sm">Platform fee</span>
-                            <span className="font-medium text-sm">S$0</span>
+                            <span className="font-medium text-sm">S$ 0</span>
                         </div>
                         <div className="flex flex-row justify-between">
                             <span className="font-medium text-sm">GST ({order.gst ? order.gst : 0}% exclusive)</span>
-                            <span className="font-medium text-sm">{getgst()}</span>
+                            <span className="font-medium text-sm">S$ {getgst()}</span>
                         </div>
                         <div className="flex flex-row justify-between pt-3">
                             <span className="font-bold">Total</span>

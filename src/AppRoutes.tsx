@@ -32,7 +32,9 @@ const AppRoutes = () => {
                         </AnimatedPage>
                     </SearchPageLayout> } />
             <Route path='/detail/:restaurantId' element={<Layout showHero={false}><DetailPage /></Layout> } />
-            <Route element={<ProtectedRoute />}>
+            <Route element={
+                <ProtectedRoute />
+            }>
                 <Route 
                     path="/order_status" 
                     element={ 
