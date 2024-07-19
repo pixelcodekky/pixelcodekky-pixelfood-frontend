@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 
 export const ProtectedRoute = () => {
     const { isAuthenticated, isLoading } = useAuth0();
-
+    
     if (isLoading){
         return(
             <>
