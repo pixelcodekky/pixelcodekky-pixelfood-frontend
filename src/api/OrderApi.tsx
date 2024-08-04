@@ -10,14 +10,18 @@ type checkOutSessionRequest = {
         menuItemId: string;
         name: string;
         quantity: string;
+        price:number;
     }[];
     deliveryDetails: {
         email:string;
         name:string;
         addressLine1:string;
         city:string;
+        phone:number;
     };
     restaurantId: string;
+    gst:number;
+    deliveryfee:number;
 }
 
 export const useGetMyOrders = () => {

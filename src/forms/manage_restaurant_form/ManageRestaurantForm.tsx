@@ -11,6 +11,7 @@ import ImageSection from './ImageSection';
 import DetailsSection from './DetailsSection';
 import { Restaurant } from '@/types';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
     restaurantName: z.string({
@@ -65,7 +66,6 @@ const ManageRestaurantForm = ({ restaurant ,onSave, isLoading }: Props ) => {
     useEffect(() => {
         if (!restaurant) return;
 
-        console.log('ManageRestaurantForm - useEffect', restaurant);
         const deliveryPriceMap = parseInt(
             (restaurant.deliveryPrice / 100).toFixed(2)
         );
@@ -120,6 +120,7 @@ const ManageRestaurantForm = ({ restaurant ,onSave, isLoading }: Props ) => {
 
       const onInvalid = (errors: any) => {
         console.log(errors);
+        toast.error(`Something went wrong, please try again.`);
       }
 
     return (

@@ -13,9 +13,16 @@ export const UserProfilepage = () => {
   }
 
   return (
-    <UserProfileForm
-      currentUser={currentUser} 
-      onSave={updateUser} 
-      isLoading={isUpdateLoading} />
+    <>
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-full lg:w-1/2 border p-5 rounded-lg">
+          <UserProfileForm
+          currentUser={currentUser} 
+          onSave={updateUser} 
+          isLoading={isUpdateLoading} />
+        </div>
+      </div>
+    </>
+    
   );
 }

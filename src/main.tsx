@@ -31,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <AppRoutes />
               </GlobalAnimation> */}
               <AppRoutes />
-              <Toaster visibleToasts={1} position='top-right' richColors/>
+              <Toaster visibleToasts={1} position='bottom-right' richColors/>
             </Auth0ProviderWithNavigate>
           </QueryClientProvider>
         </Router>

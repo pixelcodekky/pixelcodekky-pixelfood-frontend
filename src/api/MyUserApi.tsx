@@ -62,6 +62,8 @@ export const useCreateMyUser = () => {
         if(!response){
             throw new Error('Failed to create user');
         }
+
+        return response.json();
     }
 
     const {mutateAsync: createUser, 
@@ -80,11 +82,11 @@ export const useCreateMyUser = () => {
 
 type updateUserRequest = {
     name: String,
-    addressLine1: string,
-    city: String,
-    country: String,
-    mobileNumber:string,
-    countryCode:string,
+    addressLine1?: String,
+    city?: String,
+    country?: String,
+    mobileNumber:number,
+    countryCode:String,
 }
 
 export const useUpdateMyUser = () => {
@@ -92,7 +94,6 @@ export const useUpdateMyUser = () => {
 
     const updateUserData = async (formData: updateUserRequest) => {
         const  accessToken = await getAccessTokenSilently();
-        
         const res = await fetch(`${API_BASE_URL}/api/my/user`,{
             method:'PUT',
             headers: {

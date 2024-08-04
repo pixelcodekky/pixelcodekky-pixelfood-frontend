@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Search, X } from 'lucide-react';
@@ -7,11 +6,11 @@ import { Feature } from '@/types';
 
 type Props = {
     searchQuery?: string;
-    onSubmit?: (value: string) => void;
+    onSubmit?: () => void;
     placeHolder: string;
     onReset?: () => void;
     className?: string;
-    onChange: (value:string) => void;
+    onChange?: (value:string) => void;
     features?: Feature[];
     setGeocodingCollectionState: () => void;
     clearInput: boolean;
@@ -23,11 +22,11 @@ type Props = {
 
 const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionState, InputValue, SetInputValue, clearInput = false } : Props) => {
 
-    const [inputState, setInputState] = useState("");
+    //const [inputState, setInputState] = useState("");
 
     const handleOnClick = () => {
         if(onSubmit){
-            onSubmit(inputState)
+            onSubmit();
         }
     }
 
@@ -52,8 +51,8 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
                     size={18}  
                     className='rounded-full b-[10px] border bg-white-400 text-black w-[30px] hover:pointer hover:text-black hover:bg-gray-200' 
                     onClick={() => {
-                        setInputState("");
-                        setGeocodingCollectionState();
+                        //setInputState("");
+                        setGeocodingCollectionState(); // clear all suggestion and input value
                     }}
                     />
                 ) : null}
@@ -64,7 +63,6 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
                     className='rounded-full bg-green-500'
                     onClick={handleOnClick}
                     >
-                    
                     Search
                 </Button>
             </div>

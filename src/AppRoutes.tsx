@@ -13,6 +13,8 @@ import OrderStatusPage from "./pages/OrderStatusPage";
 import { AnimatedPage } from "./animotion/AnimatedPage";
 import BaseSearchPage from "./pages/SearchPage/BaseSearchPage";
 import OrderPageLayout from "./pages/Orders/OrderPageLayout";
+import AddressPage from "./pages/Address/AddressPage";
+import AddressListPage from "./pages/Address/AddressListPage";
 
 
 const AppRoutes = () => {
@@ -20,7 +22,7 @@ const AppRoutes = () => {
     return(
         <Routes key={location.pathname} location={location}>
             <Route path="/" element={<Layout showHero><HomePage/></Layout>} />
-            <Route path='/auth_callback' element={<AuthCallbackpage/>} />
+            <Route path='/auth_callback/:returnTo?' element={<AuthCallbackpage/>} />
             <Route path='/search/:lng/:lat' 
                 element={
                     <SearchPageLayout 
@@ -49,6 +51,21 @@ const AppRoutes = () => {
                     path="/manage_restaurant" 
                     element={ <Layout showHero={false}>
                         <ManageRestaurantPage /></Layout> } />
+                <Route 
+                    path="/address/:Id?"
+                    element={
+                        <Layout showHero={false}><AddressPage /></Layout>
+                    }
+                />
+                <Route
+                    path="/address_list"
+                    element={
+                        <Layout showHero={false}>
+                            <AddressListPage />
+                        </Layout>
+                    } 
+                
+                />
             </Route>
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
