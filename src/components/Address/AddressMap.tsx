@@ -79,7 +79,6 @@ const AddressMap = ({customClass}: Props) => {
         
         const load = async () => {
             let selectedcoords = await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
-            console.log(locateMeCoord);
             if(selectedcoords.features.length > 0){
                 setSelectedAddress(selectedcoords.features[0].properties.full_address);
                 ctx?.setCoords(locateMeCoord);
@@ -228,7 +227,7 @@ const AddressMap = ({customClass}: Props) => {
         <>
             <div className={`${customClass}`}>
                 <div className='mb-2'>
-                    <div className='flex flex-row items-center justify-center'>
+                    <div className='flex flex-row items-center'>
                         <div className='flex flex-col w-full'>
                             <SearchBarGeolocation 
                                 placeHolder='enter street name or postcode and select' 
@@ -240,12 +239,12 @@ const AddressMap = ({customClass}: Props) => {
                                 onSubmit={handleSearchSubmit}
                             />
                         </div>
-                        <div className='flex flex-row basis-1/4'>
+                        <div className='flex flex-row'>
                             <Button variant={'secondary'} 
                                 className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
                                 onClick={() => handleLocateMe()}>
                                 <Locate size={18} strokeWidth={2.5} />
-                                Locate Me
+                                <span className='hidden md:block'>Locate Me</span>
                             </Button>
                         </div>
                         

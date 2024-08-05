@@ -17,7 +17,7 @@ const AddressDetailsSection = () => {
                 </div>
                 <div className='flex flex-row items-center justify-center gap-2 sm:text-sm'>
                     <span><MapPin className='text-green-500' /></span>
-                    <label className='font-medium'>{ctx?.featureName}</label>
+                    <label className='font-medium text-sm'>{ctx?.featureName}</label>
                 </div>
                 <div>
                     <FormField
