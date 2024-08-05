@@ -94,12 +94,12 @@ const AddressPage = () => {
             }
         }
         load();
-    },[Id]);
+    },[Id, getAddress]);
 
     useEffect(() => {
         const load = async () => {
             if(addSuccess || updateSuccess){
-                await new Promise(d => setTimeout(d, 800));
+                await new Promise(d => setTimeout(d, 600));
                 navigate({
                     pathname: '/address_list',
                     
@@ -134,14 +134,25 @@ const AddressPage = () => {
         }
     }
 
+    const RenderLoading = () => {
+        return (
+            <div className="flex flex row items-center justify-center w-full bg-opacity-70 bg-white animate-pulse animate-fadeIn h-10">
+                <span>Loading...</span>
+            </div>
+        )
+    }
+
     return (
         <>
             <AddressContext.Provider value={{
                     coords, setCoords, setNextPage, setFeatureName, featureName,selectedUserAddress
             }} >
                 <div className="space-y-5">
-                    {RenderAddressMap()}
-                    {RenderAddressDetails()}
+                    <>
+                        {getLoading ? RenderLoading() : null}
+                        {RenderAddressMap()}
+                        {RenderAddressDetails()}
+                    </>
                 </div>
             </AddressContext.Provider>
             

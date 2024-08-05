@@ -28,7 +28,7 @@ const AddressListPage = () => {
 
     return (
         <>
-            <div className='flex flex-col items-center justify-center space-y-5 px-10'>
+            <div className='flex flex-col items-center justify-center space-y-5 px-5'>
                 <div>
                     <label className='text-xl font-medium'>Locations</label>
                 </div>

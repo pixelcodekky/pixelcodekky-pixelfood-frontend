@@ -116,11 +116,11 @@ export const useGetUserAddress = (Id = "") => {
 
     const {isError, isLoading, data: getAddress, refetch} = useQuery(
         ['fetchAddress', Id],
-        async () => {
-            await new Promise(d => setTimeout(d, 500));
-            return getAddressRequest();    
-        },{
-            staleTime: 1000,
+        getAddressRequest,{
+            onError: (error) => {
+                console.log(error);
+                toast.error(`Error getting address`);
+            }
         }
     )
 

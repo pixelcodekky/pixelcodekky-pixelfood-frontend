@@ -79,14 +79,17 @@ const AddressMap = ({customClass}: Props) => {
         
         const load = async () => {
             let selectedcoords = await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
+            console.log(locateMeCoord);
             if(selectedcoords.features.length > 0){
                 setSelectedAddress(selectedcoords.features[0].properties.full_address);
-                //coords(locateMeCoord);
                 ctx?.setCoords(locateMeCoord);
                 ctx?.setFeatureName(selectedcoords.features[0].properties.full_address);
             }
         };
-        load();
+        if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
+            load();
+        }
+        
     }, [locateMeCoord]);
 
     const handleSearchSubmit = () => {
@@ -211,7 +214,6 @@ const AddressMap = ({customClass}: Props) => {
 
     const handleMapOnClick = (lng:number, lat: number) => {
         setLocateMeCoord({lat: lat, lng: lng});
-        
     }
 
     //#endregion MapFunction
@@ -277,7 +279,7 @@ const AddressMap = ({customClass}: Props) => {
                         onMove={onMove}
                         testMode={true}
                         onClick={(e) => {
-                            //e.originalEvent.stopPropagation();
+                            e.originalEvent.stopPropagation();
                             handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
                         }}
                     >
