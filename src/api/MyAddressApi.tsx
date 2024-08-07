@@ -93,7 +93,7 @@ export const useUpdateAddress = () => {
 }
 
 export const useGetUserAddress = (Id = "") => {
-    const { getAccessTokenSilently } = useAuth0();
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
     const getAddressRequest = async (): Promise<UserAddress[]> => {
         let pathname = "/api/my/address";
@@ -120,7 +120,8 @@ export const useGetUserAddress = (Id = "") => {
             onError: (error) => {
                 console.log(error);
                 toast.error(`Error getting address`);
-            }
+            },
+            enabled: isAuthenticated,
         }
     )
 

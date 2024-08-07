@@ -20,6 +20,7 @@ import CurrentPin from '../MapResource/CurrentPin';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { setIsEdit } from '@/statemgmt/location/EditLocationSlice';
 import SavedAddressList from '../Search/SavedAddressList';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -34,6 +35,7 @@ type Props = {
 
 const EditLocationMap = ({customClass}:Props) => {
 
+    const { isAuthenticated } = useAuth0();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const mapState = useAppSelector(MapViewSelector);
@@ -349,15 +351,18 @@ const EditLocationMap = ({customClass}:Props) => {
                     >
                         Update Location
                     </Button>
-                    <Button 
-                        className={`bg-white text-green-500 hover:bg-green-500 hover:text-white }`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowSavedAddress(!!!showSavedAddress);
-                        }}
-                    >
-                        {showSavedAddress ? "Show Map" : "Show Saved Address"} 
-                    </Button>
+                    {isAuthenticated ? (
+                        <Button 
+                            className={`bg-white text-green-500 hover:bg-green-500 hover:text-white }`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowSavedAddress(!!!showSavedAddress);
+                            }}
+                        >
+                            {showSavedAddress ? "Show Map" : "Show Saved Address"} 
+                        </Button>
+                    ): null}
+                    
                 </div>
             </div>
         </>

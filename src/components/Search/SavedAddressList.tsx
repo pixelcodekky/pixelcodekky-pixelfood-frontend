@@ -1,6 +1,7 @@
 import { useGetUserAddress } from "@/api/MyAddressApi";
 import { generateuuid } from "@/common/Utilities";
 import { SearchResultType, UserAddress } from "@/types";
+import { useAuth0 } from "@auth0/auth0-react";
 import { MapPin } from "lucide-react";
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
 
+    const { isAuthenticated } = useAuth0();
     const {getAddress, isLoading: getLoading } = useGetUserAddress();
 
     const handleSavedAddress = (data: UserAddress) => {
@@ -24,6 +26,10 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
         handler(result);
     }
 
+
+    if(!isAuthenticated)
+        return false;
+    
     return (
         <>
             <div className={`flex flex-col ${asAbsoluteClass ? "z-9 absolute" : ""} w-full rounded-lg shadow-xl bg-zinc-100 ${className ? className : ""} `}>
