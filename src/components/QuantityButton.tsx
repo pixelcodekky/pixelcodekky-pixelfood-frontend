@@ -2,7 +2,7 @@ import { Input } from './ui/input'
 import { CircleMinus, CirclePlus, TrashIcon } from 'lucide-react'
 
 type Props = {
-    addquantity: ()=> void;
+    addquantity: () => void;
     minusquantity: () => void;
     qty: number;
 }
@@ -16,7 +16,7 @@ export const QuantityButton = ({addquantity, minusquantity, qty = 0}: Props) => 
                     className={`font-bold hover:text-red-500 hover:pointer
                     ${qty === 0 ? 'hidden' : 'block'}
                     `}
-                    disabled={(qty === 0)}
+                    disabled={(qty === 0) ? true : false}
                     onClick={minusquantity}
                 >
                     {qty === 1 ? <TrashIcon className='text-red-500' /> : <CircleMinus />}

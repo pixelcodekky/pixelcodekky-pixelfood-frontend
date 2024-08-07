@@ -1,40 +1,51 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MobileNav from "./MobileNav";
 import MainNav from "./MainNav";
 import pixelfootphoto from '../assets/pixel_food_logo.png';
-import { MapPin, Pencil } from "lucide-react";
+import { MapPin, Pencil, X } from "lucide-react";
 import { useAppSelector } from "@/statemgmt/hooks";
 import { HoverItem } from "@/animotion/AnimatedPage";
 import { useDispatch } from "react-redux";
-import { resetProfile } from "@/statemgmt/profile/ProfileReducer";
+//import { resetProfile } from "@/statemgmt/profile/ProfileReducer";
+import { EditLocationSelector, setIsEdit } from "@/statemgmt/location/EditLocationSlice";
 
 const Header = () => {
+    const location = useLocation();
+    const pathname = location.pathname;
+
     const dispatch = useDispatch();
     const profileState = useAppSelector((x) => x.profile);
+    const isEditLocation = useAppSelector(EditLocationSelector);
     const navigation = useNavigate();
 
-    const AddressHandler = () => {
-      dispatch(resetProfile());
+    const handleLocation = () => {
+      //dispatch(resetProfile());
       //clear profile
-      navigation('/');
+      //navigation('/');
+      dispatch(setIsEdit()); // to show model to edit location.
     } 
 
     const RenderSelectedAddress = () => {
       return (
         <>
-          {profileState.full_value !== '' ? (
+          {(profileState.full_value !== '' && pathname.split('/')[1] === 'search') ? (
             <HoverItem>
               <div 
                 className="flex flex-col items-center p-1 rounded-md bg-gray-50 lg:text-xl md:text-md sm:text-sm hover:cursor-pointer hover:bg-green-200"
                 onClick={(e) => {
                   e.stopPropagation();
-                  AddressHandler();
+                  handleLocation();
                 }}
                 >
                 <div className="flex items-center gap-2 justify-center">
                   <MapPin className="text-green-500"/>
                   <span className="text-sm font-bold">{profileState.value}</span>
-                  <Pencil size={15} />
+                  {isEditLocation.isEdit ? (
+                    <X size={15} strokeWidth={2.5} />
+                  ): (
+                    <Pencil size={15} />
+                  )}
+                  
                 </div>
               </div>
             </HoverItem>

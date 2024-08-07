@@ -7,10 +7,8 @@ import { LoadingButton } from '@/components/LoadingButton';
 import { Button } from '@/components/ui/button';
 import { User } from '@/types';
 import { useEffect } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { COUNTRY_CODE } from '@/config/country_code_config';
-import { generateuuid } from '@/common/Utilities';
 import { toast } from 'sonner';
+import UserProfileFormDetail from './UserProfileFormDetail';
 
 const phoneValidation = /^[89][0-9]{7}$/ //new RegExp();
 
@@ -64,71 +62,8 @@ export const UserProfileForm = ({ onSave, isLoading, currentUser,title = "Profil
                     View | Change
                 </FormDescription> */}
             </div>
-            <div className='flex flex-row gap-4'>
-                <div className='flex flex-col w-full'>
-                    <FormField control={form.control} name='email' render={({field}) => (
-                        <FormItem className='flex-1'>
-                            <FormLabel>Emal</FormLabel>
-                            <FormControl>
-                                <Input {...field} disabled className='bg-white' />
-                            </FormControl>
-                        </FormItem>
-                    )}/>
-                </div>
-            </div>
-            <div className='flex flex-row gap-4'>
-                <div className='flex flex-col w-full'>
-                    <FormField control={form.control} name='name' render={({field}) => (
-                        <FormItem className='flex-1'>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input {...field} className='bg-white' />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}/>
-                </div>
-            </div>
-            <div className='flex flex-row gap-4'>
-                <div className='flex flex-col w-full'>
-                    <FormField control={form.control} name='countryCode' render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Country Code</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value || 'SG'}>
-                                <FormControl>
-                                    <SelectTrigger id="countrycode">
-                                        <SelectValue placeholder= "Country Code" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent position="popper">
-                                    <SelectItem key={`${generateuuid()}`} value='NA'>Select Country Code</SelectItem>
-                                    {(COUNTRY_CODE).map((code, index) => (
-                                        <SelectItem key={index} value={code.code}>{code.dialcode} {code.country}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}/>
-                </div>
-            </div>
-            <div className='flex flex-row gap-4'>
-                <div className='flex flex-col w-full'>
-                    <FormField control={form.control} name='mobileNumber' render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Mobile Number</FormLabel>
-                            <FormControl>
-                                <Input {...field} 
-                                        type='number' 
-                                        className='bg-white' 
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                        />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}/>
-                </div>
-            </div>
+            
+            <UserProfileFormDetail />
 
             <div className='hidden flex flex-col md:flex-row gap-4'>
                 <FormField control={form.control} name='country' render={({field}) => (

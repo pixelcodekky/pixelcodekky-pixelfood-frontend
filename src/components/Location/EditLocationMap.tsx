@@ -1,33 +1,26 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import SearchBarGeolocation from '../Search/SearchBarGeolocation';
-import { Locate, Search } from 'lucide-react';
-import SearchResultList from '../Search/SearchResultList';
-import { Feature, SearchResultType, ViewMapState } from '@/types';
-import { generateuuid, useDebounce } from '@/common/Utilities';
-import { getMapGeocodingForward, getMapGeocodingReverse } from '@/api/GeocodingApi';
-import { geocodingmapping } from '@/common/GoecodingTypeMatch';
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Map, {
     Marker,
     ViewStateChangeEvent,
     MapRef
   } from 'react-map-gl';
+import SearchBarGeolocation from '../Search/SearchBarGeolocation';
+import { Button } from '../ui/button';
+import { Locate, Search } from 'lucide-react';
+import SearchResultList from '../Search/SearchResultList';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/statemgmt/hooks';
 import { MapViewSelector, setViewport } from '@/statemgmt/map/MapViewSlice';
-import { Button } from '../ui/button';
+import { Feature, SearchResultType, ViewMapState } from '@/types';
+import { getMapGeocodingForward, getMapGeocodingReverse } from '@/api/GeocodingApi';
+import { geocodingmapping } from '@/common/GoecodingTypeMatch';
+import { generateuuid, useDebounce } from '@/common/Utilities';
 import CurrentPin from '../MapResource/CurrentPin';
-import { AddressContext } from '@/pages/Address/AddressPage';
-import { useNavigate } from 'react-router-dom';
+import { setProfile } from '@/statemgmt/profile/ProfileReducer';
+import { setIsEdit } from '@/statemgmt/location/EditLocationSlice';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
-
-// const initialState : SearchResultType = {
-//     value: '',
-//     key: '',
-//     full_value: '',
-//     lat: 0,
-//     lng: 0,
-// }
 
 interface Coordinate {
     lat: number,
@@ -36,15 +29,14 @@ interface Coordinate {
 
 type Props = {
     customClass: string;
-    BackButton?: boolean;
 }
 
-const AddressMap = ({customClass, BackButton=true}: Props) => {
+const EditLocationMap = ({customClass}:Props) => {
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const mapState = useAppSelector(MapViewSelector);
     const mapRef = useRef<MapRef>(null);
-    const ctx = useContext(AddressContext);
 
     const [hideSuggestion, setHideSuggestion] = useState(false);
     const [inputValue, setInputValue] = useState("");
@@ -82,8 +74,10 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
             let selectedcoords = await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
             if(selectedcoords.features.length > 0){
                 setSelectedAddress(selectedcoords.features[0].properties.full_address);
-                ctx?.setCoords(locateMeCoord);
-                ctx?.setFeatureName(selectedcoords.features[0].properties.full_address);
+                geocodingCollection = geocodingmapping(selectedcoords);
+                //console.log(geocodingCollection);
+                const data = populateSelectedSearchResult(geocodingCollection);
+                setSelectedSearchResultType(data as SearchResultType);
             }
         };
         if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
@@ -128,6 +122,22 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
 
     const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
     const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue]);
+
+    const populateSelectedSearchResult = (data:any) => {
+        if(data.length > 0) {
+            const featureProp = data[0].properties;
+            return {
+                value: featureProp.name,
+                key: featureProp.mapbox_id,
+                full_value: featureProp.full_address,
+                lat: featureProp.coordinates.latitude,
+                lng: featureProp.coordinates.longitude
+            }
+        }else{
+            return null;
+        }
+
+    }
 
     const populateSearchResult = () => {
         let res = geocodingCollectionState.map((data) => {
@@ -178,6 +188,18 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
             
         });
     }
+
+    const handleUpdateLocation = () => {
+        console.log(selectedSearchResultType);
+        if(selectedSearchResultType.full_value !== ''){
+            dispatch(setProfile(selectedSearchResultType));
+            let address = selectedSearchResultType;
+            navigate({
+                pathname: `/search/${address.lng}/${address.lat}`,
+            });
+            dispatch(setIsEdit()); // hide model
+        }
+    }
     //#endregion Search
 
     //#region MapFunction
@@ -212,117 +234,102 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
         }
     }
 
-    const handleMapOnClick = (lng:number, lat: number) => {
+    const handleMapOnClick = async (lng:number, lat: number) => {
         setLocateMeCoord({lat: lat, lng: lng});
+        
     }
 
     //#endregion MapFunction
 
-    //#region privateFunction
-    const handleBackList = () => {
-        navigate("/address_list");
-    }
-    //#endregion
-
+    
     return (
         <>
             <div className={`${customClass}`}>
                 <div className='mb-2'>
-                    <div className='flex flex-row items-center'>
-                        <div className='flex flex-col w-full'>
-                            <SearchBarGeolocation 
-                                placeHolder='enter street name or postcode and select' 
-                                setGeocodingCollectionState={handleClearGeocoder}
-                                clearInput={hideSuggestion}
-                                InputValue={inputValue}
-                                SetInputValue={setInputValue}
-                                selectedAddress={selectedAddress}
-                                onSubmit={handleSearchSubmit}
-                            />
-                        </div>
-                        <div className='flex flex-row'>
-                            <Button variant={'secondary'} 
-                                className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
-                                onClick={() => handleLocateMe()}>
-                                <Locate size={18} strokeWidth={2.5} />
-                                <span className='hidden md:block'>Locate Me</span>
-                            </Button>
-                        </div>
-                        
-                    </div>
-                    {isRequesting ? (
-                        <div className='w-full flex flex-col relative'>
-                            <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
-                            <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
+                        <div className='flex flex-row items-center'>
+                            <div className='flex flex-col w-full'>
+                                <SearchBarGeolocation 
+                                    placeHolder='enter street name or postcode and select' 
+                                    setGeocodingCollectionState={handleClearGeocoder}
+                                    clearInput={hideSuggestion}
+                                    InputValue={inputValue}
+                                    SetInputValue={setInputValue}
+                                    selectedAddress={selectedAddress}
+                                    onSubmit={handleSearchSubmit}
+                                />
                             </div>
+                            <div className='flex flex-row'>
+                                <Button variant={'secondary'} 
+                                    className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
+                                    onClick={() => handleLocateMe()}>
+                                    <Locate size={18} strokeWidth={2.5} />
+                                    <span className='hidden md:block'>Locate Me</span>
+                                </Button>
+                            </div>
+                            
                         </div>
-                    ) : null}
+                        {isRequesting ? (
+                            <div className='w-full flex flex-col relative'>
+                                <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
+                                <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
+                                </div>
+                            </div>
+                        ) : null}
 
-                    {searchResultsType.length > 0 ? (
-                        <div className='w-full flex flex-col relative'>
-                            <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
-                        </div>
-                    ) : null}
-                </div>
-                <div className='relative flex flex-col w-full h-[450px] border-2'>
-                    <Map 
-                        {...mapState.viewState}
-                        style={{            
-                            width:'100%',
-                            height: '100%',
-                            zIndex:0,
-                        }}
-                        ref={mapRef}
-                        reuseMaps={true}
-                        mapStyle={mapState.mapStyle} 
-                        mapboxAccessToken={TOKEN}
-                        onMove={onMove}
-                        testMode={true}
-                        onClick={(e) => {
-                            e.originalEvent.stopPropagation();
-                            handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
-                        }}
-                    >
-                        {RenderMarker()}
-                    </Map>
-                    {selectedAddress !== '' ? (
-                        <div className='absolute flex flex-col w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
-                            <label className='font-medium'>{selectedAddress}</label>
-                        </div>
-                    ) : (
-                        null
-                    )} 
-                    
-                </div>
-                <div className='flex flex-row w-full mt-5 justify-between'>
-                    {BackButton ? (
-                        <Button
-                            className='bg-white text-green-500'
+                        {searchResultsType.length > 0 ? (
+                            <div className='w-full flex flex-col relative'>
+                                <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
+                            </div>
+                        ) : null}
+                    </div>
+                    <div className='relative flex flex-col w-full h-full border-2'>
+                        <Map 
+                            {...mapState.viewState}
+                            style={{            
+                                width:'100%',
+                                height: '100%',
+                                zIndex:0,
+                            }}
+                            ref={mapRef}
+                            reuseMaps={true}
+                            mapStyle={mapState.mapStyle} 
+                            mapboxAccessToken={TOKEN}
+                            onMove={onMove}
+                            testMode={true}
                             onClick={(e) => {
-                                e.preventDefault();
-                                handleBackList();
+                                e.originalEvent.stopPropagation();
+                                handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
                             }}
                         >
-                            Back to List
-                        </Button>
-                    ): null}
+                            {RenderMarker()}
+                        </Map>
+                        {selectedAddress !== '' ? (
+                            <div className='absolute flex flex-col w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
+                                <label className='font-medium'>{selectedAddress}</label>
+                            </div>
+                        ) : (
+                            null
+                        )} 
+                        
+                    </div>
+                    <div className='flex flex-row w-full mt-5 justify-between'>
                     <Button
                         className={`bg-green-600 hover:bg-white hover:text-green-500 }`}
-                        onClick={() => {
+                        onClick={(e) => {
                             //stepoption(true);
-                            ctx?.setNextPage(true);
+                            //ctx?.setNextPage(true);
+                            e.stopPropagation();
+                            handleUpdateLocation();
                         }}
                         disabled={selectedAddress === "" ? true : false}
                     >
-                        Next
+                        Update Location
                     </Button>
                 </div>
             </div>
-            
-            
         </>
         
     )
 }
 
-export default AddressMap
+export default EditLocationMap

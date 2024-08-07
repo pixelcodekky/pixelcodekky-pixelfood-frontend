@@ -5,7 +5,11 @@ import { Input } from '../ui/input';
 import { AddressContext } from '@/pages/Address/AddressPage';
 import { MapPin } from 'lucide-react';
 
-const AddressDetailsSection = () => {
+type Props = {
+    featureName?: string;
+}
+
+const AddressDetailsSection = ({featureName=""}: Props) => {
     const {control} = useFormContext();
     const ctx = useContext(AddressContext);
 
@@ -17,7 +21,7 @@ const AddressDetailsSection = () => {
                 </div>
                 <div className='flex flex-row items-center justify-center gap-2 sm:text-sm'>
                     <span><MapPin className='text-green-500' /></span>
-                    <label className='font-medium text-sm'>{ctx?.featureName}</label>
+                    <label className='font-medium text-sm'>{featureName !== "" ? featureName : (ctx?.featureName)}</label>
                 </div>
                 <div>
                     <FormField

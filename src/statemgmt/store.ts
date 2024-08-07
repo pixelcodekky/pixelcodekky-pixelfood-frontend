@@ -16,6 +16,7 @@ import ShowonMapSlice from "./map/ShowonMapSlice";
 import SearchPageReducer from "./map/SearchPageSlice";
 import RestaurantReducer from "./restaurant/RestaurantReducer";
 import ProfileReducer from "./profile/ProfileReducer";
+import EditLocationSlice from "./location/EditLocationSlice";
 
 //Redux config
 // export const store = configureStore({
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
     searchPage: SearchPageReducer,
     restaurants: RestaurantReducer,
     profile: ProfileReducer,
+    location: EditLocationSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

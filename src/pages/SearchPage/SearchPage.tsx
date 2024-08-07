@@ -15,10 +15,13 @@ import RestaurantList from "@/components/RestaurantList";
 import SortOptionRadio from "@/components/SortOptionRadio";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import SearchFooter from "@/components/Search/SearchFooter";
+import { EditLocationSelector } from "@/statemgmt/location/EditLocationSlice";
+import EditLocation from "@/components/Location/EditLocation";
 
 export const SearchPage = () => {
     const dispatch = useDispatch();
     const showOnMap = useAppSelector(ShowOnMapSelector);
+    const isEditLocation = useAppSelector(EditLocationSelector);
     const searchStateSelector: SearchState = useAppSelector(SearchPageSelector);
     const [searchState, setSearchState] = useState<SearchState>(searchStateSelector);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -112,10 +115,11 @@ export const SearchPage = () => {
     
     return (
       <>
+        <div className={``}>
         <AnimatedPage>
-        <div className="container mx-auto min-h-[500px] py-3 mb-10">
+        <div className="container relative mx-auto min-h-[500px] py-3 overscroll-none">
             <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-              <div id="side-bar" className="">
+              <div id="side-bar" className="overflow-hidden">
                 <div id="map-restaurants" className="flex flex-col m-3 gap-3 mb-5">
                   <div className="flex flex-row justify-between md:justify-center gap-2">
                     <Button onClick={() => {handleShowonMap()}} className='flex flex-row justify-center rounded-full bg-green-600 hover:bg-green-700 p-5'>
@@ -198,8 +202,19 @@ export const SearchPage = () => {
                 <SearchFooter/>
               </div>
             </div>
+            {isEditLocation.isEdit ? (
+              <div className="absolute inset-x-0 top-0 w-full h-full bg-gray-300 bg-opacity-40 animate-model-fade">
+                <div className="flex flex-col md:flex-row justify-center p-1 ">
+                  <EditLocation />
+                </div>
+              </div>
+              
+            ): null}
+            
         </div>
         </AnimatedPage>
+        </div>
+        
       </>
       
     )

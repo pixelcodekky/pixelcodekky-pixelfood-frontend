@@ -15,9 +15,13 @@ type checkOutSessionRequest = {
     deliveryDetails: {
         email:string;
         name:string;
-        addressLine1:string;
-        city:string;
-        phone:number;
+        mobileNumber:number;
+        countryCode:string;
+        buildingName:string;
+        floor:string;
+        unitNumber:string;
+        deliveryInstruction:string;
+        fullName:string;
     };
     restaurantId: string;
     gst:number;

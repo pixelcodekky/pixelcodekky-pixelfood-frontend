@@ -72,10 +72,16 @@ export type Order = {
         price?:number;
     }[],
     deliveryDetails: {
-        name: string;
-        addressLine1: string;
-        city: string;
-        email: string;
+      email:string;
+      name:string;
+      mobileNumber:number;
+      countryCode:string;
+      buildingName:string;
+      floor:string;
+      unitNumber:string;
+      deliveryInstruction:string;
+      fullName:string;
+
     },
     totalAmount:number;
     status: OrderStatus;

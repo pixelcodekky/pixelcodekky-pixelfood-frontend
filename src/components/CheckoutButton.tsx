@@ -3,12 +3,12 @@ import { useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { LoadingButton } from "./LoadingButton";
 import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
-import { UserFormData, UserProfileForm } from "@/forms/user_profile_form/UserProfileForm";
 import { useGetUser } from "@/api/MyUserApi";
-
+import CheckoutDelivery from "@/forms/checkout_delivery_form/CheckoutDelivery";
+import { CheckoutAddressFormData } from "@/common/FormSchemas";
 
 type Props = {
-    onCheckout: (userFormData: UserFormData) => void;
+    onCheckout: (userFormData: CheckoutAddressFormData) => void;
     disabled: boolean;
     isLoading: boolean;
 };
@@ -37,16 +37,22 @@ const CheckoutButton = ({onCheckout, disabled, isLoading}: Props) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button disabled={disabled} className="bg-green-500 flex-1">Go to checkout</Button>
+                <Button disabled={disabled} className="bg-green-500 flex-1">Review address and Checkout</Button>
             </DialogTrigger>
             <DialogContent className="max-w-[625px] md:min-w-[700px] bg-gray-50">
-                <UserProfileForm 
+                {/* <UserProfileForm 
                     currentUser={currentUser} 
                     onSave={onCheckout} 
                     isLoading={isGetUserLoading} 
                     title="Confirm Delivery Details"
                     buttonText="Continue to payment"
-                    />
+                    /> */}
+                <CheckoutDelivery 
+                    currentUser={currentUser}
+                    onSave={onCheckout}
+                    isLoading={isGetUserLoading}
+                    buttonText="Continue to Payment"
+                />
             </DialogContent>
         </Dialog>
     )

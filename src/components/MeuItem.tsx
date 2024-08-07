@@ -13,21 +13,6 @@ const MeuItem = ({menuItem, addquantity, minusquantity,currentQty}: Props) => {
 
     return (
         <>
-            {/* <Card className="shadow-lg">
-                <CardHeader className="m-0 p-0 mb-2">
-                    <AspectRatio ratio={16/2}>
-                        <img src={menuItem_bg} className="w-full h-full object-cover" />
-                    </AspectRatio>
-                </CardHeader>
-                <CardContent className="font-bold p-4">
-                    <CardTitle className="flex justify-between">
-                        <span className="text-white-500">{menuItem.name}</span>  
-                        
-                        <QuantityButton addquantity={addquantity} minusquantity={minusquantity} qty={currentQty} />
-                    </CardTitle>
-                    S${(menuItem.price / 100).toFixed(2)}
-                </CardContent>
-            </Card> */}
             <div className="mb-4 border rounded-md shadow-sm hover:bg-green-50 pointer">
                 <div className="min-h-[110px] min-w-[200px] grid grid-cols-2">
                     <div className="relative px-4 py-2 flex-col">

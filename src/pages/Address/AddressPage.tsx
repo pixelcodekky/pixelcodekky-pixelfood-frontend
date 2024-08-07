@@ -118,7 +118,6 @@ const AddressPage = () => {
                 <AddressMap customClass={"animate-fadeIn"}/>
             )
         }
-            
     }
 
     const RenderAddressDetails = () => {

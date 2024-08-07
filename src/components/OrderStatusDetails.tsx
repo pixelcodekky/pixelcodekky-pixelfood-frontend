@@ -55,9 +55,26 @@ const OrderStatusDetails = ({order}: Props) => {
                             <MapPin size={18} className="text-red-500" />
                             <span className="font-medium">Deliver to</span>
                         </div>
-                        {/* <span>{order.deliveryDetails.name}</span> */}
-                        <span>{order.deliveryDetails.addressLine1}, {order.deliveryDetails.city}</span>
-                        {/* <span>{order.deliveryDetails.email}</span> */}
+                        <div className="flex flex-col gap-2">
+                            <span>{order.deliveryDetails.fullName}</span>
+                            <div className="flex flex-row">
+                                {order.deliveryDetails.buildingName !== "" ?
+                                <small className="font-medium">{`${order.deliveryDetails.buildingName}:`}</small> 
+                                : null}
+                                {order.deliveryDetails.floor !== "" ? 
+                                    <small>{`${order.deliveryDetails.floor}/`}</small>
+                                : null}
+                                {order.deliveryDetails.unitNumber !== "" ? 
+                                    <small>{order.deliveryDetails.unitNumber}</small>
+                                : null}
+                            </div>
+                            
+
+                            <div className="border p-2 rounded-md">
+                                <small className="font-medium">Note: {order.deliveryDetails.deliveryInstruction}</small>
+                            </div>
+                            
+                        </div>
                     </div>
                     <div className="flex flex-col py-2">
                         <span className="font-medium">Order Summary</span>
@@ -69,7 +86,7 @@ const OrderStatusDetails = ({order}: Props) => {
                                             <span>{item.quantity}X</span>
                                             <span>{item.name} </span> 
                                         </div>
-                                        <div>S$ {((item.price ?? 0) * item.quantity)}</div>
+                                        <div>S$ {((item.price ?? 0) * item.quantity) / 100}</div>
                                     </div>
                                     
                                 </li>

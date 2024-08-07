@@ -1,3 +1,5 @@
+const { Scale } = require('lucide-react');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -69,12 +71,22 @@ module.exports = {
         "fadeIn": {
           "0%": {opacity: "0"},
           "100%": {opacity: "1"},
+        },
+        "model-fade": {
+          "0%": {opacity: "0"},
+          "100%": {opacity: "1"},
+        },
+        "model-zoom": {
+          "0%": {transform: "scale(0.8)"},
+          "100%": {transform: "scale(1)"},
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fadeIn": "fadeIn 0.5s ease-in-out",
+        "model-fade": "model-fade 0.2s ease-out",
+        "model-zoom": "model-zoom 0.1s ease-in",
       },
     },
   },

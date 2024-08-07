@@ -1,6 +1,6 @@
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Search, X } from 'lucide-react';
+import { Search, SearchIcon, X } from 'lucide-react';
 import { Feature } from '@/types';
 
 
@@ -60,10 +60,13 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
                 
                 <Button 
                     type='button' 
-                    className='rounded-full bg-green-500'
+                    className='rounded-full bg-green-500 hover:bg-green-600'
                     onClick={handleOnClick}
                     >
-                    Search
+                    <span className='hidden md:block'>Search</span>
+                    <SearchIcon 
+                    className='md:hidden'
+                    size={18} />
                 </Button>
             </div>
             {/* {suggestionState && suggestionState.length > 0 && (
