@@ -17,10 +17,11 @@ type Props = {
     InputValue: string;
     SetInputValue: (value: string) => void;
     selectedAddress: string;
+    showSavedAddress?: (value: boolean) => void;
 }
 
 
-const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionState, InputValue, SetInputValue, clearInput = false } : Props) => {
+const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionState, InputValue, SetInputValue, showSavedAddress, clearInput = false } : Props) => {
 
     //const [inputState, setInputState] = useState("");
 
@@ -28,6 +29,11 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
         if(onSubmit){
             onSubmit();
         }
+    }
+
+    const handleOnFocus = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+        if(showSavedAddress)
+            showSavedAddress(e.currentTarget.value === '' ? true : false)
     }
 
     return (
@@ -43,7 +49,8 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
                     onChange={(e) => {
                         e.stopPropagation();
                         SetInputValue(e.target.value);
-                    }} 
+                    }}
+                    onFocus={(e) => handleOnFocus(e)}
                     
                 />
                 {!clearInput ? (
@@ -56,7 +63,6 @@ const SearchBarGeolocation = ({ placeHolder, onSubmit, setGeocodingCollectionSta
                     }}
                     />
                 ) : null}
-                
                 
                 <Button 
                     type='button' 

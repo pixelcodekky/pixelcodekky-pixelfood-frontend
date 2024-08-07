@@ -15,6 +15,7 @@ import SearchResultList from '@/components/Search/SearchResultList';
 import { useDebounce } from '@/common/Utilities';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { useDispatch } from 'react-redux';
+import SavedAddressList from '@/components/Search/SavedAddressList';
 
 const initialState : SearchResultType = {
     value: '',
@@ -37,8 +38,9 @@ export const HomePage = () => {
     const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
     const [selectedSearchResultType, setSelectedSearchResultType] = useState<SearchResultType>(initialState);
     //const { isLoading, results } = useGetMapboxGeocodingForward(goecodingvalue);
-    const [hideSuggestion, setHideSuggestion] = useState(false);
-    const [isRequesting, setIsRequesting] = useState(false);
+    const [hideSuggestion, setHideSuggestion] = useState(true);
+    const [_isRequesting, setIsRequesting] = useState(false);
+    const [showSavedAddress, setShowSavedAddress] = useState(false);
     let geocodingCollection:Feature[] = [];
     
     //trigger inputvalue onchange
@@ -106,7 +108,7 @@ export const HomePage = () => {
     }
 
     //const debounceOnChange = useDebounce(handleOnChange, 800, handleSearchLoading);
-    const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
+    const {debounceFunction, clearDebounce, isLoading: isDebounceLoading} = useDebounce(handleOnChange);
     
     const populateSearchResult = () => {
         let res = geocodingCollectionState.map((data) => {
@@ -119,7 +121,7 @@ export const HomePage = () => {
             }
         });
         if(res.length == 0){
-            setHideSuggestion(true);
+            setHideSuggestion(true); 
         }
         setSearchResultsType(res);
         hideIsRequesting();
@@ -131,6 +133,7 @@ export const HomePage = () => {
         setInputValue(searchResult.full_value);
         setSelectedSearchResultType(searchResult);
         setIsSelected(true);
+        setHideSuggestion(false);
     }
 
     const hideIsRequesting = () => {
@@ -162,9 +165,10 @@ export const HomePage = () => {
                     SetInputValue={setInputValue}
                     selectedAddress={selectedAddress}
                     onSubmit={handleSearchSubmit}
+                    showSavedAddress={setShowSavedAddress}
                 />
 
-                {isRequesting ? (
+                {isDebounceLoading ? (
                     <div className='w-full flex flex-col relative'>
                         <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
                         <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
@@ -177,6 +181,11 @@ export const HomePage = () => {
                          <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
                     </div>
                 ) : null}
+                {showSavedAddress ? (
+                    <div className='w-full flex flex-col relative animate-fadeIn'>
+                        <SavedAddressList className='block' handler={handleSearchSelected} />
+                    </div>
+                ): null}
             </div>
             
         </div>

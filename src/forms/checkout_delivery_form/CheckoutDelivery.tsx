@@ -28,6 +28,8 @@ const CheckoutDelivery = ({currentUser, onSave, isLoading, buttonText}:Props) =>
 
     const onSubmit = (formJson: CheckoutAddressFormData) => {
         formJson.fullName = profileState.full_value || "";
+        formJson.lat = profileState.lat || 0;
+        formJson.lng = profileState.lng || 0;
         //console.log(formJson);
         onSave(formJson);
     }

@@ -85,7 +85,7 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fadeIn": "fadeIn 0.5s ease-in-out",
-        "model-fade": "model-fade 0.2s ease-out",
+        "model-fade": "model-fade 0.1s ease-in",
         "model-zoom": "model-zoom 0.1s ease-in",
       },
     },

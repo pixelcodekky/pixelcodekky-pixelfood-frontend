@@ -11,12 +11,15 @@ export const useDebounce = <Func extends handler> (
     delay = 1000,
 ) => {
     const [timer, setTimer] = useState<Timer>();
+    const [isLoading, setIsLoading] = useState(false);
     const timerRef = useRef<Timer | undefined>(timer);
 
     const debounceFunction = ((...args) => {
+        setIsLoading(true);
         clearTimeout(timerRef.current);
         const newTimer = setTimeout(() => {
             func(...args);
+            setIsLoading(false);
         }, delay);
         timerRef.current = newTimer;
         setTimer(newTimer);
@@ -27,9 +30,10 @@ export const useDebounce = <Func extends handler> (
         clearTimeout(timerRef.current);
         timerRef.current = undefined;
         setTimer(undefined);
+        setIsLoading(false);
     }
 
-    return {debounceFunction, clearDebounce, setTimer: setTimer as React.Dispatch<React.SetStateAction<Timer | undefined>>};
+    return {debounceFunction, clearDebounce, isLoading ,setTimer: setTimer as React.Dispatch<React.SetStateAction<Timer | undefined>>};
 }
 
 // Value Debounce

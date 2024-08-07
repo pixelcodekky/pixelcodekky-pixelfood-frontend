@@ -19,6 +19,7 @@ import { generateuuid, useDebounce } from '@/common/Utilities';
 import CurrentPin from '../MapResource/CurrentPin';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
 import { setIsEdit } from '@/statemgmt/location/EditLocationSlice';
+import SavedAddressList from '../Search/SavedAddressList';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
@@ -41,7 +42,7 @@ const EditLocationMap = ({customClass}:Props) => {
     const [hideSuggestion, setHideSuggestion] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [selectedAddress, setSelectedAddress] = useState("");
-    const [isRequesting, setIsRequesting] = useState(false);
+    const [_isRequesting, setIsRequesting] = useState(false);
     const [isSelected, setIsSelected] = useState(false);
     const [selectedSearchResultType, setSelectedSearchResultType] = useState<SearchResultType>({
         value: '',
@@ -53,6 +54,7 @@ const EditLocationMap = ({customClass}:Props) => {
     const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({lat:0, lng:0});
+    const [showSavedAddress, setShowSavedAddress] = useState(false);
     let geocodingCollection:Feature[] = [];
 
     //#region Search 
@@ -100,9 +102,9 @@ const EditLocationMap = ({customClass}:Props) => {
     }
 
     const handleOnChange = async (value: string) => {
-        if(value.length > 0) {
-            setIsRequesting(true);
-        }
+        // if(value.length > 0) {
+        //     setIsRequesting(true);
+        // }
         if(value.length == 0) {
             hideIsRequesting();
             setHideSuggestion(true);
@@ -120,7 +122,7 @@ const EditLocationMap = ({customClass}:Props) => {
         }
     }
 
-    const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
+    const {debounceFunction, clearDebounce, isLoading: isDebounceLoading} = useDebounce(handleOnChange);
     const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue]);
 
     const populateSelectedSearchResult = (data:any) => {
@@ -170,6 +172,12 @@ const EditLocationMap = ({customClass}:Props) => {
         setInputValue(searchResult.full_value);
         setSelectedSearchResultType(searchResult);
         setIsSelected(true);
+        setSelectedAddress(searchResult.full_value);
+        setLocateMeCoord({ 
+            lat: searchResult.lat || 0,
+            lng: searchResult.lng || 0
+        });
+        
     }
 
     const hideIsRequesting = () => {
@@ -190,7 +198,6 @@ const EditLocationMap = ({customClass}:Props) => {
     }
 
     const handleUpdateLocation = () => {
-        console.log(selectedSearchResultType);
         if(selectedSearchResultType.full_value !== ''){
             dispatch(setProfile(selectedSearchResultType));
             let address = selectedSearchResultType;
@@ -218,7 +225,6 @@ const EditLocationMap = ({customClass}:Props) => {
 
     const RenderMarker = () => {
         if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
-            
             return (
                 <>
                     <Marker
@@ -245,74 +251,92 @@ const EditLocationMap = ({customClass}:Props) => {
     return (
         <>
             <div className={`${customClass}`}>
-                <div className='mb-2'>
-                        <div className='flex flex-row items-center'>
-                            <div className='flex flex-col w-full'>
-                                <SearchBarGeolocation 
-                                    placeHolder='enter street name or postcode and select' 
-                                    setGeocodingCollectionState={handleClearGeocoder}
-                                    clearInput={hideSuggestion}
-                                    InputValue={inputValue}
-                                    SetInputValue={setInputValue}
-                                    selectedAddress={selectedAddress}
-                                    onSubmit={handleSearchSubmit}
-                                />
-                            </div>
-                            <div className='flex flex-row'>
-                                <Button variant={'secondary'} 
-                                    className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
-                                    onClick={() => handleLocateMe()}>
-                                    <Locate size={18} strokeWidth={2.5} />
-                                    <span className='hidden md:block'>Locate Me</span>
-                                </Button>
-                            </div>
-                            
-                        </div>
-                        {isRequesting ? (
-                            <div className='w-full flex flex-col relative'>
-                                <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
-                                <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
+                {!showSavedAddress ? (
+                    <>
+                        <div className={`my-2`}>
+                    
+                            <div className='flex flex-row items-center'>
+                                <div className='flex flex-col w-full'>
+                                    <SearchBarGeolocation 
+                                        placeHolder='enter street name or postcode and select' 
+                                        setGeocodingCollectionState={handleClearGeocoder}
+                                        clearInput={hideSuggestion}
+                                        InputValue={inputValue}
+                                        SetInputValue={setInputValue}
+                                        selectedAddress={selectedAddress}
+                                        onSubmit={handleSearchSubmit}
+                                    />
+                                </div>
+                                <div className='flex flex-row'>
+                                    <Button variant={'secondary'} 
+                                        className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
+                                        onClick={() => handleLocateMe()}>
+                                        <Locate size={18} strokeWidth={2.5} />
+                                        <span className='hidden md:block'>Locate Me</span>
+                                    </Button>
                                 </div>
                             </div>
-                        ) : null}
+                            {isDebounceLoading ? (
+                                <div className='w-full flex flex-col relative'>
+                                    <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
+                                    <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
+                                    </div>
+                                </div>
+                            ) : null}
 
-                        {searchResultsType.length > 0 ? (
-                            <div className='w-full flex flex-col relative'>
-                                <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
-                            </div>
-                        ) : null}
-                    </div>
-                    <div className='relative flex flex-col w-full h-full border-2'>
-                        <Map 
-                            {...mapState.viewState}
-                            style={{            
-                                width:'100%',
-                                height: '100%',
-                                zIndex:0,
-                            }}
-                            ref={mapRef}
-                            reuseMaps={true}
-                            mapStyle={mapState.mapStyle} 
-                            mapboxAccessToken={TOKEN}
-                            onMove={onMove}
-                            testMode={true}
-                            onClick={(e) => {
-                                e.originalEvent.stopPropagation();
-                                handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
-                            }}
-                        >
-                            {RenderMarker()}
-                        </Map>
+                            {searchResultsType.length > 0 ? (
+                                <div className='w-full flex flex-col relative'>
+                                    <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
+                                </div>
+                            ) : null}
+                        </div>
+                        <div className={`relative flex flex-col w-full h-full border-2`}>
+                            <Map 
+                                {...mapState.viewState}
+                                style={{            
+                                    width:'100%',
+                                    height: '100%',
+                                    zIndex:0,
+                                }}
+                                ref={mapRef}
+                                reuseMaps={true}
+                                mapStyle={mapState.mapStyle} 
+                                mapboxAccessToken={TOKEN}
+                                onMove={onMove}
+                                testMode={true}
+                                onClick={(e) => {
+                                    e.originalEvent.stopPropagation();
+                                    handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
+                                }}
+                            >
+                                {RenderMarker()}
+                            </Map>
+                            {selectedAddress !== '' ? (
+                                <div className='absolute flex flex-col w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
+                                    <label className='font-medium'>{selectedAddress}</label>
+                                </div>
+                            ) : (
+                                null
+                            )} 
+                        </div>
+                    </>
+                ): (
+                    <div className={`flex flex-col mt-5`}>
                         {selectedAddress !== '' ? (
-                            <div className='absolute flex flex-col w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
+                            <div className='flex flex-row w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
                                 <label className='font-medium'>{selectedAddress}</label>
                             </div>
                         ) : (
                             null
                         )} 
-                        
+                        <div className='w-full flex flex-row animate-fadeIn'>
+                            <SavedAddressList className='block' handler={handleSearchSelected} asAbsoluteClass={false} />
+                        </div>
                     </div>
-                    <div className='flex flex-row w-full mt-5 justify-between'>
+                )}
+                
+                
+                <div className='flex flex-row w-full mt-5 justify-between'>
                     <Button
                         className={`bg-green-600 hover:bg-white hover:text-green-500 }`}
                         onClick={(e) => {
@@ -324,6 +348,15 @@ const EditLocationMap = ({customClass}:Props) => {
                         disabled={selectedAddress === "" ? true : false}
                     >
                         Update Location
+                    </Button>
+                    <Button 
+                        className={`bg-white text-green-500 hover:bg-green-500 hover:text-white }`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowSavedAddress(!!!showSavedAddress);
+                        }}
+                    >
+                        {showSavedAddress ? "Show Map" : "Show Saved Address"} 
                     </Button>
                 </div>
             </div>

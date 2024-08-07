@@ -37,9 +37,9 @@ const Header = () => {
                   handleLocation();
                 }}
                 >
-                <div className="flex items-center gap-2 justify-center">
+                <div className="flex items-center gap-2 justify-center ">
                   <MapPin className="text-green-500"/>
-                  <span className="text-sm font-bold">{profileState.value}</span>
+                  <label className="xs:text-xs text-sm font-bold cursor-pointer">{profileState.full_value}</label>
                   {isEditLocation.isEdit ? (
                     <X size={15} strokeWidth={2.5} />
                   ): (

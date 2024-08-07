@@ -22,6 +22,8 @@ type checkOutSessionRequest = {
         unitNumber:string;
         deliveryInstruction:string;
         fullName:string;
+        lat:number;
+        lng:number;
     };
     restaurantId: string;
     gst:number;

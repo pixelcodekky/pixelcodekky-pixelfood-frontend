@@ -54,7 +54,7 @@ const AddressDetails = ({onSave, isLoading, customClass}:Props) => {
             formData.append("_id", ctx?.selectedUserAddress._id ?? "");
         }
 
-        formData.append("fullName", (formDataJson.fullName ?? ""));
+        formData.append("fullName", (ctx?.featureName !== "" ? ctx?.featureName ?? "" : (formDataJson.fullName ?? "")));
         formData.append("addressName", formDataJson.addressName);
         formData.append("buildingName", (formDataJson.buildingName || ""));
         formData.append("floor", (formDataJson.floor || ""));

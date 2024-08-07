@@ -104,6 +104,8 @@ const DetailPage = () => {
                 unitNumber: checkoutFormData.unitNumber || "",
                 deliveryInstruction: checkoutFormData.deliveryInstruction,
                 fullName: checkoutFormData.fullName || "",
+                lat: checkoutFormData.lat || 0,
+                lng: checkoutFormData.lng || 0,
             },
             gst:gstvalue,
             deliveryfee: restaurant.deliveryPrice,

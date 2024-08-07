@@ -31,6 +31,8 @@ export const CheckoutAddressFormSchema = z.object({
     unitNumber: z.string().optional(),
     deliveryInstruction: z.string({required_error: "required"}),
     fullName: z.string().optional(),
+    lat: z.number().optional(),
+    lng: z.number().optional(),
 });
 
 export type CheckoutAddressFormData = z.infer<typeof CheckoutAddressFormSchema>;
