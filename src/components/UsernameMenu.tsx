@@ -28,15 +28,25 @@ export const UsernameMenu = () => {
                     <span className='bounce'>Loading...</span>
                 ) : (
                     <>
-                        <CircleUserRound className='text-green-500'/>
-                        <span>
-                            {currentUser?.name || currentUser?.email || user?.name}
-                        </span>
+                        <div className='flex flex-row gap-1 hover:bg-gray-50 p-2 rounded-md'>
+                            <CircleUserRound />
+                            <span className='font-medium'>
+                                {currentUser?.name || currentUser?.email || user?.name}
+                            </span>
+                        </div>
+                        
                     </>
                 )}
             </DropdownMenuTrigger>
             <DropdownMenuContent className='shadow-lg'>
-                <div className='py-2'>
+                <div className='py-5'>
+                    <DropdownMenuItem>
+                        <Link 
+                            to='/order_status' 
+                            className='font-bold hover:text-green-500'>
+                                Orders
+                        </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                         <Link 
                             to='/manage_restaurant' 
@@ -58,7 +68,7 @@ export const UsernameMenu = () => {
                                 Address
                         </Link>
                     </DropdownMenuItem>
-                    <Separator className='my-3' />
+                    <Separator className='my-2' />
                     <DropdownMenuItem>
                         <Button onClick={async () => await logout()} className='flex flex-1 font-bold text-red-400 bg-white-200 hover:bg-red-400 hover:text-white gap-2'>
                             <LogOut size={15} /> Log Out

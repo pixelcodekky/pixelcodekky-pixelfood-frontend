@@ -9,7 +9,7 @@ export const MobileNavLinks = () => {
   return (
     <>
         <Link to='/order_status' className='flex bg-white items-center font-bold hover:text-green-500'>
-          Order Status
+          Orders
         </Link>
         <Link to='/manage_restaurant' className='flex bg-white items-center font-bold hover:text-green-500'>
         Manage Restaurant

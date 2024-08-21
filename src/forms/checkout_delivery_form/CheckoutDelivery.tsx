@@ -1,4 +1,4 @@
-import { User } from '@/types';
+import { User, UserAddress } from '@/types';
 import { CheckoutAddressFormData, CheckoutAddressFormSchema } from '@/common/FormSchemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,18 +12,23 @@ import { useAppSelector } from '@/statemgmt/hooks';
 
 type Props = {
     currentUser: User;
+    selectedAddress: UserAddress;
     onSave: (userProfileData: CheckoutAddressFormData) => void;
     isLoading: boolean;
     buttonText: string;
 }
 
-const CheckoutDelivery = ({currentUser, onSave, isLoading, buttonText}:Props) => {
+const CheckoutDelivery = ({currentUser, selectedAddress, onSave, isLoading, buttonText}:Props) => {
 
     const profileState = useAppSelector((x) => x.profile);
 
     const form = useForm<CheckoutAddressFormData>({
         resolver: zodResolver(CheckoutAddressFormSchema),
-        defaultValues: currentUser,
+        defaultValues: {
+            ...currentUser,
+            ...selectedAddress
+        },
+        
     }) 
 
     const onSubmit = (formJson: CheckoutAddressFormData) => {

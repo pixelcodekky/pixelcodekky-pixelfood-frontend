@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search } from 'lucide-react';
+import { Search, SearchIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { FormControl, FormField, FormItem, Form } from '../ui/form';
@@ -76,7 +76,12 @@ export const SearchBar = ({onSubmit, placeHolder, onReset, searchQuery, classNam
                 
                 ) : null}
                 
-                <Button type='submit' className='rounded-full bg-green-500'>Search</Button>
+                <Button type='submit' className='rounded-full bg-green-500'>
+                    <span className='hidden md:block'>Search</span>
+                    <SearchIcon 
+                    className='md:hidden'
+                    size={18} />
+                </Button>
             </form>
         </Form>
     )

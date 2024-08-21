@@ -1,8 +1,7 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { Button } from './ui/button'
 import { UsernameMenu } from './UsernameMenu';
-import { Link } from 'react-router-dom';
-import { FileSpreadsheet, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 
 const MainNav = () => {
     const {loginWithRedirect, isAuthenticated} = useAuth0();  
@@ -19,10 +18,9 @@ const MainNav = () => {
         <span className='flex space-x-2 items-center'>
           {isAuthenticated ? (
             <>
-              <Link to='/order_status' className='font-bold hover:text-green-500'>
-                {/* Order Status */}
+              {/* <Link to='/order_status' className='font-bold hover:text-green-500'>
                 <FileSpreadsheet className='text-white-500 hover:text-green-500' />
-              </Link>
+              </Link> */}
               <UsernameMenu />
             </>
             ) : (

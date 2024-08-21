@@ -356,7 +356,7 @@ const EditLocationMap = ({customClass}:Props) => {
                             className={`bg-white text-green-500 hover:bg-green-500 hover:text-white }`}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setShowSavedAddress(!!!showSavedAddress);
+                                setShowSavedAddress(!!!showSavedAddress); 
                             }}
                         >
                             {showSavedAddress ? "Show Map" : "Show Saved Address"} 

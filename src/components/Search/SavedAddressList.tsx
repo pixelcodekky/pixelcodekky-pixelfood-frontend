@@ -3,6 +3,7 @@ import { generateuuid } from "@/common/Utilities";
 import { SearchResultType, UserAddress } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type Props = {
     className?: string;
@@ -51,7 +52,7 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
                         (getAddress?.length ?? 0 > 0) ? (
                             getAddress?.map((data) => (
                                 <li key={generateuuid()}
-                                    className='flex flex-row p-4 gap-2 min-h-10 border-l-gray-300 text-left cursor-pointer hover:bg-green-200'
+                                    className='flex flex-row p-2 gap-2 min-h-10 border-l-gray-300 text-left cursor-pointer hover:bg-green-200'
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleSavedAddress(data);
@@ -71,8 +72,9 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
                             ))
                         ) : 
                         <li key={generateuuid()}>
-                            <div className='w-full flex flex-col relative'>
-                                No Address Found.
+                            <div className='w-full flex flex-col relative p-2'>
+                                <span>No Address Found. Go to <Link to={`/address_list`} className="text-green-600">Address Page</Link> to add new.</span>
+                                
                             </div>
                         </li>
                     )}

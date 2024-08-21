@@ -91,9 +91,7 @@ const Header = () => {
                 </div>
               </div>
               <div className="flex item-center">
-                <div className="">
-                  <MainNav/>
-                </div>
+                <MainNav/>
               </div>
           </div>
         </div>
