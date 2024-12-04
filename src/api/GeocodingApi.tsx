@@ -43,7 +43,6 @@ export const useGeocodingForward = (value: string) => {
             }
 
             const data = await res.json();
-            
             return data;
 
         } catch (error) {
@@ -74,7 +73,6 @@ export const useGeocodingReverse = (lng:string, lat:string) => {
             }
 
             const data = await res.json();
-
             return data;
         } catch (error) {
             console.log(error);

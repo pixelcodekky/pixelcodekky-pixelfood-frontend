@@ -56,12 +56,14 @@ const EditLocationMap = ({customClass}:Props) => {
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({lat:0, lng:0});
     const [showSavedAddress, setShowSavedAddress] = useState(false);
-    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
+    const [debounceInput, setDebounceInput ] = useState("");
+    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(debounceInput);
     const {data: geocodeReverse, isLoading: _isLoadingGeocodeReverse} = useGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "")
 
     //#region Search 
     useEffect(() => {
         debounceRequest(inputValue);
+        setDebounceInput(inputValue);
     }, [inputValue]);
 
     useEffect(() => {
@@ -69,10 +71,12 @@ const EditLocationMap = ({customClass}:Props) => {
     }, [geocodingCollectionState])
 
     useEffect(() => {
-        mapRef.current?.flyTo({
-            center: [locateMeCoord.lng, locateMeCoord.lat],
-            zoom: 17
-        });
+        if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
+            mapRef.current?.flyTo({
+                center: [locateMeCoord.lng, locateMeCoord.lat],
+                zoom: 17
+            });
+        }
         
         const load = async () => {
             if(geocodeReverse !== undefined){
@@ -244,6 +248,20 @@ const EditLocationMap = ({customClass}:Props) => {
                 </>
             )
         }
+        // else if(mapState.viewState.latitude > 0 && mapState.viewState.longitude > 0){
+        //     return (
+        //         <>
+        //             <Marker
+        //                 key={`${generateuuid}`}
+        //                 latitude={mapState.viewState.latitude}
+        //                 longitude={mapState.viewState.longitude}
+        //                 anchor='bottom'                       
+        //             >
+        //                 <CurrentPin className={`animate-bounce`}/>
+        //             </Marker> 
+        //         </>
+        //     )
+        // }
     }
 
     const handleMapOnClick = async (lng:number, lat: number) => {

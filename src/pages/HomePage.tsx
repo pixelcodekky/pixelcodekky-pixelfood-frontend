@@ -40,11 +40,13 @@ export const HomePage = () => {
     const [hideSuggestion, setHideSuggestion] = useState(true);
     const [_isRequesting, setIsRequesting] = useState(false);
     const [showSavedAddress, setShowSavedAddress] = useState(false);
-    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
+    const [debounceInput, setDebounceInput ] = useState("");
+    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(debounceInput);
     
     //trigger inputvalue onchange
     useEffect(() => {
         debounceRequest(inputValue);
+        setDebounceInput(inputValue);
     }, [inputValue]);
 
     useEffect(() => {
@@ -90,6 +92,7 @@ export const HomePage = () => {
                 setHideSuggestion(false);
                 //let res = await getMapGeocodingForward(value); // API Call
                 //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
+                //setDebounceInput(value);
                 if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
                     setGeocodingCollectionState(geocodeFroward.payload);
             }

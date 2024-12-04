@@ -25,7 +25,6 @@ export const useDebounce = <Func extends handler> (
         setTimer(newTimer);
     }) as Func;
 
-
     const clearDebounce = () => {
         clearTimeout(timerRef.current);
         timerRef.current = undefined;
