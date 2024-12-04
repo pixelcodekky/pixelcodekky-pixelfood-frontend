@@ -13,8 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '@/statemgmt/hooks';
 import { MapViewSelector, setViewport } from '@/statemgmt/map/MapViewSlice';
 import { Feature, SearchResultType, ViewMapState } from '@/types';
-import { getMapGeocodingForward, getMapGeocodingReverse } from '@/api/GeocodingApi';
-import { geocodingmapping } from '@/common/GoecodingTypeMatch';
+import { useGeocodingForward, useGeocodingReverse } from '@/api/GeocodingApi';
 import { generateuuid, useDebounce } from '@/common/Utilities';
 import CurrentPin from '../MapResource/CurrentPin';
 import { setProfile } from '@/statemgmt/profile/ProfileReducer';
@@ -57,7 +56,8 @@ const EditLocationMap = ({customClass}:Props) => {
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({lat:0, lng:0});
     const [showSavedAddress, setShowSavedAddress] = useState(false);
-    let geocodingCollection:Feature[] = [];
+    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
+    const {data: geocodeReverse, isLoading: _isLoadingGeocodeReverse} = useGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "")
 
     //#region Search 
     useEffect(() => {
@@ -75,20 +75,22 @@ const EditLocationMap = ({customClass}:Props) => {
         });
         
         const load = async () => {
-            let selectedcoords = await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
-            if(selectedcoords.features.length > 0){
-                setSelectedAddress(selectedcoords.features[0].properties.full_address);
-                geocodingCollection = geocodingmapping(selectedcoords);
-                //console.log(geocodingCollection);
-                const data = populateSelectedSearchResult(geocodingCollection);
-                setSelectedSearchResultType(data as SearchResultType);
+            if(geocodeReverse !== undefined){
+                let selectedcoords = geocodeReverse.payload; //await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
+                if(selectedcoords.length > 0){
+                    setSelectedAddress(selectedcoords[0].properties.full_address);
+                    
+                    const data = populateSelectedSearchResult(selectedcoords);
+                    setSelectedSearchResultType(data as SearchResultType);
+                }
             }
         };
+
         if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
             load();
         }
         
-    }, [locateMeCoord]);
+    }, [locateMeCoord, geocodeReverse]);
 
     const handleSearchSubmit = () => {
         //send lat long to Map
@@ -116,9 +118,11 @@ const EditLocationMap = ({customClass}:Props) => {
         }else{
             if(!isSelected){
                 setHideSuggestion(false);
-                let res = await getMapGeocodingForward(value); // API Call
-                geocodingCollection = geocodingmapping(res);
-                setGeocodingCollectionState(geocodingCollection);
+                //let res = await getMapGeocodingForward(value); // API Call
+                //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
+                //setGeocodingCollectionState(geocodingCollection);
+                if(geocodeFroward.payload !== undefined && geocodeFroward.payload.length > 0)
+                    setGeocodingCollectionState(geocodeFroward.payload);
             }
             
         }

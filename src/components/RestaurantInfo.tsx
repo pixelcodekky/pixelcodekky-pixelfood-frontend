@@ -2,11 +2,12 @@ import { Restaurant } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { CircleChevronDown, CircleChevronUp, Clock, Dot, MapPin, MapPinned, Truck } from "lucide-react";
 import { useAppSelector } from "@/statemgmt/hooks";
-import { getGeocodingStaticMapAPI } from "@/api/GeocodingApi";
+import { useGetcodingStaticMap } from "@/api/GeocodingApi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
 import { AccordionAnimation } from "@/animotion/AnimatedPage";
+import { Skeleton } from "./ui/skeleton";
 
 type Props = {
     restaurant: Restaurant;
@@ -18,6 +19,10 @@ const RestaurantInfo = ({restaurant}: Props) => {
     const profileState = useAppSelector((x) => x.profile);
     const [staticMap,setStaticMap] = useState("");
     const [showinMap, setShowInMap] = useState("");
+    const [latitude, setLatitude] = useState("");
+    const [longitude, setLongitude] = useState("");
+    //const [data, isLoading ] = useGetcodingStaticMap(latitude,longitude);
+    const {data, isLoading} = useGetcodingStaticMap(longitude, latitude);
     
     useEffect(() => {
         if(profileState.full_value === ''){
@@ -31,14 +36,18 @@ const RestaurantInfo = ({restaurant}: Props) => {
         const load = async () => {
             if(restaurant.address[0] !== undefined){
                 const address = restaurant.address[0];
-                let resStaticMap = await getGeocodingStaticMapAPI(address.lon.toString(),address.lat.toString());
-                if(resStaticMap !== ""){
-                    setStaticMap(resStaticMap);
-                    //build show in map
+                
+                if(address)
+                {
+                    setLatitude(address.lat.toFixed(4));
+                    setLongitude(address.lon.toFixed(4));
+                    
+                    setStaticMap(data || "");
                     setShowInMap(buildLinkString());
                 }
             }
         }
+
         load();
     },[restaurant])
 
@@ -49,13 +58,30 @@ const RestaurantInfo = ({restaurant}: Props) => {
         return `${provider}${coordination}`;
     }
 
+    if(isLoading){
+        return (
+           <>
+           <Card className="border-1">
+                <CardHeader>
+                    <CardTitle>
+                        <Skeleton className="h-[30px] w-[300px]"></Skeleton>
+                    </CardTitle>
+                    <CardContent>
+                        <Skeleton className="h-[50px] w-full"></Skeleton>
+                    </CardContent>
+                </CardHeader>
+           </Card>
+           </>
+        )
+    }
+
     return (
         <Card className="border-1">
             <CardHeader>
                 <CardTitle className='text-3xl font-bold tracking-tight'>
                     <div className="flex flex-row gap-2 items-center">
                         {restaurant.restaurantName}
-                        {staticMap === "" ? (
+                        {(staticMap) === "" ? (
                             null
                         ): isMoreInfoOpen ? (
                             <CircleChevronUp 
@@ -112,7 +138,7 @@ const RestaurantInfo = ({restaurant}: Props) => {
                     <div className="flex flex-row gap-2 text-xs">
                         <div className="flex flex-row items-center gap-1">
                             <MapPin size={14} className="text-green-500"/>
-                            {restaurant.distance !== undefined ? (`${restaurant.distance.toFixed(1)}km away | `) : null}
+                            {restaurant.distance !== undefined ? (`${restaurant?.distance?.toFixed(1)}km away | `) : null}
                         </div>
                         <div className="flex flex-row items-center gap-2">
                             <Truck size={14} strokeWidth="2" className="text-green-500"/>

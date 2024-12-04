@@ -6,10 +6,9 @@ import mainimg1 from '../assets/main_1.png';
 import mainimg2 from '../assets/main_2.png';
 import { LucideTruck, MapPinned, Search, SquareMousePointer } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { getMapGeocodingForward } from '@/api/GeocodingApi';
+import { useGeocodingForward } from '@/api/GeocodingApi';
 import { useCallback, useEffect, useState } from 'react';
 import { Feature, SearchResultType } from '@/types';
-import { geocodingmapping } from '@/common/GoecodingTypeMatch';
 import SearchBarGeolocation from '@/components/Search/SearchBarGeolocation';
 import SearchResultList from '@/components/Search/SearchResultList';
 import { useDebounce } from '@/common/Utilities';
@@ -41,7 +40,7 @@ export const HomePage = () => {
     const [hideSuggestion, setHideSuggestion] = useState(true);
     const [_isRequesting, setIsRequesting] = useState(false);
     const [showSavedAddress, setShowSavedAddress] = useState(false);
-    let geocodingCollection:Feature[] = [];
+    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
     
     //trigger inputvalue onchange
     useEffect(() => {
@@ -89,9 +88,10 @@ export const HomePage = () => {
         }else{
             if(!isSelected){
                 setHideSuggestion(false);
-                let res = await getMapGeocodingForward(value); // API Call
-                geocodingCollection = geocodingmapping(res);
-                setGeocodingCollectionState(geocodingCollection);
+                //let res = await getMapGeocodingForward(value); // API Call
+                //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
+                if(geocodeFroward.payload !== undefined && geocodeFroward.payload.length > 0)
+                    setGeocodingCollectionState(geocodeFroward.payload);
             }
             
         }

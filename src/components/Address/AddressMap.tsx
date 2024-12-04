@@ -4,8 +4,7 @@ import { Locate, Search } from 'lucide-react';
 import SearchResultList from '../Search/SearchResultList';
 import { Feature, SearchResultType, ViewMapState } from '@/types';
 import { generateuuid, useDebounce } from '@/common/Utilities';
-import { getMapGeocodingForward, getMapGeocodingReverse } from '@/api/GeocodingApi';
-import { geocodingmapping } from '@/common/GoecodingTypeMatch';
+import { useGeocodingForward, useGeocodingReverse } from '@/api/GeocodingApi';
 import Map, {
     Marker,
     ViewStateChangeEvent,
@@ -61,8 +60,9 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
     const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
     const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
     const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({lat:0, lng:0});
-    let geocodingCollection:Feature[] = [];
-
+    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
+    const {data: geocodeReverse, isLoading: _isLoadingGeocodeReverse} = useGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "")
+    
     //#region Search 
     useEffect(() => {
         debounceRequest(inputValue);
@@ -79,11 +79,11 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
         });
         
         const load = async () => {
-            let selectedcoords = await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
-            if(selectedcoords.features.length > 0){
-                setSelectedAddress(selectedcoords.features[0].properties.full_address);
+            let selectedcoords = geocodeReverse.payload; //await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
+            if(selectedcoords.length > 0){
+                setSelectedAddress(selectedcoords[0].properties.full_address);
                 ctx?.setCoords(locateMeCoord);
-                ctx?.setFeatureName(selectedcoords.features[0].properties.full_address);
+                ctx?.setFeatureName(selectedcoords[0].properties.full_address);
             }
         };
         if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
@@ -118,11 +118,12 @@ const AddressMap = ({customClass, BackButton=true}: Props) => {
         }else{
             if(!isSelected){
                 setHideSuggestion(false);
-                let res = await getMapGeocodingForward(value); // API Call
-                geocodingCollection = geocodingmapping(res);
-                setGeocodingCollectionState(geocodingCollection);
+                //let res = await getMapGeocodingForward(value); // API Call
+                //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
+                //setGeocodingCollectionState(geocodingCollection);
+                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
+                    setGeocodingCollectionState(geocodeFroward.payload);
             }
-            
         }
     }
 

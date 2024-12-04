@@ -1,241 +1,99 @@
 import { useQuery } from "react-query";
 
-const MAPBOX_GEOCODING_URL = import.meta.env.VITE_MAPBOX_GEOCODING_URL;
-const MAPBOX_GEOCODING_STATIC_MAP_URL = import.meta.env.VITE_MAPBOX_GEOCODING_STATIC_MAP_URL;
-const MAPBOX_API_KEY = import.meta.env.VITE_MAPBOX_API_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
-export const getGeocodingStaticMapAPI = async (lon:string, lat:string): Promise<string> => {
-    const accessToken = MAPBOX_API_KEY;
-    const url = `${MAPBOX_GEOCODING_STATIC_MAP_URL}`
-
-    //overlay,lon,lat,zoom,size
-    const size = '800x400';
-    const location = `${lon},${lat},16`
-    const strGeoJson = `geojson({"type": "Point", "coordinates": [${lon},${lat}]})`;
-    const addPath = `${strGeoJson}/${location}/${size}`;
-
-    const res = await fetch(`${url}${addPath}?access_token=${accessToken}`);
-
-    //const res = await fetch('https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-122.4403,37.8002,14,10/500x200@2x?access_token=pk.eyJ1IjoicGl4ZWxzb2Z0IiwiYSI6ImNsdjB1eGljdzAwN3EycXI5dzliYW9vc2EifQ.Bw5nFKXpCLgGXMQ8Bn5vIQ');
-    
-    if(res.status === 404){
-        return "";
-    }
-
-    const blob = await res.blob();
-
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64string = reader.result as string;
-            resolve(base64string);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    })
-}
-
-export const useGetGeocodingStaticMap = (lon:string, lat:string) => {
+export const useGetcodingStaticMap = (lon:string, lat:string) => {
     const getGeocodingStaticMap = async (): Promise<string> => {
-        const accessToken = MAPBOX_API_KEY;
-        const url = `${MAPBOX_GEOCODING_STATIC_MAP_URL}`
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/geocoder/staticmap/${lat}/${lon}`);
     
-        //overlay,lon,lat,zoom,size
-        const size = '800x400';
-        const location = `${lon},${lat},16`
-        const strGeoJson = `geojson({"type": "Point", "coordinates": [${lon},${lat}]})`;
-        const addPath = `${strGeoJson}/${location}/${size}`;
+            if(!res.ok)
+                throw new Error(res.statusText);
+            
+            const data = await res.json()
+
+            return data.payload as string;
     
-        const res = await fetch(`${url}${addPath}?access_token=${accessToken}`);
-    
-        //const res = await fetch('https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/-122.4403,37.8002,14,10/500x200@2x?access_token=pk.eyJ1IjoicGl4ZWxzb2Z0IiwiYSI6ImNsdjB1eGljdzAwN3EycXI5dzliYW9vc2EifQ.Bw5nFKXpCLgGXMQ8Bn5vIQ');
-        
-        if(res.status === 404){
+        } catch (error) {
+            console.log(error);
             return "";
         }
-
-        const blob = await res.blob();
-
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64string = reader.result as string;
-                resolve(base64string);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        })
-    
     }
 
-    const {data: results, isLoading} = useQuery(
-        'fetchgetGeocodingStaticMap',
-        async () => {
-            return getGeocodingStaticMap();
-        }
-        ,{
-            cacheTime: -1,
+    const {data, isLoading} = useQuery(
+        ['geocodingStaticMap', lon, lat],
+        getGeocodingStaticMap,
+        { 
+            enabled: lat !== "" && lon !== "",
+            retry: 1,
         }
     )
 
-    return {results, isLoading};
+    return {data, isLoading}
 }
 
-export const getGeocodingStaticMap = async (lon:string, lat:string) => {
-    const accessToken = MAPBOX_API_KEY;
-    const url = `${MAPBOX_GEOCODING_STATIC_MAP_URL}`
+export const useGeocodingForward = (value: string) => {
+    const getMapGeocodingForward = async () => {
+        try {
+            
+            const res = await fetch(`${API_BASE_URL}/api/geocoder/forward/${value}`);
 
-    const buildParams = {
-        overlay:`pin-s+#1a6b11(${lon},${lat})`,
-        lon:lon,
-        lat:lat,
-        zoom:'14',
-        bearing:'0',
-        size:'500x300@2x',
-    }
+            if(!res.ok){
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
 
-    const queryString = new URLSearchParams(buildParams).toString();
+            const data = await res.json();
 
-    const reqOptions = {
-        method: 'GET'
-    }
+            return data;
 
-    const res = await fetch(`${url}${queryString}?access_token=${accessToken}`, reqOptions);
-
-    return res;
-
-}
-
-export const getMapGeocodingForward = async (value:string) => {
-    const accessToken = MAPBOX_API_KEY;
-    const url = `${MAPBOX_GEOCODING_URL}forward?`
-
-    const buildParams = {
-        q: value,
-        limit: "5",
-        country:"sg",
-        types:"postcode,address,secondary_address,street",
-        access_token: accessToken
-    }
-
-    const queryString = new URLSearchParams(buildParams).toString();
-
-    const reqOptions = {
-        method: 'GET'
-    }
-
-    const res = await fetch(`${url}${queryString}`, reqOptions);
-
-    if(!res.ok){
-        throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    var result = await res.json();
-    return result;
-}
-
-export const useGetMapboxGeocodingForward = (location:string) => {
-    const getGeocodingForward = async () => {
-        
-        const accessToken = MAPBOX_API_KEY;
-        const url = `${MAPBOX_GEOCODING_URL}forward?`
-
-        const params = {
-            q:location,
-            country:"sg",
-            types:"postcode,address,secondary_address,street",
-            access_token: accessToken
+        } catch (error) {
+            console.log(error);
+            return undefined;
         }
-
-        const queryString = new URLSearchParams(params).toString();
-
-        const reqOptions = {
-            method: 'GET'
-        }
-
-        const res = await fetch(`${url}${queryString}`, reqOptions);
-        
-        if(!res.ok){
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
-
-        var result = await res.json();
-        
-        return result;
     }
 
-    const {data: results, isLoading} = useQuery(
-        'fetchGeocodingforward',
-        getGeocodingForward
+    const {data, isLoading} = useQuery(
+        ['getMapGeocodingForward', value],
+        getMapGeocodingForward,
+        {
+            enabled: value !== "",
+            retry: 1,
+        }
     )
 
-    return {results, isLoading};
+    return {data, isLoading}
 }
 
-export const getMapGeocodingReverse = async (lng:string, lat:string) => { 
-    const accessToken = MAPBOX_API_KEY;
-    const url = `${MAPBOX_GEOCODING_URL}reverse?`
-    const buildParams = {
-        longitude: lng,
-        latitude: lat,
-        country:"sg",
-        types:"postcode,address,secondary_address,street",
-        access_token: accessToken
+export const useGeocodingReverse = (lng:string, lat:string) => {
+    const getMapGeocodingReverse = async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/geocoder/reverse/${lat}/${lng}`);
+           
+            if(!res.ok){
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            return data;
+        } catch (error) {
+            console.log(error);
+            return undefined;
+        }
     }
 
-    const queryString = new URLSearchParams(buildParams).toString();
+    const {data, isLoading} = useQuery(
+        ['getMapGeocodingReverse',lng,lat],
+        getMapGeocodingReverse,
+        {
+            enabled: lat !== "" && lng !== "",
+            retry: 1,
+        }
+    );
 
-    const reqOptions = {
-        method: 'GET'
-    }
-
-    const res = await fetch(`${url}${queryString}`, reqOptions);
-
-    if(!res.ok){
-        throw new Error(`HTTP error! status: ${res.status}`);
-    }
-    var result = await res.json();
-    return result;
+    return {data, isLoading};
 }
 
-export const useGetMapboxGeocodingReverse = (lng: string, lat:string) => {
-    const getMapGeocodingReverse = async () => { 
-        const accessToken = MAPBOX_API_KEY;
-        const url = `${MAPBOX_GEOCODING_URL}reverse?`
-        const buildParams = {
-            longitude: lng,
-            latitude: lat,
-            country:"sg",
-            types:"postcode,address,secondary_address,street",
-            access_token: accessToken
-        }
-    
-        const queryString = new URLSearchParams(buildParams).toString();
-    
-        const reqOptions = {
-            method: 'GET'
-        }
-    
-        const res = await fetch(`${url}${queryString}`, reqOptions);
-    
-        if(!res.ok){
-            throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        var result = await res.json();
-        return result;
-    }
 
-    const {data: results, isLoading, isError, isFetching} = useQuery(
-        'fetchGeocodingReverse',
-        async () => {
-            return getMapGeocodingReverse();
-        },
-        { enabled: lat !== "" && lng !== "" }
-    )
-
-    return {results, isLoading, isFetching, isError};
-
-
-}
 
 
