@@ -43,7 +43,7 @@ export const useGeocodingForward = (value: string) => {
             }
 
             const data = await res.json();
-
+            
             return data;
 
         } catch (error) {

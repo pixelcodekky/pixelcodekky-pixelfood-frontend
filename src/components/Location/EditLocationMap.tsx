@@ -121,7 +121,7 @@ const EditLocationMap = ({customClass}:Props) => {
                 //let res = await getMapGeocodingForward(value); // API Call
                 //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
                 //setGeocodingCollectionState(geocodingCollection);
-                if(geocodeFroward.payload !== undefined && geocodeFroward.payload.length > 0)
+                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
                     setGeocodingCollectionState(geocodeFroward.payload);
             }
             

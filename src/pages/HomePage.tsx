@@ -90,7 +90,7 @@ export const HomePage = () => {
                 setHideSuggestion(false);
                 //let res = await getMapGeocodingForward(value); // API Call
                 //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
-                if(geocodeFroward.payload !== undefined && geocodeFroward.payload.length > 0)
+                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
                     setGeocodingCollectionState(geocodeFroward.payload);
             }
             
