@@ -63,12 +63,17 @@ const EditLocationMap = ({customClass}:Props) => {
     //#region Search 
     useEffect(() => {
         debounceRequest(inputValue);
-        setDebounceInput(inputValue);
     }, [inputValue]);
 
     useEffect(() => {
         populateSearchResult();
     }, [geocodingCollectionState])
+
+    useEffect(() => {
+        if(geocodeFroward){
+            populateGeocodingCollectionState(geocodeFroward);
+        }
+    },[geocodeFroward])
 
     useEffect(() => {
         if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
@@ -125,10 +130,17 @@ const EditLocationMap = ({customClass}:Props) => {
                 //let res = await getMapGeocodingForward(value); // API Call
                 //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
                 //setGeocodingCollectionState(geocodingCollection);
-                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
-                    setGeocodingCollectionState(geocodeFroward.payload);
+                setDebounceInput(value);
+                populateGeocodingCollectionState(geocodeFroward);
             }
             
+        }
+    }
+
+    const populateGeocodingCollectionState = (collection: any) => {
+        if(collection !== undefined && collection.payload.length > 0){
+            const updatedCollection = collection.payload;
+            setGeocodingCollectionState(updatedCollection);
         }
     }
 

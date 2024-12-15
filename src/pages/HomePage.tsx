@@ -46,12 +46,17 @@ export const HomePage = () => {
     //trigger inputvalue onchange
     useEffect(() => {
         debounceRequest(inputValue);
-        setDebounceInput(inputValue);
     }, [inputValue]);
 
     useEffect(() => {
         populateSearchResult();
-    }, [geocodingCollectionState])
+    },[geocodingCollectionState])
+
+    useEffect(() => {
+        if(geocodeFroward){
+            populateGeocodingCollectionState(geocodeFroward);
+        }
+    },[geocodeFroward])
 
     const handleSearchSubmit = () => {
         //find selected address
@@ -63,19 +68,7 @@ export const HomePage = () => {
                 pathname: `/search/${address.lng}/${address.lat}`,
             })
         }
-        
     }
-
-    // const handleSearchSubmit = (values: SearchForm) => {
-    //     setGeocodingValue(values.searchQuery);
-        
-    //     geocodingCollection = geocodingmapping(results);
-    //     setGeocodingCollectionState(geocodingCollection);
-
-    //     // navigate({
-    //     //     pathname: `/search/${values.searchQuery}`,
-    //     // })
-    // }
 
     const handleOnChange = async (value: string) => {
         if(value.length > 0) {
@@ -92,11 +85,23 @@ export const HomePage = () => {
                 setHideSuggestion(false);
                 //let res = await getMapGeocodingForward(value); // API Call
                 //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
-                //setDebounceInput(value);
-                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
-                    setGeocodingCollectionState(geocodeFroward.payload);
+                setDebounceInput(value);
+                
+                // if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0){
+                //     const updatedCollection = geocodeFroward.payload;
+                //     setGeocodingCollectionState(updatedCollection);
+                //     console.log('fetched handleOnChange', updatedCollection);
+                // }
+                populateGeocodingCollectionState(geocodeFroward);
             }
             
+        }
+    }
+
+    const populateGeocodingCollectionState = (collection: any) => {
+        if(collection !== undefined && collection.payload.length > 0){
+            const updatedCollection = collection.payload;
+            setGeocodingCollectionState(updatedCollection);
         }
     }
 
@@ -125,7 +130,7 @@ export const HomePage = () => {
         });
         if(res.length == 0){
             setHideSuggestion(true); 
-        }
+        } 
         setSearchResultsType(res);
         hideIsRequesting();
     }
@@ -143,7 +148,7 @@ export const HomePage = () => {
         setIsRequesting(false);
     }
 
-    const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue]);
+    const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue, debounceInput]);
 
     const onChange = (value: string) => {
         setInputValue(value);
