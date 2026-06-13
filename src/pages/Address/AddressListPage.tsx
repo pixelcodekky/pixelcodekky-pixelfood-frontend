@@ -1,5 +1,4 @@
 import { useGetUserAddress, useRemoveAddress } from '@/api/MyAddressApi';
-import { generateuuid } from '@/common/Utilities';
 import { Button } from '@/components/ui/button';
 import { Edit, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
