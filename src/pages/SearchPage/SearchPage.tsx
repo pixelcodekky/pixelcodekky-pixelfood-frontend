@@ -33,39 +33,39 @@ export const SearchPage = () => {
       setSelectedCuisines(searchStateSelector.selectedCuisines);
     },[searchStateSelector])
 
-    const setSortOption = async (sortOption: string) => {
+    const setSortOption = (sortOption: string) => {
       let newState = {...searchState}; //copy object to new one;
       newState.sortOption = sortOption;
       //dispatch(dataSortOption(newState));
       setSearchState({ ...newState});
     }
 
-    const setSelectedCuisines = async (_selectedCuisines: string[]) => {
+    const setSelectedCuisines = (_selectedCuisines: string[]) => {
       let newState = {...searchState}; //copy object to new one;
       newState.selectedCuisines = _selectedCuisines;
       dispatch(dataSelectedCuisines(newState));
       setSearchState({ ...newState});
     }
 
-    const setPage = async (page: number) => {
+    const setPage = (page: number) => {
       let newState = {...searchState}; //copy object to new one;
       newState.page = page;
       dispatch(dataPage(newState));
       setSearchState({...newState});
     }
 
-    const setSearchQuery = async (searchFormData: SearchForm) => {
+    const setSearchQuery = (searchFormData: SearchForm) => {
       let newState = {...searchState}; //copy object to new one;
       newState.searchQuery = searchFormData.searchQuery;
       dispatch(dataSearchQuery(newState));
       setSearchState({...newState});
     }
 
-    const resetSearch = async () => {
+    const resetSearch = () => {
       let newState = {...searchState}; //copy object to new one;
       newState.searchQuery = "";
-      await dispatch(dataResetSearch());
-      await setSearchState(newState);
+      dispatch(dataResetSearch());
+      setSearchState(newState);
     }
 
     const handleShowonMap = () => {
@@ -127,7 +127,7 @@ export const SearchPage = () => {
                       <Map strokeWidth={2.5} className='ml-1 text-black-500 hidden md:block' />
                     </Button>
                     <div className="md:hidden">
-                      <Button onClick={() => {setIsFilterOpen(!!!isFilterOpen)}} className='flex flex-row justify-center text-green-500 bg-white-200 rounded-full hover:bg-green-200  p-5'>
+                      <Button onClick={() => {setIsFilterOpen(!isFilterOpen)}} className='flex flex-row justify-center text-green-500 bg-white-200 rounded-full hover:bg-green-200  p-5'>
                         Filters
                         <ListFilter strokeWidth={2} />
                       </Button>

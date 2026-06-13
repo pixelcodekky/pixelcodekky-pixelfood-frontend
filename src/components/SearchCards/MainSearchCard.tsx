@@ -15,8 +15,8 @@ const MainSearchCard = ({restaurant}: Props) => {
         return (
             <>
                 <div className="flex flex-start gap-2">
-                    {restaurant.cuisines.slice(0, 2).map((d, index) => (
-                        <Badge variant={"outline"} key={index} className="border-green-400">{d}</Badge>
+                    {restaurant.cuisines.slice(0, 2).map((d) => (
+                        <Badge variant={"outline"} key={d} className="border-green-400">{d}</Badge>
                     ))}
                 </div>
             </>

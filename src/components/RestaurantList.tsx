@@ -32,10 +32,10 @@ const RestaurantList = ({data, setPage}: Props) => {
           animate='show'>
           <div className="flex flex-col min-h-[400px]">
             <ul className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
-              {data?.data.map((d, index) => (
-                <li key={index}>
+              {data?.data.map((d) => (
+                <li key={d._id}>
                   <motion.div variants={SearchResultGrid}>
-                    <SearchResultCard restaurant={d} key={index} />
+                    <SearchResultCard restaurant={d} />
                   </motion.div>
                 </li>
               ))}

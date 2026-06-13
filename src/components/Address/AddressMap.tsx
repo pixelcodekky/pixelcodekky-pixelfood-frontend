@@ -2,9 +2,9 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import SearchBarGeolocation from '../Search/SearchBarGeolocation';
 import { Locate, Search } from 'lucide-react';
 import SearchResultList from '../Search/SearchResultList';
-import { Feature, SearchResultType, ViewMapState } from '@/types';
-import { generateuuid, useDebounce } from '@/common/Utilities';
-import { useGeocodingForward, useGeocodingReverse } from '@/api/GeocodingApi';
+import { SearchResultType } from '@/types';
+import { generateuuid, useGeocodingSearch } from '@/common';
+import { useGeocodingReverse } from '@/api/GeocodingApi';
 import Map, {
     Marker,
     ViewStateChangeEvent,
@@ -20,17 +20,9 @@ import { useNavigate } from 'react-router-dom';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_API_KEY;
 
-// const initialState : SearchResultType = {
-//     value: '',
-//     key: '',
-//     full_value: '',
-//     lat: 0,
-//     lng: 0,
-// }
-
 interface Coordinate {
     lat: number,
-    lng: number 
+    lng: number
 }
 
 type Props = {
@@ -38,292 +30,188 @@ type Props = {
     BackButton?: boolean;
 }
 
-const AddressMap = ({customClass, BackButton=true}: Props) => {
+const AddressMap = ({ customClass, BackButton = true }: Props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const mapState = useAppSelector(MapViewSelector);
     const mapRef = useRef<MapRef>(null);
     const ctx = useContext(AddressContext);
 
-    const [hideSuggestion, setHideSuggestion] = useState(false);
-    const [inputValue, setInputValue] = useState("");
     const [selectedAddress, setSelectedAddress] = useState("");
-    const [isRequesting, setIsRequesting] = useState(false);
-    const [isSelected, setIsSelected] = useState(false);
-    const [selectedSearchResultType, setSelectedSearchResultType] = useState<SearchResultType>({
-        value: '',
-        key: '',
-        full_value: '',
-        lat: 0,
-        lng: 0,
-    });
-    const [searchResultsType, setSearchResultsType] = useState<SearchResultType[]>([]);
-    const [geocodingCollectionState, setGeocodingCollectionState] = useState<Feature[]>([]);
-    const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({lat:0, lng:0});
-    const {data: geocodeFroward, isLoading: _isLoadingGeocodeForward} = useGeocodingForward(inputValue);
-    const {data: geocodeReverse, isLoading: _isLoadingGeocodeReverse} = useGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "")
-    
-    //#region Search 
-    useEffect(() => {
-        debounceRequest(inputValue);
-    }, [inputValue]);
+    const [locateMeCoord, setLocateMeCoord] = useState<Coordinate>({ lat: 0, lng: 0 });
+
+    const {
+        inputValue,
+        hideSuggestion,
+        searchResults,
+        selectedResult,
+        isDebounceLoading,
+        clearSearch,
+        onSelect,
+        onChange,
+    } = useGeocodingSearch();
+
+    const { data: geocodeReverse } = useGeocodingReverse(
+        locateMeCoord.lng.toString(),
+        locateMeCoord.lat.toString()
+    );
 
     useEffect(() => {
-        populateSearchResult();
-    }, [geocodingCollectionState])
+        mapRef.current?.flyTo({ center: [locateMeCoord.lng, locateMeCoord.lat], zoom: 17 });
 
-    useEffect(() => {
-        mapRef.current?.flyTo({
-            center: [locateMeCoord.lng, locateMeCoord.lat],
-            zoom: 17
-        });
-        
-        const load = async () => {
-            let selectedcoords = geocodeReverse.payload; //await getMapGeocodingReverse(locateMeCoord.lng.toString() || "", locateMeCoord.lat.toString() || "");
-            if(selectedcoords.length > 0){
-                setSelectedAddress(selectedcoords[0].properties.full_address);
+        if (locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0 && geocodeReverse) {
+            const coords = geocodeReverse.payload;
+            if (coords.length > 0) {
+                setSelectedAddress(coords[0].properties.full_address);
                 ctx?.setCoords(locateMeCoord);
-                ctx?.setFeatureName(selectedcoords[0].properties.full_address);
+                ctx?.setFeatureName(coords[0].properties.full_address);
             }
-        };
-        if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
-            load();
         }
-        
     }, [locateMeCoord]);
 
     const handleSearchSubmit = () => {
-        //send lat long to Map
-        if(isSelected){
-            let address = selectedSearchResultType;
-            setLocateMeCoord({ 
-                lat: address.lat || 0,
-                lng: address.lng || 0
-            });
-            setSelectedAddress(address.full_value);
+        if (selectedResult.full_value !== '') {
+            setLocateMeCoord({ lat: selectedResult.lat || 0, lng: selectedResult.lng || 0 });
+            setSelectedAddress(selectedResult.full_value);
         }
-        handleClearGeocoder();
+        clearSearch();
     }
 
-    const handleOnChange = async (value: string) => {
-        if(value.length > 0) {
-            setIsRequesting(true);
-        }
-        if(value.length == 0) {
-            hideIsRequesting();
-            setHideSuggestion(true);
-            setInputValue("");
-            setIsSelected(false);
-            clearDebounce();
-        }else{
-            if(!isSelected){
-                setHideSuggestion(false);
-                //let res = await getMapGeocodingForward(value); // API Call
-                //geocodingCollection = await getMapGeocodingForward(value); //geocodingmapping(res);
-                //setGeocodingCollectionState(geocodingCollection);
-                if(geocodeFroward !== undefined && geocodeFroward.payload.length > 0)
-                    setGeocodingCollectionState(geocodeFroward.payload);
-            }
-        }
+    const handleSearchSelected = (result: SearchResultType) => {
+        onSelect(result);
+        setSelectedAddress(result.full_value);
     }
 
-    const {debounceFunction, clearDebounce} = useDebounce(handleOnChange);
-    const debounceRequest = useCallback((value: string) => debounceFunction(value), [inputValue]);
-
-    const populateSearchResult = () => {
-        let res = geocodingCollectionState.map((data) => {
-            return {
-                value: data.properties.name,
-                key: data.properties.mapbox_id,
-                full_value: data.properties.full_address,
-                lat: data.properties.coordinates.latitude,
-                lng: data.properties.coordinates.longitude
-            }
-        });
-        if(res.length == 0){
-            setHideSuggestion(true);
-        }
-        setSearchResultsType(res);
-        hideIsRequesting();
-    }
-
-    const handleClearGeocoder = () => {
-        setGeocodingCollectionState([]);
-        setHideSuggestion(true);
+    const handleClearAll = () => {
+        clearSearch();
         setSelectedAddress("");
-        hideIsRequesting();
-        setInputValue("");
-        setIsSelected(false);
-        clearDebounce();
     }
 
-    const handleSearchSelected = (searchResult:SearchResultType) => {
-        setInputValue(searchResult.full_value);
-        setSelectedSearchResultType(searchResult);
-        setIsSelected(true);
-    }
-
-    const hideIsRequesting = () => {
-        setIsRequesting(false);
-    }
-
-    const handleLocateMe = async () => {
-        navigator.geolocation.getCurrentPosition(position => {
-            const {coords} = position;
-            const lat = coords.latitude;
-            const lng = coords.longitude;
-            setLocateMeCoord({ 
-                lat: lat || 0,
-                lng: lng || 0
-            });
-            
+    const handleLocateMe = () => {
+        navigator.geolocation.getCurrentPosition(({ coords }) => {
+            setLocateMeCoord({ lat: coords.latitude, lng: coords.longitude });
         });
     }
-    //#endregion Search
 
-    //#region MapFunction
+    const mapStyleRef = useRef(mapState.mapStyle);
+    mapStyleRef.current = mapState.mapStyle;
 
-    const onMove = useCallback((e: ViewStateChangeEvent) => {
-        const onMoveState: ViewMapState = {
-            mapStyle: mapState.mapStyle,
+    const onMoveEnd = useCallback((e: ViewStateChangeEvent) => {
+        dispatch(setViewport({
+            mapStyle: mapStyleRef.current,
             viewState: {
                 latitude: e.viewState.latitude,
                 longitude: e.viewState.longitude,
                 zoom: e.viewState.zoom,
             }
-        }
-        dispatch(setViewport(onMoveState));
-    }, []);
+        }));
+    }, [dispatch]);
 
     const RenderMarker = () => {
-        if(locateMeCoord.lat !== 0 && locateMeCoord.lng !== 0){
-            
-            return (
-                <>
-                    <Marker
-                        key={`${generateuuid}`}
-                        latitude={locateMeCoord.lat}
-                        longitude={locateMeCoord.lng}
-                        anchor='bottom'                       
-                    >
-                        <CurrentPin className={`animate-bounce`}/>
-                    </Marker> 
-                </>
-            )
-        }
+        if (locateMeCoord.lat === 0 && locateMeCoord.lng === 0) return null;
+        return (
+            <Marker
+                key={generateuuid()}
+                latitude={locateMeCoord.lat}
+                longitude={locateMeCoord.lng}
+                anchor='bottom'
+            >
+                <CurrentPin className='animate-bounce' />
+            </Marker>
+        );
     }
-
-    const handleMapOnClick = (lng:number, lat: number) => {
-        setLocateMeCoord({lat: lat, lng: lng});
-    }
-
-    //#endregion MapFunction
-
-    //#region privateFunction
-    const handleBackList = () => {
-        navigate("/address_list");
-    }
-    //#endregion
 
     return (
         <>
-            <div className={`${customClass}`}>
+            <div className={customClass}>
                 <div className='mb-2'>
                     <div className='flex flex-row items-center'>
                         <div className='flex flex-col w-full'>
-                            <SearchBarGeolocation 
-                                placeHolder='enter street name or postcode and select' 
-                                setGeocodingCollectionState={handleClearGeocoder}
+                            <SearchBarGeolocation
+                                placeHolder='enter street name or postcode and select'
+                                SetInputValue={onChange}
+                                setGeocodingCollectionState={handleClearAll}
                                 clearInput={hideSuggestion}
                                 InputValue={inputValue}
-                                SetInputValue={setInputValue}
                                 selectedAddress={selectedAddress}
                                 onSubmit={handleSearchSubmit}
                             />
                         </div>
                         <div className='flex flex-row'>
-                            <Button variant={'secondary'} 
+                            <Button
+                                variant='secondary'
                                 className='flex flex-row items-center justify-center gap-1 hover:bg-green-500 hover:text-white'
-                                onClick={() => handleLocateMe()}>
+                                onClick={handleLocateMe}
+                            >
                                 <Locate size={18} strokeWidth={2.5} />
                                 <span className='hidden md:block'>Locate Me</span>
                             </Button>
                         </div>
-                        
                     </div>
-                    {isRequesting ? (
+
+                    {isDebounceLoading ? (
                         <div className='w-full flex flex-col relative'>
                             <div className='flex flex-row p-4 gap-2 z-10 min-h-10 absolute w-full rounded-lg shadow-xl bg-zinc-100'>
-                            <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
+                                <Search className='animate-bounce' /><span className='animate-bounce'> Loading...</span>
                             </div>
                         </div>
                     ) : null}
 
-                    {searchResultsType.length > 0 ? (
+                    {searchResults.length > 0 ? (
                         <div className='w-full flex flex-col relative'>
-                            <SearchResultList results={searchResultsType} handler={handleSearchSelected} className={hideSuggestion ? "invisible" : "visible"}/>   
+                            <SearchResultList
+                                results={searchResults}
+                                handler={handleSearchSelected}
+                                className={hideSuggestion ? "invisible" : "visible"}
+                            />
                         </div>
                     ) : null}
                 </div>
+
                 <div className='relative flex flex-col w-full h-[450px] border-2'>
-                    <Map 
-                        {...mapState.viewState}
-                        style={{            
-                            width:'100%',
-                            height: '100%',
-                            zIndex:0,
-                        }}
+                    <Map
+                        initialViewState={mapState.viewState}
+                        style={{ width: '100%', height: '100%', zIndex: 0 }}
                         ref={mapRef}
                         reuseMaps={true}
-                        mapStyle={mapState.mapStyle} 
+                        mapStyle={mapState.mapStyle}
                         mapboxAccessToken={TOKEN}
-                        onMove={onMove}
+                        onMoveEnd={onMoveEnd}
                         testMode={true}
                         onClick={(e) => {
                             e.originalEvent.stopPropagation();
-                            handleMapOnClick(e.lngLat.lng, e.lngLat.lat);
+                            setLocateMeCoord({ lat: e.lngLat.lat, lng: e.lngLat.lng });
                         }}
                     >
                         {RenderMarker()}
                     </Map>
-                    {selectedAddress !== '' ? (
+                    {selectedAddress !== '' && (
                         <div className='absolute flex flex-col w-full items-center justify-center p-2 bg-opacity-70 bg-green-400'>
                             <label className='font-medium'>{selectedAddress}</label>
                         </div>
-                    ) : (
-                        null
-                    )} 
-                    
+                    )}
                 </div>
+
                 <div className='flex flex-row w-full mt-5 justify-between'>
-                    {BackButton ? (
+                    {BackButton && (
                         <Button
                             className='bg-white text-green-500'
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleBackList();
-                            }}
+                            onClick={(e) => { e.preventDefault(); navigate("/address_list"); }}
                         >
                             Back to List
                         </Button>
-                    ): null}
+                    )}
                     <Button
-                        className={`bg-green-600 hover:bg-white hover:text-green-500 }`}
-                        onClick={() => {
-                            //stepoption(true);
-                            ctx?.setNextPage(true);
-                        }}
-                        disabled={selectedAddress === "" ? true : false}
+                        className='bg-green-600 hover:bg-white hover:text-green-500'
+                        onClick={() => ctx?.setNextPage(true)}
+                        disabled={selectedAddress === ""}
                     >
                         Next
                     </Button>
                 </div>
             </div>
-            
-            
         </>
-        
-    )
+    );
 }
 
 export default AddressMap

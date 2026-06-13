@@ -66,13 +66,11 @@ const ManageRestaurantForm = ({ restaurant ,onSave, isLoading }: Props ) => {
     useEffect(() => {
         if (!restaurant) return;
 
-        const deliveryPriceMap = parseInt(
-            (restaurant.deliveryPrice / 100).toFixed(2)
-        );
+        const deliveryPriceMap = Math.round(restaurant.deliveryPrice / 100);
 
         const menuItemMap = restaurant.menuItems.map((item) => ({
-            ...item, 
-            price: parseInt((item.price / 100).toFixed(2)),
+            ...item,
+            price: Math.round(item.price / 100),
         }));
 
         const restaurantMap = {

@@ -30,10 +30,9 @@ export const QuantityButton = ({addquantity, minusquantity, qty = 0}: Props) => 
                 null
             )}
             
-            <button>
+            <button onClick={addquantity}>
                 <CirclePlus
-                    className={`font-bold hover:text-green-500 ${qty === 0 ? "rounded-full text-black-400 bg-white" : ""} `} 
-                    onClick={addquantity}
+                    className={`font-bold hover:text-green-500 ${qty === 0 ? "rounded-full text-black-400 bg-white" : ""} `}
                 />
             </button>
             

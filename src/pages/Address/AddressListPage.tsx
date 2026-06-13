@@ -51,7 +51,7 @@ const AddressListPage = () => {
                     <span>Loading...</span> 
                 ): (
                     (getAddress?.length ?? 0) > 0 ?  (getAddress?.map((data) => (
-                            <div key={generateuuid()} 
+                            <div key={data._id}
                                 className='w-full lg:w-1/2 space-y-3 bg-white border p-5 rounded-lg shadow-lg'>
                                 <div className={`flex flex-row justify-between`}>
                                     <label>{data.addressName}</label>

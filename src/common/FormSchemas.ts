@@ -16,7 +16,8 @@ export type AddressDetailsFormData = z.infer<typeof AddressDetailsFormSchema>;
 
 
 
-const phoneValidation = /^[89][0-9]{7}$/ //new RegExp();
+// Singapore mobile numbers only: 8 digits, starting with 8 or 9
+const phoneValidation = /^[89][0-9]{7}$/;
 export const CheckoutAddressFormSchema = z.object({
     email: z.string().optional(),
     name: z.string({required_error: "required"})

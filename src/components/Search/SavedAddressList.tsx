@@ -1,5 +1,4 @@
 import { useGetUserAddress } from "@/api/MyAddressApi";
-import { generateuuid } from "@/common/Utilities";
 import { SearchResultType, UserAddress } from "@/types";
 import { useAuth0 } from "@auth0/auth0-react";
 import { MapPin } from "lucide-react";
@@ -35,13 +34,13 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
         <>
             <div className={`flex flex-col ${asAbsoluteClass ? "z-9 absolute" : ""} w-full rounded-lg shadow-xl bg-zinc-100 ${className ? className : ""} `}>
                 <ul className='flex flex-col rounded-lg overflow-y-auto transition ease-in-out delay-150'>
-                    <li key={generateuuid()}
+                    <li key="header"
                     className={`flex flex-col p-1 gap-2 min-h-7 border-l-gray-300 text-sm bg-slate-300`}
                     >   
                         Saved Address
                     </li>
                     {getLoading ? (
-                        <li key={generateuuid()}>
+                        <li key="loading">
                             <div className='w-full flex flex-col'>
                                 <div className='flex flex-row p-4 gap-2 z-10 min-h-10 w-full rounded-lg shadow-xl bg-zinc-100'>
                                 <span className='animate-bounce'> Loading...</span>
@@ -49,9 +48,9 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
                             </div>
                         </li>
                     ):(
-                        (getAddress?.length ?? 0 > 0) ? (
+                        (getAddress?.length ?? 0) > 0 ? (
                             getAddress?.map((data) => (
-                                <li key={generateuuid()}
+                                <li key={data._id}
                                     className='flex flex-row p-2 gap-2 min-h-10 border-l-gray-300 text-left cursor-pointer hover:bg-green-200'
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -71,7 +70,7 @@ const SavedAddressList = ({className, handler, asAbsoluteClass=true}:Props) => {
                                 </li>
                             ))
                         ) : 
-                        <li key={generateuuid()}>
+                        <li key="no-address">
                             <div className='w-full flex flex-col relative p-2'>
                                 <span>No Address Found. Go to <Link to={`/address_list`} className="text-green-600">Address Page</Link> to add new.</span>
                                 

@@ -3,8 +3,6 @@ import { Separator } from "./ui/separator";
 import { CircleChevronDown, MapPin } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { generateuuid } from "@/common/Utilities";
-
 type Props = {
     order: Order;
 }
@@ -80,7 +78,7 @@ const OrderStatusDetails = ({order}: Props) => {
                         <span className="font-medium">Order Summary</span>
                         <ul>
                             {order.cartItems.map((item) => (
-                                <li key={`${generateuuid()}`}>
+                                <li key={item.menuItemId}>
                                     <div className="flex flex-row justify-between">
                                         <div className="flex gap-2">
                                             <span>{item.quantity}X</span>

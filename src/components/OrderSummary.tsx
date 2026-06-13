@@ -27,8 +27,8 @@ const OrderSummary = ({restaurant, cartItems, removeFromCart, getgst,gettotalwit
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-                {cartItems.map((item, idx) => (
-                    <div key={idx} className="flex justify-between">
+                {cartItems.map((item) => (
+                    <div key={item._id} className="flex justify-between">
                         <span>
                             <Badge variant='outline' className="mr-2">
                                 {item.quantity}

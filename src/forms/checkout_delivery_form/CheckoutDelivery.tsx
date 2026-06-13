@@ -26,16 +26,16 @@ const CheckoutDelivery = ({currentUser, selectedAddress, onSave, isLoading, butt
         resolver: zodResolver(CheckoutAddressFormSchema),
         defaultValues: {
             ...currentUser,
-            ...selectedAddress
+            ...selectedAddress,
+            // Prefer the saved address location; fall back to the current search profile.
+            // UserAddress uses `lon` while the form schema uses `lng` — map explicitly.
+            fullName: selectedAddress.fullName || profileState.full_value || "",
+            lat: selectedAddress.lat || profileState.lat || 0,
+            lng: selectedAddress.lon || profileState.lng || 0,
         },
-        
-    }) 
+    })
 
     const onSubmit = (formJson: CheckoutAddressFormData) => {
-        formJson.fullName = profileState.full_value || "";
-        formJson.lat = profileState.lat || 0;
-        formJson.lng = profileState.lng || 0;
-        //console.log(formJson);
         onSave(formJson);
     }
 

@@ -4,6 +4,7 @@ import { CircleChevronDown, CircleChevronUp, Clock, Dot, MapPin, MapPinned, Truc
 import { useAppSelector } from "@/statemgmt/hooks";
 import { useGetcodingStaticMap } from "@/api/GeocodingApi";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Collapsible, CollapsibleContent } from "./ui/collapsible";
 import { AccordionAnimation } from "@/animotion/AnimatedPage";
@@ -17,46 +18,18 @@ const RestaurantInfo = ({restaurant}: Props) => {
     const navigate = useNavigate();
     const [isMoreInfoOpen, setIsMoreInfoOpen] = useState<boolean>(false);
     const profileState = useAppSelector((x) => x.profile);
-    const [staticMap,setStaticMap] = useState("");
-    const [showinMap, setShowInMap] = useState("");
-    const [latitude, setLatitude] = useState("");
-    const [longitude, setLongitude] = useState("");
-    //const [data, isLoading ] = useGetcodingStaticMap(latitude,longitude);
-    const {data, isLoading} = useGetcodingStaticMap(longitude, latitude);
-    
+
+    const address = restaurant.address[0];
+    const latitude = address ? address.lat.toFixed(4) : "";
+    const longitude = address ? address.lon.toFixed(4) : "";
+    const showinMap = address ? `https://www.google.com/maps?q=${address.lat},${address.lon}` : "";
+    const { data: staticMap, isLoading } = useGetcodingStaticMap(longitude, latitude);
+
     useEffect(() => {
         if(profileState.full_value === ''){
-            navigate({
-                pathname: `/`,
-            })
+            navigate({ pathname: `/` });
         }
     },[]);
-
-    useEffect(() => {
-        const load = async () => {
-            if(restaurant.address[0] !== undefined){
-                const address = restaurant.address[0];
-                
-                if(address)
-                {
-                    setLatitude(address.lat.toFixed(4));
-                    setLongitude(address.lon.toFixed(4));
-                    
-                    setStaticMap(data || "");
-                    setShowInMap(buildLinkString());
-                }
-            }
-        }
-
-        load();
-    },[restaurant])
-
-    const buildLinkString = () => {
-        const address = restaurant.address[0];
-        const provider = 'https://www.google.com/maps?q=';
-        const coordination = `${address.lat},${address.lon}`;
-        return `${provider}${coordination}`;
-    }
 
     if(isLoading){
         return (
@@ -86,12 +59,12 @@ const RestaurantInfo = ({restaurant}: Props) => {
                         ): isMoreInfoOpen ? (
                             <CircleChevronUp 
                                 className="text-green-400 cursor-pointer hover:text-green-500" 
-                                onClick={() => {setIsMoreInfoOpen(!!!isMoreInfoOpen)}}
+                                onClick={() => {setIsMoreInfoOpen(!isMoreInfoOpen)}}
                                 />
                         ) : (
                             <CircleChevronDown 
                                 className="text-green-400 cursor-pointer hover:text-green-500" 
-                                onClick={() => {setIsMoreInfoOpen(!!!isMoreInfoOpen)}}
+                                onClick={() => {setIsMoreInfoOpen(!isMoreInfoOpen)}}
                                 />
                         )}
                         
@@ -125,9 +98,17 @@ const RestaurantInfo = ({restaurant}: Props) => {
                                         </a> 
                                     </div>
                                     <div className="flex flex-col w-full items-center">
-                                        {staticMap !== "" ? (
-                                            <img src={staticMap} className="rounded-md shadow-md" />
-                                        ):null}
+                                        {isLoading ? (
+                                            <Skeleton className="h-[200px] w-full rounded-md" />
+                                        ) : staticMap ? (
+                                            <motion.img
+                                                src={staticMap}
+                                                className="rounded-md shadow-md"
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                            />
+                                        ) : null}
                                     </div>
                                 </div>
                             </AccordionAnimation>
@@ -151,7 +132,7 @@ const RestaurantInfo = ({restaurant}: Props) => {
                 </div>
                 <div className="flex flex-row">
                     {restaurant.cuisines.map((d, idx) => (
-                        <div className="flex text-xs font-bold text-gray-500" key={idx}>
+                        <div className="flex text-xs font-bold text-gray-500" key={d}>
                             <span>{d}</span>
                             {idx < restaurant.cuisines.length - 1 && <Dot size={18}/>}
                         </div>

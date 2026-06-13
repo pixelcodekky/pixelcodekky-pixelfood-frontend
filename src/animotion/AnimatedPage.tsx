@@ -37,8 +37,8 @@ export const AnimatedPage = ({children}: Props) => {
 
 const animationscale = {
     initial: {opacity: 0, scale:0.5},
-    animate: {opacity:1, x: 0},
-    exit: {opacity: 0, x:0.5},
+    animate: {opacity:1, scale: 1},
+    exit: {opacity: 0, scale: 0.5},
 }
 
 export const AnimatedCard = ({children}: Props) => {

@@ -49,8 +49,9 @@ const AddressDetails = ({onSave, isLoading, customClass}:Props) => {
 
     const onSubmit = async (formDataJson: AddressDetailsFormData) => {
         const formData = new FormData();
-        
-        if(ctx?.selectedUserAddress.fullName !== ""){
+
+        // Non-empty _id means this is an update to an existing address
+        if (ctx?.selectedUserAddress._id !== "") {
             formData.append("_id", ctx?.selectedUserAddress._id ?? "");
         }
 
@@ -60,7 +61,7 @@ const AddressDetails = ({onSave, isLoading, customClass}:Props) => {
         formData.append("floor", (formDataJson.floor || ""));
         formData.append("unitNumber", (formDataJson.unitNumber || ""));
         formData.append("deliveryInstruction", (formDataJson.deliveryInstruction || ""));
-        formData.append("postalcode", "0");
+        formData.append("postalcode", "");
         formData.append("lon", (ctx?.coords.lng.toString() || ""));
         formData.append("lat", (ctx?.coords.lat.toString() || ""));
         formData.append("isDefault", "false");
@@ -95,7 +96,7 @@ const AddressDetails = ({onSave, isLoading, customClass}:Props) => {
                                 >Back to Map</Button>
                             {isLoading ? <LoadingButton /> : 
                             <Button type='submit' className='bg-green-600'>
-                                {ctx?.selectedUserAddress.fullName !== "" ? "Update " : "Add "} 
+                                {ctx?.selectedUserAddress._id !== "" ? "Update " : "Add "}
                                 Address
                             </Button>}
                         </div>

@@ -232,7 +232,7 @@ export type UserAddress = {
 }
 
 export type GetUserAddressPara = {
-  _Id?: String;
+  _Id?: string;
 }
 
 export type UserAddressRequest = {

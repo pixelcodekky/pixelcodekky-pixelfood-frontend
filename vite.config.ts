@@ -17,5 +17,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     host: true,
+    hmr: {
+      clientPort: 5173,
+    },
   },
 });

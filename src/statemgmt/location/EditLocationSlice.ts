@@ -10,7 +10,7 @@ const editLocationSlice = createSlice({
     initialState,
     reducers: {
         setIsEdit: (state) => {
-            state.isEdit = !!!state.isEdit;
+            state.isEdit = !state.isEdit;
         }
     }
 });

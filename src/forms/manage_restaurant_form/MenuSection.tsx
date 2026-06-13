@@ -20,7 +20,7 @@ const MenuSection = () => {
                 <FormDescription>Create your own menu</FormDescription>
             </div>
             <Button type='button' className='bg-white-500 hover:bg-green-100'
-                onClick={() => append({name:'', price:''})}><Plus className='text-green-600'></Plus></Button>
+                onClick={() => append({name:'', price: 0})}><Plus className='text-green-600'></Plus></Button>
             <FormField control={control} 
                 name='menuItems' 
                 render={() => (

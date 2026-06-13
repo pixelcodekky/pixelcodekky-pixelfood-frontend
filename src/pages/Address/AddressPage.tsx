@@ -112,30 +112,9 @@ const AddressPage = () => {
         load();
     },[addSuccess, updateSuccess])
 
-    const RenderAddressMap = () => {
-        if(!nextpage){
-            return (
-                <AddressMap customClass={"animate-fadeIn"}/>
-            )
-        }
-    }
-
-    const RenderAddressDetails = () => {
-        if(nextpage){
-            return (
-                <AddressDetails
-                    isLoading={addLoading || getLoading || updateLoading}
-                    customClass={"animate-fadeIn"}
-                    onSave={(Id !== undefined && Id !== "") ? updateAddress : createAddress}
-
-                />
-            )
-        }
-    }
-
     const RenderLoading = () => {
         return (
-            <div className="flex flex row items-center justify-center w-full bg-opacity-70 bg-white animate-pulse animate-fadeIn h-10">
+            <div className="flex flex-row items-center justify-center w-full bg-opacity-70 bg-white animate-pulse animate-fadeIn h-10">
                 <span>Loading...</span>
             </div>
         )
@@ -149,8 +128,14 @@ const AddressPage = () => {
                 <div className="space-y-5">
                     <>
                         {getLoading ? RenderLoading() : null}
-                        {RenderAddressMap()}
-                        {RenderAddressDetails()}
+                        {!nextpage && <AddressMap customClass={"animate-fadeIn"} />}
+                        {nextpage && (
+                            <AddressDetails
+                                isLoading={addLoading || getLoading || updateLoading}
+                                customClass={"animate-fadeIn"}
+                                onSave={(Id !== undefined && Id !== "") ? updateAddress : createAddress}
+                            />
+                        )}
                     </>
                 </div>
             </AddressContext.Provider>

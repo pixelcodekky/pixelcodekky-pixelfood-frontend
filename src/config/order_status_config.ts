@@ -7,9 +7,9 @@ type OrderStatusInfo = {
 }
 
 export const ORDER_STATUS: OrderStatusInfo[] = [
-    {label: "places", value:"placed", progressValue: 0},
+    {label: "Placed", value:"placed", progressValue: 0},
     {label: "Awaiting Restaurant Confirmation", value:"paid", progressValue: 25},
     {label: "In Progress", value:"inProgress", progressValue: 50},
-    {label: "Our for Delivery", value: "outForDelivery", progressValue: 75},
+    {label: "Out for Delivery", value: "outForDelivery", progressValue: 75},
     {label: "Delivered", value:"delivered", progressValue: 100},
 ]

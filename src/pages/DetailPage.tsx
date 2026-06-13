@@ -1,11 +1,11 @@
 import { useGetRestaurant } from "@/api/RestaurantApi";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
-import MeuItem from "@/components/MeuItem";
+import MenuItem from "@/components/MenuItem";
 import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MenuItem as MenuItemType } from '../types';
 import CheckoutButton from "@/components/CheckoutButton";
@@ -30,9 +30,13 @@ const DetailPage = () => {
     const { createCheckoutSession, isLoading: isCheckoutLoading } = useCreateCheckoutSession();
 
     const [cartItems, setCardItems] = useState<CartItem[]>(() => {
-        const storedCartItems = sessionStorage.getItem(`cartItems_${restaurantId}`);
+        const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
         return storedCartItems ? JSON.parse(storedCartItems) : []
     });
+
+    useEffect(() => {
+        sessionStorage.setItem(`cartItems-${restaurantId}`, JSON.stringify(cartItems));
+    }, [cartItems, restaurantId]);
 
     const gstvalue = import.meta.env.VITE_GST_PERCENT;
     
@@ -45,7 +49,7 @@ const DetailPage = () => {
                 if(isAdd){
                     updatedCartItem = prev.map((cartItem)=> cartItem._id == menuItem._id ? {...cartItem, quantity: cartItem.quantity + 1} : cartItem);
                 }else if(!isAdd){
-                    var updatedQty = cartItems.find((x) => x._id === menuItem._id)?.quantity ?? 0;
+                    const updatedQty = cartItems.find((x) => x._id === menuItem._id)?.quantity ?? 0;
                     if((updatedQty - 1) <= 0){
                         //remove from cart list
                         updatedCartItem = prev.filter((item) => item._id !== menuItem._id);
@@ -190,9 +194,9 @@ const DetailPage = () => {
                         <div className="flex flex-col gap-4">
                             <span className="text-2xl font-bold tracking-tight">Menu</span>
                             <ul className="grid md:grid-cols-2 gap-4"> 
-                                {restaurant.menuItems.map((item, idx) => (
-                                    <li key={idx}>
-                                        <MeuItem menuItem={item} key={idx} 
+                                {restaurant.menuItems.map((item) => (
+                                    <li key={item._id}>
+                                        <MenuItem menuItem={item}
                                             addquantity={() => addToCart(item, true)}
                                             minusquantity={() => addToCart(item, false)}
                                             currentQty={cartItems.find((x) => x._id === item._id)?.quantity ?? 0}
@@ -202,11 +206,11 @@ const DetailPage = () => {
                                 ))}
                             </ul>
                         </div>
-                        <div className="invisible lg:visible">
+                        <div className="hidden lg:block">
                             {renderOrderSummary("")}
                         </div>
                     </div>
-                    <div className="lg:invisible fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
+                    <div className="lg:hidden fixed inset-x-0 bottom-0 w-full h-auto bg-white p-2">
                         <Dialog>
                             <DialogTrigger asChild>
                             <Button className="w-full h-15 bg-green-700 hover:bg-green-600 justify-between shadow-md">

@@ -38,19 +38,14 @@ const CheckoutButton = ({onCheckout, disabled, isLoading}: Props) => {
     const { pathname } = useLocation();
 
     const { currentUser, isLoading: isGetUserLoading} = useGetUser();
-    const {getAddress } = useGetUserAddress("");
+    const {getAddress } = useGetUserAddress();
     const [selectedAddress, setSelectedAddress] = useState<UserAddress>(initialUserAddress);
 
     useEffect(() => {
-        const load = async () => {
-            const address = await getAddress;
-            const objaddress = address?.find(x => x.fullName === profileState.full_value);
-            if(objaddress !== undefined)
-                setSelectedAddress(objaddress);
-        };
-
-        load();
-    }, []);
+        const objaddress = getAddress?.find(x => x.fullName === profileState.full_value);
+        if(objaddress !== undefined)
+            setSelectedAddress(objaddress);
+    }, [getAddress]);
 
     const onLogin = async () => {
         await loginWithRedirect({
